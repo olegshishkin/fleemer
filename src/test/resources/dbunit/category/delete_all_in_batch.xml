@@ -1,0 +1,49 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE dataset [
+        <!ELEMENT dataset (Person*, Account*, Category*, Operation*)>
+        <!ELEMENT Person EMPTY>
+        <!ATTLIST Person id CDATA #REQUIRED>
+        <!ATTLIST Person first_name CDATA #REQUIRED>
+        <!ATTLIST Person last_name CDATA #REQUIRED>
+        <!ATTLIST Person email CDATA #REQUIRED>
+        <!ATTLIST Person hash CDATA #REQUIRED>
+
+        <!ELEMENT Account EMPTY>
+        <!ATTLIST Account id CDATA #REQUIRED>
+        <!ATTLIST Account type CDATA #REQUIRED>
+        <!ATTLIST Account currency CDATA #REQUIRED>
+        <!ATTLIST Account name CDATA #REQUIRED>
+        <!ATTLIST Account balance CDATA #REQUIRED>
+        <!ATTLIST Account person_id CDATA #REQUIRED>
+
+        <!ELEMENT Category EMPTY>
+        <!ATTLIST Category id CDATA #IMPLIED>
+        <!ATTLIST Category name CDATA #IMPLIED>
+        <!ATTLIST Category type CDATA #IMPLIED>
+        <!ATTLIST Category person_id CDATA #IMPLIED>
+
+        <!ELEMENT Operation EMPTY>
+        <!ATTLIST Operation id CDATA #REQUIRED>
+        <!ATTLIST Operation date CDATA #REQUIRED>
+        <!ATTLIST Operation in_account_id CDATA #REQUIRED>
+        <!ATTLIST Operation out_account_id CDATA #REQUIRED>
+        <!ATTLIST Operation category_id CDATA #IMPLIED>
+        <!ATTLIST Operation sum CDATA #REQUIRED>
+        <!ATTLIST Operation comment CDATA #REQUIRED>]>
+<dataset>
+    <Person id="1" first_name="FirstName1" last_name="LastName1" email="mail100@mail.ma" hash="hash1"/>
+    <Person id="2" first_name="FirstName2" last_name="LastName2" email="mail95@mail.ma"  hash="hash2"/>
+    <Person id="3" first_name="FirstName3" last_name="LastName3" email="mail3@mail.ma"   hash="hash3"/>
+    <Person id="4" first_name="FirstName4" last_name="LastName4" email="mail5@mail.ma"   hash="hash4"/>
+    <Person id="5" first_name="FirstName5" last_name="LastName5" email="mail@mail.ma"    hash="hash5"/>
+
+    <Account id="1" type="0" currency="0" name="Cash"   balance="00000000000000001012.1000000000" person_id="2"/>
+    <Account id="2" type="1" currency="1" name="Bank"   balance="00000000000000000333.4500000000" person_id="4"/>
+    <Account id="3" type="3" currency="0" name="Wallet" balance="00000000000000001001.0200000000" person_id="1"/>
+
+    <Category/>
+
+    <Operation id="3" date="2016-05-12" in_account_id="3" out_account_id="1" sum="00000000000000008080.1100000000" comment="comment3"/>
+    <Operation id="5" date="2018-11-12" in_account_id="1" out_account_id="2" sum="00000000000000000543.0000000000" comment="comment5"/>
+    <Operation id="8" date="2015-05-08" in_account_id="1" out_account_id="2" sum="00000000000000001176.9200000000" comment="comment8"/>
+</dataset>

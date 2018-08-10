@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataset>
+    <Person id="1" first_name="FirstName1" last_name="LastName1" email="mail100@mail.ma" hash="hash1"/>
+    <Person id="2" first_name="FirstName2" last_name="LastName2" email="mail95@mail.ma"  hash="hash2"/>
+    <Person id="3" first_name="FirstName3" last_name="LastName3" email="mail3@mail.ma"   hash="hash3"/>
+    <Person id="4" first_name="FirstName4" last_name="LastName4" email="mail5@mail.ma"   hash="hash4"/>
+    <Person id="5" first_name="FirstName5" last_name="LastName5" email="mail@mail.ma"    hash="hash5"/>
+
+    <Account/>
+
+    <Category id="1" name="Car"     type="1" person_id="1"/>
+    <Category id="2" name="Home"    type="1" person_id="3"/>
+    <Category id="3" name="Salary"  type="0" person_id="1"/>
+    <Category id="4" name="Car"     type="1" person_id="2"/>
+    <Category id="5" name="Gifts"   type="1" person_id="1"/>
+    <Category id="6" name="Home"    type="1" person_id="2"/>
+    <Category id="7" name="Salary"  type="0" person_id="4"/>
+
+    <Operation/>
+</dataset>
