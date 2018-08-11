@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div th:replace="navbar::navbar('home')"></div>
+    <main role="main" class="container">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                        <span class="text-muted" th:text="#{index.total-balance}">Total balance</span>
+                        <span id="totalBalance" class="badge badge-warning badge-pill"></span>
+                    </h4>
+                    <ul id="accountSummaryPlace" class="list-group mb-3"></ul>
+                </div>
+
+                <div class="col-md-8">
+                    <div class="text-center">
+                        <h5 class="text-center" th:text="#{index.add-operation}">Add operation</h5>
+                    </div>
+
+                    <div class="d-block my-3 text-center">
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input id="outcome" name="operationType" type="radio" class="custom-control-input" required>
+                            <label class="custom-control-label" for="outcome" th:text="#{index.form.outcome}">Outcome</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input id="income" name="operationType" type="radio" class="custom-control-input" checked required>
+                            <label class="custom-control-label" for="income" th:text="#{index.form.income}">Income</label>
+                        </div>
+                        <div class="custom-control custom-radio custom-control-inline">
+                            <input id="transfer" name="operationType" type="radio" class="custom-control-input" required>
+                            <label class="custom-control-label" for="transfer" th:text="#{index.form.transfer}">Transfer</label>
+                        </div>
+                    </div>
+
+                    <form method="post" th:action="@{/operations/create}" action="#" th:object="${operation}"
+                          class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <select id="outAccountName" th:field="*{outAccountName}" class="custom-select d-block w-100">
+                                    <option value="" th:text="#{index.form.select-account}"></option>
+                                    <option th:each="account : ${accounts}" th:value="${account.name}" th:text="${account.name}"></option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('outAccountName')}">
+                                    <span th:errors="*{outAccountName}" class="text-danger small"></span><br>
+                                </div>
+                                <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <select id="inAccountName" th:field="*{inAccountName}" class="custom-select d-block w-100" disabled>
+                                    <option value="" th:text="#{index.form.select-account}"></option>
+                                    <option th:each="account : ${accounts}" th:value="${account.name}" th:text="${account.name}"></option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('inAccountName')}">
+                                    <span th:errors="*{inAccountName}" class="text-danger small"></span><br>
+                                </div>
+                                <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <select id="categoryName" th:field="*{categoryName}" class="custom-select d-block w-100" title="">
+                                    <option id="categoryNameBlankValue" value="" th:text="#{index.form.select-category}"></option>
+                                </select>
+                                <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <input th:field="*{operation.date}" class="form-control" type="text"
+                                       placeholder="yyyy-mm-dd" required/>
+                                <div th:if="${#fields.hasErrors('operation.date')}">
+                                    <span th:errors="*{operation.date}" class="text-danger small"></span><br>
+                                </div>
+                                <div class="invalid-feedback" th:text="#{index.error.select-date}">Select a date of operation</div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <input th:field="*{operation.sum}" type="text" class="form-control" placeholder="0.00"
+                                            pattern="[0-9]+(\.[0-9]+)?" required autofocus/>
+                                <div th:if="${#fields.hasErrors('operation.sum')}">
+                                    <span th:errors="*{operation.sum}" class="text-danger small"></span><br>
+                                </div>
+                                <div class="invalid-feedback" th:text="#{index.error.should-be-digit}">
+                                    The field cannot be empty and should be a digit
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <textarea th:field="*{operation.comment}" class="form-control" rows="1"
+                                          th:placeholder="#{index.form.comment.placeholder}"></textarea>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <button class="btn btn-primary btn-block" type="submit" th:text="#{index.form.submit}">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3"></div>
+            </div>
+
+            <div class="row">
+                <div id="operationTable" class="col-md-12 mb-3"></div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <nav>
+                        <ul id="pagination" class="pagination justify-content-center"></ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div hidden>
+                <li id="accountSummary" class="d-flex justify-content-between lh-condensed">
+                    <div>
+                        <h6 class="my-0"></h6>
+                        <small class="text-muted"></small>
+                    </div>
+                    <span class="text-muted"></span>
+                </li>
+            </div>
+
+            <div hidden>
+                <table id="operationTableSnippet" class="table table-hover">
+                    <thead align="right">
+                    <tr>
+                        <th scope="col" th:text="#{index.table.date}">Date</th>
+                        <th scope="col" th:text="#{index.table.from-account}">From account</th>
+                        <th scope="col" th:text="#{index.table.to-account}">To account</th>
+                        <th scope="col" th:text="#{index.table.category}">Category</th>
+                        <th scope="col" th:text="#{index.table.sum}">Sum</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+
+            <div hidden>
+                <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
+            </div>
+            <footer th:replace="footer::footer"></footer>
+            <script>
+                $(document).ready(function(){
+                    setValidationListener();
+                    setDataPicker();
+                    setOperationTypeListener();
+                    $('#outcome').click();
+                    setTotalBalance();
+                    fillAccountsList();
+                    getOperationsPage(0, 15);
+                });
+            </script>
+        </div>
+    </main>
+</body>
+</html>

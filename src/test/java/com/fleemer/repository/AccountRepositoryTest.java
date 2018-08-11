@@ -1,6 +1,6 @@
 package com.fleemer.repository;
 
-import static com.fleemer.EntityCreator.createAccount;
+import static com.fleemer.model.EntityCreator.createAccount;
 
 import com.fleemer.FleemerApplication;
 import com.fleemer.model.Account;

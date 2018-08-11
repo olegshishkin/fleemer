@@ -1,6 +1,6 @@
 package com.fleemer.model;
 
-import static com.fleemer.EntityCreator.createAccount;
+import static com.fleemer.model.EntityCreator.createAccount;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -47,5 +47,13 @@ public class AccountTest {
         assertNotEquals(hash, a2.hashCode());
         a2.setId(11L);
         assertEquals(hash, a2.hashCode());
+    }
+
+    @Test
+    public void getRefactoredType_success() {
+        Account a = createAccount(11L, AccountType.CASH, Currency.USD, "Wallet", BigDecimal.TEN, null);
+        assertEquals("Cash", a.getRefactoredType());
+        a.setType(AccountType.BANK_ACCOUNT);
+        assertEquals("Bank account", a.getRefactoredType());
     }
 }

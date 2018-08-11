@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+    <nav th:fragment="navbar (pageName)" class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+        <a th:href="@{/}" href="#" class="navbar-brand">
+            <img th:src="@{/static/images/logo_full.png}" src="../static/images/logo_full.png" width="135" height="35" alt="Fleemer">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExampleDefault"
+                aria-controls="navbarsExampleDefault" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item" th:classappend="${pageName == 'home'}? 'active'">
+                    <a th:href="@{/}" href="#" class="nav-link" th:text="#{navbar.menu.home}">Home</a>
+                </li>
+                <li class="nav-item" th:classappend="${pageName == 'accounts'}? 'active'">
+                    <a th:href="@{/accounts}" href="#" class="nav-link" th:text="#{navbar.menu.accounts}">Accounts</a>
+                </li>
+                <li class="nav-item" th:classappend="${pageName == 'categories'}? 'active'">
+                    <a th:href="@{/categories}" href="#" class="nav-link" th:text="#{navbar.menu.categories}">Categories</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" th:href="@{/logout}" href="#" th:text="#{navbar.logout(${session.userName})}">
+                        Logout(username)
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</body>
+</html>

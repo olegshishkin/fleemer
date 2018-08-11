@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div th:replace="navbar::navbar('categories')"></div>
+    <main role="main" class="container">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-4">
+                    <h5 class="text-center" th:text="#{categories.add-category}">Add category</h5>
+
+                    <form method="post" th:action="@{/categories/create}" action="#" th:object="${category}"
+                          class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label th:for="*{name}" th:text="#{categories.form.name}">Name</label>
+                                <input th:field="*{name}" type="text" class="form-control" required/>
+                                <div th:if="${#fields.hasErrors('name')}">
+                                    <span th:errors="*{name}" class="text-danger small"></span><br>
+                                </div>
+                                <div class="invalid-feedback" th:text="#{categories.error.not-empty}">The field cannot be empty</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label th:for="*{type}" th:text="#{categories.form.type}">Type</label>
+                                <select th:field="*{type}" class="custom-select d-block w-100" required>
+                                    <option value="" label="Select..."></option>
+                                    <option th:each="type : ${categoryTypes}" th:value="${type}" th:text="${type}"></option>
+                                </select>
+                                <div th:if="${#fields.hasErrors('type')}">
+                                    <span th:errors="*{type}" class="text-danger small"></span><br>
+                                </div>
+                                <div class="invalid-feedback" th:text="#{categories.error.select-value}">Select a value</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <button th:text="#{categories.form.submit}" class="btn btn-primary btn-block" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-md-6 mb-3">
+                    <table class="table table-hover">
+                        <thead align="right">
+                        <tr>
+                            <th scope="col" th:text="#{categories.table.columns.name}">Name</th>
+                            <th scope="col" th:text="#{categories.table.columns.type}">Type</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="a : ${categories}">
+                                <td align="right" th:text="${a.name}">...</td>
+                                <td align="right" th:text="${a.type}">...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer th:replace="footer::footer"></footer>
+    <script>
+        $(document).ready(function(){
+            setValidationListener();
+        });
+    </script>
+</body>
+</html>

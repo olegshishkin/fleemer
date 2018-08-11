@@ -1,6 +1,6 @@
 package com.fleemer.model;
 
-import static com.fleemer.EntityCreator.createCategory;
+import static com.fleemer.model.EntityCreator.createCategory;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 

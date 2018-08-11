@@ -1,6 +1,6 @@
 package com.fleemer.model;
 
-import static com.fleemer.EntityCreator.createPerson;
+import static com.fleemer.model.EntityCreator.createPerson;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 

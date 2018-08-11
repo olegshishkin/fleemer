@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="/static/images/logo.ico">
+    <title>Fleemer</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link th:href="@{/static/css/signin.css}" href="../static/css/signin.css" rel="stylesheet">
+    <script th:src="@{/static/js/custom.js}" src="../static/js/custom.js" defer></script>
+</head>
+<body>
+    <form th:action="@{/login}" method="post" class="form-signin text-center">
+        <img class="mb-4" th:src="@{/static/images/logo_full.png}" src="../static/images/logo_full.png" alt="" width="259" height="75">
+        <div th:if="${param.error}">
+            <div class="alert alert-danger text-center" role="alert">
+                <span th:text="#{login.unsuccessful-login}">Invalid username or password.</span>
+            </div>
+        </div>
+        <div th:if="${param.logout}">
+            <div class="alert alert-warning text-center" role="alert">
+                <span th:text="#{login.just-logged-out}">You've just logged out.</span>
+            </div>
+        </div>
+
+        <input type="email" id="username" name="username" class="form-control" th:placeholder="#{login.placeholder-email}"
+               placeholder="Email address" required autofocus/>
+        <div class="invalid-feedback">
+            <span th:text="#{login.no-email}">Please input your email address</span>
+        </div>
+
+        <input type="password" id="password" name="password" class="form-control" th:placeholder="#{login.placeholder-password}"
+               placeholder="Password" required/>
+        <div class="invalid-feedback">
+            <span th:text="#{login.no-password}">Please input password</span>
+        </div>
+
+        <button type="submit" class="btn btn-outline-primary">
+            <span th:text="#{login.sign-in}">Sign in</span>
+        </button>
+        <br><br>
+        <div>
+            <a th:href="@{/user}" href="/user" class="btn btn-link text-dark btn-sm" role="button">
+                <span th:text="#{login.to-register}">Register</span>
+            </a>
+        </div>
+        <footer class="text-muted text-center text-small">
+            <p >&copy; 2018 Fleemer Corp.</p>
+        </footer>
+    </form>
+</body>
+</html>

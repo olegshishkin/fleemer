@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div class="alert alert-danger form-signin text-center" role="alert">
+    <h4 class="alert-heading" th:text="#{error.error}">Error!</h4>
+    <p th:utext="#{error.message}">Unfortunately, an unexpected error occurred while the application was running.
+        Please go to the main page of the <a href="/">link</a>.</p>
+    <hr>
+    <p class="mb-0" th:text="#{error.message.conclusion}">I hope these little troubles will not affect your love for
+        our application :)</p>
+</div>
+<footer th:replace="footer::footer"></footer>
+</body>
+</html>

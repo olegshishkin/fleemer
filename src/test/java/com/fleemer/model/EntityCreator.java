@@ -1,9 +1,5 @@
-package com.fleemer;
+package com.fleemer.model;
 
-import com.fleemer.model.Account;
-import com.fleemer.model.Category;
-import com.fleemer.model.Operation;
-import com.fleemer.model.Person;
 import com.fleemer.model.enums.AccountType;
 import com.fleemer.model.enums.CategoryType;
 import com.fleemer.model.enums.Currency;
