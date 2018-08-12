@@ -161,4 +161,23 @@ public class CategoryRepositoryTest {
         repository.deleteAllInBatch();
         repository.flush();
     }
+
+    @Test
+    public void findAllByPersonOrderByName() {
+        List<Category> expected = List.of(categories.get(3), categories.get(5));
+        List<Category> actual = repository.findAllByPersonOrderByName(people.get(1));
+        RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findByNameAndPerson() {
+        Category actual = repository.findByNameAndPerson("Salary", people.get(3)).orElseThrow();
+        RepositoryAssertions.assertEquals(categories.get(6), actual);
+    }
+
+    @Test
+    public void findAllByTypeAndPerson() {
+        Iterable<Category> actual = repository.findAllByTypeAndPerson(CategoryType.OUTCOME, people.get(1));
+        RepositoryAssertions.assertIterableEquals(List.of(categories.get(3), categories.get(5)), actual);
+    }
 }

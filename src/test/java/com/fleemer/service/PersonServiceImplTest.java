@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.fleemer.model.Person;
 import com.fleemer.repository.PersonRepository;
+import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.PersonServiceImpl;
 import java.util.Collections;
 import java.util.List;
@@ -103,7 +104,7 @@ public class PersonServiceImplTest {
     }
 
     @Test
-    public void save() {
+    public void save() throws ServiceException {
         when(repository.save(person)).thenReturn(person);
         assertEquals(person, service.save(person));
         verify(repository, times(1)).save(person);
@@ -159,5 +160,13 @@ public class PersonServiceImplTest {
         doThrow(UnsupportedOperationException.class).when(repository).deleteAllInBatch();
         service.deleteAllInBatch();
         verify(repository, times(1)).deleteAllInBatch();
+    }
+
+    @Test
+    public void findByEmail() {
+        Optional<Person> expected = Optional.of(person);
+        when(repository.findByEmail("email")).thenReturn(expected);
+        assertEquals(expected, service.findByEmail("email"));
+        verify(repository, times(1)).findByEmail("email");
     }
 }

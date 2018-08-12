@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     private static final String ROOT_VIEW = "accounts";
     private static final String ACCOUNT_EXISTS_ERROR_MSG_KEY = "accounts.error.name-exists";
+
     private final AccountService accountService;
     private final MessageSource messageSource;
     private final PersonService personService;
@@ -68,7 +69,7 @@ public class AccountController {
         }
         account.setPerson(person);
         accountService.save(account);
-        return "redirect:/account";
+        return "redirect:/accounts";
     }
 
     private Person getCurrentPerson(@NotNull Principal principal) {

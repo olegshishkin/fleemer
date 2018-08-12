@@ -8,7 +8,7 @@
             <div class="row justify-content-center">
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{accounts.add-account}">Add account</h5>
-                    <form method="post" th:action="@{/account/create}" action="#" th:object="${account}"
+                    <form method="post" th:action="@{/accounts/create}" action="#" th:object="${account}"
                           class="needs-validation" novalidate=>
                         <div class="row">
                             <div class="col-md-12 mb-3">
@@ -52,8 +52,8 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="balance" th:text="#{accounts.initial-balance}">Initial balance</label>
-                                <input th:field="*{balance}" type="text" class="form-control" value="0"
-                                            placeholder="0.0" pattern="[0-9]+(\.[0-9]+)?" required/>
+                                <input th:field="*{balance}" type="text" class="form-control" placeholder="0.0"
+                                       pattern="[0-9]+(\.[0-9]+)?" required/>
                                 <div th:if="${#fields.hasErrors('balance')}">
                                     <span th:errors="*{balance}" class="text-danger small"></span><br>
                                 </div>

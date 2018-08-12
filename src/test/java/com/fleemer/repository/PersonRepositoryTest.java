@@ -91,7 +91,7 @@ public class PersonRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        Person person = createPerson(null, "test firstname", "test lastname", "test email", "test hash");
+        Person person = createPerson(null, "test firstname", "test lastname", "test@email.com", "test hash");
         repository.save(person);
         repository.flush();
     }
@@ -100,7 +100,7 @@ public class PersonRepositoryTest {
     @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml")
     public void save_existing() {
         Person person = people.get(1);
-        person.setEmail("Changed email");
+        person.setEmail("Changed@email.ch");
         repository.save(person);
         repository.flush();
     }
@@ -108,10 +108,10 @@ public class PersonRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Person newPerson1 = createPerson(null, "New Firstname1", "New Lastname1", "New email1", "New hash1");
-        Person newPerson2 = createPerson(null, "New Firstname2", "New Lastname2", "New email2", "New hash2");
+        Person newPerson1 = createPerson(null, "New Firstname1", "New Lastname1", "New@email1.co", "New hash1");
+        Person newPerson2 = createPerson(null, "New Firstname2", "New Lastname2", "New@email2.ui", "New hash2");
         Person person = people.get(1);
-        person.setEmail("Changed email");
+        person.setEmail("Changed@email.ill");
         repository.saveAll(List.of(newPerson1, newPerson2, person));
         repository.flush();
     }
@@ -164,5 +164,10 @@ public class PersonRepositoryTest {
             Assert.assertEquals(message, e.getMessage());
             throw e;
         }
+    }
+
+    @Test
+    public void findByEmail() {
+        RepositoryAssertions.assertEquals(people.get(2), repository.findByEmail("mail3@mail.ma").orElseThrow());
     }
 }

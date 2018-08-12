@@ -5,8 +5,11 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.fleemer.model.Account;
+import com.fleemer.model.Person;
 import com.fleemer.repository.AccountRepository;
+import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.AccountServiceImpl;
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +34,9 @@ public class AccountServiceImplTest {
 
     @Mock
     private Account account;
+
+    @Mock
+    private Person person;
 
     @Mock
     private Pageable pageable;
@@ -103,7 +109,7 @@ public class AccountServiceImplTest {
     }
 
     @Test
-    public void save() {
+    public void save() throws ServiceException {
         when(repository.save(account)).thenReturn(account);
         assertEquals(account, service.save(account));
         verify(repository, times(1)).save(account);
@@ -159,5 +165,29 @@ public class AccountServiceImplTest {
         doNothing().when(repository).deleteAllInBatch();
         service.deleteAllInBatch();
         verify(repository, times(1)).deleteAllInBatch();
+    }
+
+    @Test
+    public void findAll_byPerson() {
+        List<Account> expected = List.of(account);
+        when(repository.findAllByPersonOrderByName(person)).thenReturn(expected);
+        List<Account> actual = service.findAll(person);
+        assertEquals(expected, actual);
+        verify(repository, times(1)).findAllByPersonOrderByName(person);
+    }
+
+    @Test
+    public void findByNameAndPerson() {
+        Optional<Account> expected = Optional.of(account);
+        when(repository.findByNameAndPerson("Bank", person)).thenReturn(expected);
+        assertEquals(expected, service.findByNameAndPerson("Bank", person));
+        verify(repository, times(1)).findByNameAndPerson("Bank", person);
+    }
+
+    @Test
+    public void getTotalBalance() {
+        BigDecimal decimal = new BigDecimal("211.5600000000");
+        when(repository.getTotalBalance(person)).thenReturn(decimal);
+        assertEquals(decimal, repository.getTotalBalance(person));
     }
 }

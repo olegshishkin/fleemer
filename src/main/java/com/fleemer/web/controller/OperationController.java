@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class OperationController {
     private static final String ROOT_VIEW = "index";
+
     private final AccountService accountService;
     private final CategoryService categoryService;
     private final PersonService personService;

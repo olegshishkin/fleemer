@@ -52,7 +52,7 @@ public abstract class AbstractService <T, ID, R extends JpaRepository<T, ID>> im
     }
 
     @Override
-    public <S extends T> S save(S entity) throws ServiceException {
+    public <S extends T> S save(S entity) throws ServiceException, com.fleemer.service.exception.ServiceException {
         return getRepository().save(entity);
     }
 

@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -110,7 +112,8 @@ public class OperationRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        repository.save(createOperation(null, LocalDate.of(2000, Month.FEBRUARY, 4), accounts.get(1), null, categories.get(6), 7.98, "new comment"));
+        repository.save(createOperation(null, LocalDate.of(2000, Month.FEBRUARY, 4), accounts.get(1), null,
+                categories.get(6), 7.98, "new comment"));
         repository.flush();
     }
 
@@ -126,8 +129,10 @@ public class OperationRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Operation o1 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), accounts.get(1), accounts.get(2), null, 7.98, "new comment1");
-        Operation o2 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), null, accounts.get(0), categories.get(1), -17.98, "new comment2");
+        Operation o1 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), accounts.get(1), accounts.get(2),
+                null, 7.98, "new comment1");
+        Operation o2 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), null, accounts.get(0),
+                categories.get(1), -17.98, "new comment2");
         Operation o = operations.get(3);
         o.setComment("Changed comment");
         repository.saveAll(List.of(o1, o2, o));
@@ -174,5 +179,29 @@ public class OperationRepositoryTest {
     public void deleteAllInBatch() {
         repository.deleteAllInBatch();
         repository.flush();
+    }
+
+    @Test
+    public void findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson() {
+        Person person = people.get(1);
+        List<Operation> expected = List.of(operations.get(1),
+                operations.get(2),
+                operations.get(3),
+                operations.get(4),
+                operations.get(6),
+                operations.get(7),
+                operations.get(8));
+        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person);
+        RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson_pageable() {
+        Person person = people.get(1);
+        List<Operation> expected = List.of(operations.get(3), operations.get(2));
+        Pageable pageable = PageRequest.of(2, 2, new Sort(Sort.Direction.DESC, "date"));
+        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person,
+                person, pageable).getContent();
+        RepositoryAssertions.assertIterableEquals(expected, actual);
     }
 }

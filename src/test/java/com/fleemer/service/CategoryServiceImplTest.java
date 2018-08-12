@@ -5,7 +5,10 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import com.fleemer.model.Category;
+import com.fleemer.model.Person;
+import com.fleemer.model.enums.CategoryType;
 import com.fleemer.repository.CategoryRepository;
+import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.CategoryServiceImpl;
 import java.util.Collections;
 import java.util.List;
@@ -34,6 +37,9 @@ public class CategoryServiceImplTest {
 
     @Mock
     private Pageable pageable;
+
+    @Mock
+    private Person person;
 
     @Mock
     private Page<Category> page;
@@ -103,7 +109,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void save() {
+    public void save() throws ServiceException {
         when(repository.save(category)).thenReturn(category);
         assertEquals(category, service.save(category));
         verify(repository, times(1)).save(category);
@@ -159,5 +165,29 @@ public class CategoryServiceImplTest {
         doNothing().when(repository).deleteAllInBatch();
         service.deleteAllInBatch();
         verify(repository, times(1)).deleteAllInBatch();
+    }
+
+    @Test
+    public void findAll_byPerson() {
+        List<Category> expected = Collections.emptyList();
+        when(repository.findAllByPersonOrderByName(person)).thenReturn(expected);
+        assertEquals(expected, service.findAll(person));
+        verify(repository, times(1)).findAllByPersonOrderByName(person);
+    }
+
+    @Test
+    public void findByNameAndPerson() {
+        Optional<Category> expected = Optional.of(category);
+        when(repository.findByNameAndPerson("name", person)).thenReturn(expected);
+        assertEquals(expected, service.findByNameAndPerson("name", person));
+        verify(repository, times(1)).findByNameAndPerson("name", person);
+    }
+
+    @Test
+    public void findAllByTypeAndPerson() {
+        List<Category> expected = Collections.emptyList();
+        when(repository.findAllByTypeAndPerson(CategoryType.INCOME, person)).thenReturn(expected);
+        assertEquals(expected, service.findAllByTypeAndPerson(CategoryType.INCOME, person));
+        verify(repository, times(1)).findAllByTypeAndPerson(CategoryType.INCOME, person);
     }
 }

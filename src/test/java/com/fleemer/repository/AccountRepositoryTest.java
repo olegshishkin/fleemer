@@ -99,7 +99,7 @@ public class AccountRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        BigDecimal sum = new BigDecimal(111.89);
+        BigDecimal sum = new BigDecimal("111.8900000000");
         Account account = createAccount(null, AccountType.BANK_ACCOUNT, Currency.EUR, "Bank!", sum, people.get(4));
         repository.save(account);
         repository.flush();
@@ -117,8 +117,8 @@ public class AccountRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Account account1 = createAccount(null, AccountType.DEPOSIT, Currency.RUB, "Depo", new BigDecimal(0.0), people.get(1));
-        Account account2 = createAccount(null, AccountType.CASH, Currency.USD, "My cash", new BigDecimal(0.124), people.get(2));
+        Account account1 = createAccount(null, AccountType.DEPOSIT, Currency.RUB, "Depo", new BigDecimal("0.0000000000"), people.get(1));
+        Account account2 = createAccount(null, AccountType.CASH, Currency.USD, "My cash", new BigDecimal("0.1240000000"), people.get(2));
         Account account = accounts.get(0);
         account.setName("Save all");
         repository.saveAll(List.of(account1, account2, account));
@@ -165,5 +165,22 @@ public class AccountRepositoryTest {
     public void deleteAllInBatch() {
         repository.deleteAllInBatch();
         repository.flush();
+    }
+
+    @Test
+    public void findAllByPersonOrderByName() {
+        List<Account> expected = List.of(accounts.get(2));
+        List<Account> actual = repository.findAllByPersonOrderByName(people.get(0));
+        RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findByNameAndPerson() {
+        RepositoryAssertions.assertEquals(accounts.get(1), repository.findByNameAndPerson("Bank", people.get(3)).orElseThrow());
+    }
+
+    @Test
+    public void getTotalBalance() {
+        Assert.assertEquals(new BigDecimal("1001.0200000000"), repository.getTotalBalance(people.get(0)));
     }
 }

@@ -5,7 +5,7 @@
     <Person id="3" first_name="FirstName3" last_name="LastName3" email="mail3@mail.ma"   hash="hash3"/>
     <Person id="4" first_name="FirstName4" last_name="LastName4" email="mail5@mail.ma"   hash="hash4"/>
     <Person id="5" first_name="FirstName5" last_name="LastName5" email="mail@mail.ma"    hash="hash5"/>
-    <Person id="6" first_name="test firstname" last_name="test lastname" email="test email"    hash="test hash"/>
+    <Person id="6" first_name="test firstname" last_name="test lastname" email="test@email.com"    hash="test hash"/>
 
     <Account id="1" type="0" currency="0" name="Cash"   balance="00000000000000001012.1000000000" person_id="2"/>
     <Account id="2" type="1" currency="1" name="Bank"   balance="00000000000000000333.4500000000" person_id="4"/>

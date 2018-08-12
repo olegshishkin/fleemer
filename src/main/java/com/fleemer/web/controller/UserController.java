@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 public class UserController {
     private static final String USER_EXISTS_ERROR_MSG_KEY = "userForm.error.user-exists";
     private static final String USER_FORM_VIEW = "userForm";
+
     private final BCryptPasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
     private final PersonService personService;
@@ -34,12 +35,6 @@ public class UserController {
     public ModelAndView show() {
         return new ModelAndView(USER_FORM_VIEW, "person", new Person());
     }
-
-//    @ResponseBody todo
-//    @GetMapping("name")
-//    public String userName(Principal principal) {
-//        return personService.findByEmail(principal.getName()).orElseThrow().getFirstName();
-//    }
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) throws ServiceException {

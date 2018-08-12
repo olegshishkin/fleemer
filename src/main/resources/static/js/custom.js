@@ -57,13 +57,13 @@ function setOperationTypeListener(){
 }
 
 function fillCategories(catType) {
-    $('#categoryNameBlankValue').siblings().remote();
+    $('#categoryNameBlankValue').siblings().remove();
     var selectTag = $('#categoryName');
-    if (catType == 'transfer') {
+    if (catType == 'TRANSFER') {
         return;
     }
     $.ajax({
-        url: '/categories/json.json',
+        url: '/categories/json',
         data: { type: catType },
         success: function(result){
             $.each(result,
@@ -76,7 +76,7 @@ function fillCategories(catType) {
 
 function setTotalBalance(){
     $.ajax({
-        url: '/balance.json',
+        url: '/balance',
         success: function(result){
             $("#totalBalance").html(result.toFixed(2));
         }

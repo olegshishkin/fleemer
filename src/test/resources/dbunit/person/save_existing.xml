@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
     <Person id="1" first_name="FirstName1" last_name="LastName1" email="mail100@mail.ma" hash="hash1"/>
-    <Person id="2" first_name="FirstName2" last_name="LastName2" email="Changed email"  hash="hash2"/>
+    <Person id="2" first_name="FirstName2" last_name="LastName2" email="Changed@email.ch"  hash="hash2"/>
     <Person id="3" first_name="FirstName3" last_name="LastName3" email="mail3@mail.ma"   hash="hash3"/>
     <Person id="4" first_name="FirstName4" last_name="LastName4" email="mail5@mail.ma"   hash="hash4"/>
     <Person id="5" first_name="FirstName5" last_name="LastName5" email="mail@mail.ma"    hash="hash5"/>

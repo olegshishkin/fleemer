@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/categories")
 public class CategoryController {
     private static final String ROOT_VIEW = "categories";
+
     private final CategoryService categoryService;
     private final PersonService personService;
 
@@ -39,7 +40,7 @@ public class CategoryController {
     }
 
     @ResponseBody
-    @GetMapping("/json")
+    @GetMapping(value = "/json", params = {"type"})
     public List<Category> categories(@RequestParam("type") CategoryType type, Principal principal) {
         return categoryService.findAllByTypeAndPerson(type, getCurrentPerson(principal));
     }
@@ -61,7 +62,7 @@ public class CategoryController {
         }
         category.setPerson(person);
         categoryService.save(category);
-        return "redirect:/category";
+        return "redirect:/categories";
     }
 
     private Person getCurrentPerson(@NotNull Principal principal) {
