@@ -25,7 +25,7 @@
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{type}" th:text="#{accounts.form.type}">Type</label>
                                 <select th:field="*{type}" class="custom-select d-block w-100" required>
-                                    <option value="" label="Select..."></option>
+                                    <option value="" th:text="#{accounts.form.select-type}">Select type</option>
                                     <option th:each="type : ${accountTypes}" th:value="${type}" th:text="${type}"></option>
                                 </select>
                                 <div th:if="${#fields.hasErrors('type')}">
@@ -39,7 +39,7 @@
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{currency}" th:text="#{accounts.form.currency}">Currency</label>
                                 <select th:field="*{currency}" class="custom-select d-block w-100" required>
-                                    <option value="" label="Select..."></option>
+                                    <option value="" th:text="#{accounts.form.select-currency}">Select currency</option>
                                     <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
                                 </select>
                                 <div th:if="${#fields.hasErrors('currency')}">

@@ -47,7 +47,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{hash}" th:text="#{userForm.form.password}">Password</label>
-                                <input th:field="*{hash}" class="form-control" required/>
+                                <input th:field="*{hash}" type="password" class="form-control" required/>
                                 <div th:if="${#fields.hasErrors('hash')}">
                                     <span th:errors="*{hash}" class="text-danger small"></span><br>
                                 </div>

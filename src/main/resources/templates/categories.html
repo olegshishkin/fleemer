@@ -26,7 +26,7 @@
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{type}" th:text="#{categories.form.type}">Type</label>
                                 <select th:field="*{type}" class="custom-select d-block w-100" required>
-                                    <option value="" label="Select..."></option>
+                                    <option value="" th:text="#{accounts.form.select-type}">Select type</option>
                                     <option th:each="type : ${categoryTypes}" th:value="${type}" th:text="${type}"></option>
                                 </select>
                                 <div th:if="${#fields.hasErrors('type')}">
@@ -66,11 +66,11 @@
             </div>
         </div>
     </main>
-    <footer th:replace="footer::footer"></footer>
-    <script>
-        $(document).ready(function(){
-            setValidationListener();
-        });
-    </script>
+<script>
+    $(document).ready(function(){
+        setValidationListener();
+    });
+</script>
+<footer th:replace="footer::footer"></footer>
 </body>
 </html>

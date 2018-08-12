@@ -17,7 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/user")
 public class UserController {
     private static final String USER_EXISTS_ERROR_MSG_KEY = "userForm.error.user-exists";
-    private static final String USER_FORM_VIEW = "userForm";
+    private static final String USER_FORM_VIEW = "user_form";
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
