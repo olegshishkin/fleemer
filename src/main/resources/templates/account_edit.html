@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div th:replace="navbar::navbar('accounts')"></div>
+<main role="main" class="container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-4">
+                <h5 class="text-center" th:text="#{accounts.edit-account}">Edit account</h5>
+
+                <form method="post" th:action="@{/accounts/update}" action="#" th:object="${account}"
+                      class="needs-validation" novalidate=>
+
+                    <input type="hidden" th:field="*{id}">
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:for="*{name}" th:text="#{accounts.form.name}">Name</label>
+                            <input th:field="*{name}" type="text" class="form-control" required/>
+                            <div th:if="${#fields.hasErrors('name')}">
+                                <span th:errors="*{name}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{accounts.error.not-empty}">The field cannot be empty</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:for="*{type}" th:text="#{accounts.form.type}">Type</label>
+                            <select th:field="*{type}" class="custom-select d-block w-100" required>
+                                <option value="" th:text="#{accounts.form.select-type}">Select type</option>
+                                <option th:each="type : ${accountTypes}" th:value="${type}" th:text="${type}"></option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('type')}">
+                                <span th:errors="*{type}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{accounts.error.select-value}">Select a value</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:for="*{currency}" th:text="#{accounts.form.currency}">Currency</label>
+                            <select th:field="*{currency}" class="custom-select d-block w-100" required>
+                                <option value="" th:text="#{accounts.form.select-currency}">Select currency</option>
+                                <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
+                            </select>
+                            <div th:if="${#fields.hasErrors('currency')}">
+                                <span th:errors="*{currency}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{accounts.error.select-value}">Select a value</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:for="balance" th:text="#{accounts.initial-balance}">Initial balance</label>
+                            <input th:field="*{balance}" type="text" class="form-control" placeholder="0.0"
+                                   pattern="[0-9]+(\.[0-9]+)?" required/>
+                            <div th:if="${#fields.hasErrors('balance')}">
+                                <span th:errors="*{balance}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{accounts.error.should-be-digit}">
+                                The field cannot be empty and should be a digit
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <button class="btn btn-primary btn-block" type="submit" th:text="#{accounts.form.submit}">Submit</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3 text-center">
+                            <a th:href="@{/accounts}" href="#" class="btn btn-link text-dark btn-sm" role="button"
+                               th:text="#{accounts.back}">Back
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</main>
+<footer th:replace="footer::footer"></footer>
+<script>
+    $(document).ready(function(){
+        setValidationListener();
+    });
+</script>
+</body>
+</html>

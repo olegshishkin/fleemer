@@ -1,5 +1,7 @@
 package com.fleemer.repository;
 
+import com.fleemer.model.Account;
+import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import java.util.List;
@@ -15,4 +17,8 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
 
     Page<Operation> findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(Person inPerson, Person outPerson,
                                                                                Person categoryPerson, Pageable pageable);
+
+    List<Operation> findAllByCategory(Category category);
+
+    List<Operation> findAllByInAccountOrOutAccount(Account inAccount, Account outAccount);
 }

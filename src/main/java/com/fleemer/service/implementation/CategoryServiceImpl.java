@@ -40,4 +40,9 @@ public class CategoryServiceImpl extends AbstractService<Category, Long, Categor
     public List<Category> findAllByTypeAndPerson(CategoryType type, Person person) {
         return repository.findAllByTypeAndPerson(type, person);
     }
+
+    @Override
+    public Optional<Category> getByIdAndPerson(Long id, Person person) {
+        return repository.getByIdAndPerson(id, person);
+    }
 }

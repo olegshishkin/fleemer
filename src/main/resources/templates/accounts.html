@@ -8,8 +8,16 @@
             <div class="row justify-content-center">
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{accounts.add-account}">Add account</h5>
+
+                    <div th:if="${error}">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <span th:text="${error}"></span><br>
+                        </div>
+                    </div>
+
                     <form method="post" th:action="@{/accounts/create}" action="#" th:object="${account}"
                           class="needs-validation" novalidate=>
+
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{name}" th:text="#{accounts.form.name}">Name</label>
@@ -81,13 +89,22 @@
                             <th scope="col" th:text="#{accounts.table.columns.name}">Name</th>
                             <th scope="col" th:text="#{accounts.table.columns.type}">Type</th>
                             <th scope="col" th:text="#{accounts.table.columns.currency}">Currency</th>
+                            <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr th:each="a : ${accounts}">
                                 <td align="right" th:text="${a.name}">...</td>
-                                <td align="right" th:text="${a.type}">...</td>
+                                <td align="right" th:text="${a.getRefactoredType()}">...</td>
                                 <td align="right" th:text="${a.currency}">...</td>
+                                <td align="right">
+                                    <p>
+                                        <a href="#" th:href="@{/accounts/update(id=${a.id})}"
+                                           th:text="#{accounts.edit}" class="small">Edit</a>
+                                        <a href="#" th:href="@{/accounts/delete(id=${a.id})}"
+                                           th:text="#{accounts.delete}" class="small">Delete</a>
+                                    </p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

@@ -40,4 +40,9 @@ public class AccountServiceImpl extends AbstractService<Account, Long, AccountRe
     public BigDecimal getTotalBalance(Person person) {
         return repository.getTotalBalance(person);
     }
+
+    @Override
+    public Optional<Account> getByIdAndPerson(Long id, Person person) {
+        return repository.getByIdAndPerson(id, person);
+    }
 }

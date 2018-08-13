@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div th:replace="navbar::navbar('categories')"></div>
+<main role="main" class="container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-4">
+                <h5 class="text-center" th:text="#{categories.edit-category}">Edit category</h5>
+
+                <form method="post" th:action="@{/categories/update}" action="#" th:object="${category}"
+                      class="needs-validation" novalidate>
+
+                    <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{type}">
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:for="*{name}" th:text="#{categories.form.name}">Name</label>
+                            <input th:field="*{name}" type="text" class="form-control" required/>
+                            <div th:if="${#fields.hasErrors('name')}">
+                                <span th:errors="*{name}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{categories.error.not-empty}">The field cannot be empty</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:text="#{categories.form.type}">Type</label>
+                            <input type="text" th:value="${category.type}" class="form-control" required disabled>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <button th:text="#{categories.form.submit}" class="btn btn-primary btn-block" type="submit">Submit</button>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3 text-center">
+                            <a th:href="@{/categories}" href="#" class="btn btn-link text-dark btn-sm" role="button"
+                               th:text="#{categories.back}">Back
+                            </a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</main>
+<script>
+    $(document).ready(function(){
+        setValidationListener();
+    });
+</script>
+<footer th:replace="footer::footer"></footer>
+</body>
+</html>

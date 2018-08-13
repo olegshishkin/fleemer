@@ -38,22 +38,22 @@
                           class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <select id="outAccountName" th:field="*{outAccountName}" class="custom-select d-block w-100">
+                                <select id="outAccount" th:field="*{outAccount}" class="custom-select d-block w-100">
                                     <option value="" th:text="#{index.form.select-account}"></option>
-                                    <option th:each="account : ${accounts}" th:value="${account.name}" th:text="${account.name}"></option>
+                                    <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
                                 </select>
-                                <div th:if="${#fields.hasErrors('outAccountName')}">
-                                    <span th:errors="*{outAccountName}" class="text-danger small"></span><br>
+                                <div th:if="${#fields.hasErrors('outAccount')}">
+                                    <span th:errors="*{outAccount}" class="text-danger small"></span><br>
                                 </div>
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <select id="inAccountName" th:field="*{inAccountName}" class="custom-select d-block w-100" disabled>
+                                <select id="inAccount" th:field="*{inAccount}" class="custom-select d-block w-100" disabled>
                                     <option value="" th:text="#{index.form.select-account}"></option>
-                                    <option th:each="account : ${accounts}" th:value="${account.name}" th:text="${account.name}"></option>
+                                    <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
                                 </select>
-                                <div th:if="${#fields.hasErrors('inAccountName')}">
-                                    <span th:errors="*{inAccountName}" class="text-danger small"></span><br>
+                                <div th:if="${#fields.hasErrors('inAccount')}">
+                                    <span th:errors="*{inAccount}" class="text-danger small"></span><br>
                                 </div>
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
                             </div>
@@ -61,7 +61,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <select id="categoryName" th:field="*{categoryName}" class="custom-select d-block w-100" title="">
+                                <select id="category" th:field="*{category}" class="custom-select d-block w-100" title="">
                                     <option id="categoryNameBlankValue" value="" th:text="#{index.form.select-category}"></option>
                                 </select>
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
@@ -70,18 +70,18 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <input th:field="*{operation.date}" class="form-control" type="text"
+                                <input th:field="*{date}" class="form-control" type="text"
                                        placeholder="yyyy-mm-dd" required/>
-                                <div th:if="${#fields.hasErrors('operation.date')}">
-                                    <span th:errors="*{operation.date}" class="text-danger small"></span><br>
+                                <div th:if="${#fields.hasErrors('date')}">
+                                    <span th:errors="*{date}" class="text-danger small"></span><br>
                                 </div>
                                 <div class="invalid-feedback" th:text="#{index.error.select-date}">Select a date of operation</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <input th:field="*{operation.sum}" type="text" class="form-control" placeholder="0.00"
+                                <input th:field="*{sum}" type="text" class="form-control" placeholder="0.00"
                                             pattern="[0-9]+(\.[0-9]+)?" required autofocus/>
-                                <div th:if="${#fields.hasErrors('operation.sum')}">
-                                    <span th:errors="*{operation.sum}" class="text-danger small"></span><br>
+                                <div th:if="${#fields.hasErrors('sum')}">
+                                    <span th:errors="*{sum}" class="text-danger small"></span><br>
                                 </div>
                                 <div class="invalid-feedback" th:text="#{index.error.should-be-digit}">
                                     The field cannot be empty and should be a digit
@@ -91,7 +91,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <textarea th:field="*{operation.comment}" class="form-control" rows="1"
+                                <textarea th:field="*{comment}" class="form-control" rows="1"
                                           th:placeholder="#{index.form.comment.placeholder}"></textarea>
                             </div>
                         </div>
@@ -140,6 +140,7 @@
                         <th scope="col" th:text="#{index.table.to-account}">To account</th>
                         <th scope="col" th:text="#{index.table.category}">Category</th>
                         <th scope="col" th:text="#{index.table.sum}">Sum</th>
+                        <th scope="col"></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -150,6 +151,12 @@
             <div hidden>
                 <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
             </div>
+
+            <div hidden>
+                <span id="edit-word" th:text="#{index.table.edit}">Edit</span>
+                <span id="delete-word" th:text="#{index.table.delete}">Delete</span>
+            </div>
+
             <footer th:replace="footer::footer"></footer>
             <script>
                 $(document).ready(function(){

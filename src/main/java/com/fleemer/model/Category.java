@@ -1,5 +1,6 @@
 package com.fleemer.model;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fleemer.model.enums.CategoryType;
 import java.io.Serializable;
@@ -39,4 +40,10 @@ public class Category implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn
     private Person person;
+
+    @JsonGetter("type")
+    public String getRefactoredType() {
+        String text = type.name().toLowerCase();
+        return text.substring(0, 1).toUpperCase() + text.substring(1);
+    }
 }

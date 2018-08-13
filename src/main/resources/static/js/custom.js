@@ -17,7 +17,7 @@ function setValidationListener() {
 
 // Set bootstrap datepicker
 function setDataPicker() {
-    var date_input=$('input[name="operation.date"]'); //our date input has the name "date"
+    var date_input=$('input[name="date"]'); //our date input has the name "date"
     var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
     var options={
         format: 'yyyy-mm-dd',
@@ -32,9 +32,9 @@ function setDataPicker() {
 // operation type radiobuttons
 function setOperationTypeListener(){
     $("input[name=operationType]:radio").change(function() {
-        var inAcc = $('#inAccountName');
-        var outAcc = $('#outAccountName');
-        var category = $('#categoryName');
+        var inAcc = $('#inAccount');
+        var outAcc = $('#outAccount');
+        var category = $('#category');
         if ($('#outcome').prop('checked')) {
             fillCategories('OUTCOME');
             inAcc.prop('selectedIndex', 0).prop('disabled', true).prop('required', false);
@@ -56,7 +56,7 @@ function setOperationTypeListener(){
 
 function fillCategories(catType) {
     $('#categoryNameBlankValue').siblings().remove();
-    var selectTag = $('#categoryName');
+    var selectTag = $('#category');
     if (catType == 'TRANSFER') {
         return;
     }
@@ -66,7 +66,7 @@ function fillCategories(catType) {
         success: function(result){
             $.each(result,
                 function (key, value) {
-                    selectTag.append($('<option>').attr('value', value.name).text(value.name));
+                    selectTag.append($('<option>').attr('value', value.id).text(value.name));
                 });
         }
     });
@@ -144,6 +144,11 @@ function fillTable(operations) {
             } else {
                 tr.append($('<td>').attr('align', 'right').text(sum.toFixed(2)));
             }
+            var editLink = $('<a>').attr('href', '/operations/update?id=' + value.id).addClass("small").text($('#edit-word').text());
+            var deleteLink = $('<a>').attr('href', '/operations/delete?id=' + value.id).addClass("small").text($('#delete-word').text());
+            var editCell = $('<td>').attr('align', 'right').append(editLink).append(' ').append(deleteLink);
+            tr.append(editCell);
+
             table.find('tbody').append(tr);
         });
     $('#operationTable').append(table);

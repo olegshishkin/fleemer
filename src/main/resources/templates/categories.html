@@ -9,8 +9,15 @@
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{categories.add-category}">Add category</h5>
 
+                    <div th:if="${error}">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <span th:text="${error}"></span><br>
+                        </div>
+                    </div>
+
                     <form method="post" th:action="@{/categories/create}" action="#" th:object="${category}"
                           class="needs-validation" novalidate>
+
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{name}" th:text="#{categories.form.name}">Name</label>
@@ -53,12 +60,21 @@
                         <tr>
                             <th scope="col" th:text="#{categories.table.columns.name}">Name</th>
                             <th scope="col" th:text="#{categories.table.columns.type}">Type</th>
+                            <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr th:each="a : ${categories}">
                                 <td align="right" th:text="${a.name}">...</td>
-                                <td align="right" th:text="${a.type}">...</td>
+                                <td align="right" th:text="${a.getRefactoredType()}">...</td>
+                                <td align="right">
+                                    <p>
+                                        <a href="#" th:href="@{/categories/update(id=${a.id})}"
+                                           th:text="#{categories.edit}" class="small">Edit</a>
+                                        <a href="#" th:href="@{/categories/delete(id=${a.id})}"
+                                           th:text="#{categories.delete}" class="small">Delete</a>
+                                    </p>
+                                </td>
                             </tr>
                         </tbody>
                     </table>

@@ -18,4 +18,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     @Query("SELECT SUM(a.balance) FROM Account a WHERE a.person = :person")
     BigDecimal getTotalBalance(@Param("person") Person person);
+
+    Optional<Account> getByIdAndPerson(Long id, Person person);
 }

@@ -60,6 +60,16 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
+    public List<Operation> findAllByCategory(Category category) {
+        return repository.findAllByCategory(category);
+    }
+
+    @Override
+    public List<Operation> findAllByAccount(Account account) {
+        return repository.findAllByInAccountOrOutAccount(account, account);
+    }
+
+    @Override
     public <S extends Operation> S save(S entity) throws ServiceException {
         Account in = entity.getInAccount();
         Account out = entity.getOutAccount();
