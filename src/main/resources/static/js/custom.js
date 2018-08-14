@@ -31,23 +31,23 @@ function setDataPicker() {
 }
 
 // operation type radiobuttons
-function setOperationTypeListener(){
+function setOperationTypeListener(async){
     $("input[name=operationType]:radio").change(function() {
         var inAcc = $('#inAccount');
         var outAcc = $('#outAccount');
         var category = $('#category');
         if ($('#outcome').prop('checked')) {
-            fillCategories('OUTCOME');
+            fillCategories('OUTCOME', async);
             inAcc.prop('selectedIndex', 0).prop('disabled', true).prop('required', false);
             outAcc.prop('disabled', false).prop('required', true);
             category.prop('disabled', false).prop('required', true);
         } else if ($('#income').prop('checked')) {
-            fillCategories('INCOME');
+            fillCategories('INCOME', async);
             outAcc.prop('selectedIndex', 0).prop('disabled', true).prop('required', false);
             inAcc.prop('disabled', false).prop('required', true);
             category.prop('disabled', false).prop('required', true);
         } else if ($('#transfer').prop('checked')) {
-            fillCategories('TRANSFER');
+            fillCategories('TRANSFER', async);
             category.prop('selectedIndex', 0).prop('disabled', true).prop('required', false);
             inAcc.prop('disabled', false).prop('required', true);
             outAcc.prop('disabled', false).prop('required', true);
@@ -55,7 +55,7 @@ function setOperationTypeListener(){
     })
 }
 
-function fillCategories(catType) {
+function fillCategories(catType, async) {
     $('#categoryNameBlankValue').siblings().remove();
     var selectTag = $('#category');
     if (catType == 'TRANSFER') {
@@ -64,6 +64,7 @@ function fillCategories(catType) {
     $.ajax({
         url: '/categories/json',
         data: { type: catType },
+        async: async,
         success: function(result){
             $.each(result,
                 function (key, value) {
@@ -71,6 +72,30 @@ function fillCategories(catType) {
                 });
         }
     });
+}
+
+function prepareOperationEditForm() {
+    var inElem = $('#inAccount');
+    var outElem = $('#outAccount');
+    var catVal = $('#category').val();
+    var catText = $('#category option:selected').text();
+    var tempVal;
+    if (inElem.val() != '' && catVal != '') {
+        tempVal = inElem.val();
+        $('#income').click();
+        inElem.val(tempVal);
+    }
+    if (outElem.val() != '' && catVal != '') {
+        tempVal = outElem.val();
+        $('#outcome').click();
+        outElem.val(tempVal);
+    }
+    if (catVal == '') {
+        $('#transfer').click();
+    }
+    $("#category option").filter(function() {
+        return this.text == catText;
+    }).attr('selected', true);
 }
 
 function setTotalBalance(){
@@ -145,8 +170,15 @@ function fillTable(operations) {
             } else {
                 tr.append($('<td>').attr('align', 'right').text(sum.toFixed(2)));
             }
-            var editLink = $('<a>').attr('href', '/operations/update?id=' + value.id).addClass("small").text($('#edit-word').text());
-            var deleteLink = $('<a>').attr('href', '/operations/delete?id=' + value.id).addClass("small").text($('#delete-word').text());
+            var editLink = $('<a>')
+                .attr('href', '/operations/update?id=' + value.id)
+                .addClass("small")
+                .text($('#edit-word').text());
+            var deleteLink = $('<a>')
+                .attr('href', '/operations/delete?id=' + value.id)
+                .attr('onclick', 'return confirm("' + $('#deleteConfirm').html() +  '");')
+                .addClass("small")
+                .text($('#delete-word').text());
             var editCell = $('<td>').attr('align', 'right').append(editLink).append(' ').append(deleteLink);
             tr.append(editCell);
 

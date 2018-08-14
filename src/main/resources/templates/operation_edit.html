@@ -9,6 +9,21 @@
             <div class="col-lg-8">
                 <h5 class="text-center" th:text="#{operation.edit-operation}">Edit operation</h5>
 
+                <div class="d-block my-3 text-center">
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="outcome" name="operationType" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="outcome" th:text="#{index.form.outcome}">Outcome</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="income" name="operationType" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="income" th:text="#{index.form.income}">Income</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                        <input id="transfer" name="operationType" type="radio" class="custom-control-input" required>
+                        <label class="custom-control-label" for="transfer" th:text="#{index.form.transfer}">Transfer</label>
+                    </div>
+                </div>
+
                 <form method="post" th:action="@{/operations/update}" action="#" th:object="${operation}"
                       class="needs-validation" novalidate>
 
@@ -40,7 +55,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <select id="category" th:field="*{category}" class="custom-select d-block w-100" title="">
-                                <option value="" th:text="#{operation.form.select-category}"></option>
+                                <option id="categoryNameBlankValue" value="" th:text="#{operation.form.select-category}"></option>
                                 <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
                             </select>
                             <div th:if="${#fields.hasErrors('category')}">
@@ -100,6 +115,8 @@
     $(document).ready(function(){
         setValidationListener();
         setDataPicker();
+        setOperationTypeListener(false);
+        prepareOperationEditForm();
     });
 </script>
 <footer th:replace="footer::footer"></footer>

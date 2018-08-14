@@ -156,6 +156,7 @@
                 <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
                 <span id="incomeChartText" th:text="#{index.chart.income}">Income</span>
                 <span id="outcomeChartText" th:text="#{index.chart.outcome}">Outcome</span>
+                <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
             </div>
 
             <footer th:replace="footer::footer"></footer>
@@ -163,7 +164,7 @@
                 $(document).ready(function(){
                     setValidationListener();
                     setDataPicker();
-                    setOperationTypeListener();
+                    setOperationTypeListener(true);
                     $('#outcome').click();
                     setTotalBalance();
                     fillAccountsList();
