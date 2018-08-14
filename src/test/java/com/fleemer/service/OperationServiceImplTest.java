@@ -39,12 +39,6 @@ public class OperationServiceImplTest {
     private OperationRepository repository;
 
     @Mock
-    private AccountService accountService;
-
-    @Mock
-    private CategoryService categoryService;
-
-    @Mock
     private Operation operation;
 
     @Mock
@@ -203,13 +197,9 @@ public class OperationServiceImplTest {
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setCategory(category);
         operation.setInAccount(in);
-        when(accountService.save(in)).thenReturn(in);
-        when(categoryService.save(category)).thenReturn(category);
         when(repository.save(operation)).thenReturn(operation);
         assertEquals(operation, service.save(operation));
         assertEquals(13.46, in.getBalance().doubleValue(), 0.0);
-        verify(accountService, times(1)).save(in);
-        verify(categoryService, times(1)).save(category);
         verify(repository, times(1)).save(operation);
     }
 
@@ -226,13 +216,9 @@ public class OperationServiceImplTest {
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setCategory(category);
         operation.setOutAccount(out);
-        when(accountService.save(out)).thenReturn(out);
-        when(categoryService.save(category)).thenReturn(category);
         when(repository.save(operation)).thenReturn(operation);
         assertEquals(operation, service.save(operation));
         assertEquals(6.56, out.getBalance().doubleValue(), 0.0);
-        verify(accountService, times(1)).save(out);
-        verify(categoryService, times(1)).save(category);
         verify(repository, times(1)).save(operation);
     }
 
@@ -249,15 +235,10 @@ public class OperationServiceImplTest {
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setInAccount(in);
         operation.setOutAccount(out);
-        when(accountService.save(in)).thenReturn(in);
-        when(accountService.save(out)).thenReturn(out);
         when(repository.save(operation)).thenReturn(operation);
         assertEquals(operation, service.save(operation));
         assertEquals(9.54, in.getBalance().doubleValue(), 0.0);
         assertEquals(6.56, out.getBalance().doubleValue(), 0.0);
-        verify(accountService, times(2)).save(in);
-        verify(accountService, times(2)).save(out);
-        verify(categoryService, never()).save(any());
         verify(repository, times(1)).save(operation);
     }
 
