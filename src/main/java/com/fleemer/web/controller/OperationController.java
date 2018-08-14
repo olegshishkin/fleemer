@@ -4,7 +4,11 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.service.*;
 import com.fleemer.service.exception.ServiceException;
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -57,6 +61,20 @@ public class OperationController {
         Pageable pageable = PageRequest.of(page, size, new Sort(Sort.Direction.DESC, "date"));
         Page<Operation> operationPage = operationService.findAll(person, pageable);
         return new OperationPageDto(operationPage.getNumber(), operationPage.getTotalPages(), operationPage.getContent());
+    }
+
+    @ResponseBody
+    @GetMapping("/operations/dailyvolumes/json")
+    public List<DailyVolumesDto> operations(Principal principal) {
+        Person person = getCurrentPerson(principal);
+        LocalDate today = LocalDate.now();
+        int year = today.getYear();
+        int month = today.getMonth().getValue();
+        int lengthOfMonth = today.lengthOfMonth();
+        LocalDate from = LocalDate.of(year, month, 1);
+        LocalDate till = LocalDate.of(year, month, lengthOfMonth);
+        List<Object[]> volumes = operationService.findAllDailyVolumes(from, till, person);
+        return convertDailyVolumes(from, till, volumes);
     }
 
     @PostMapping("/operations/create")
@@ -141,6 +159,27 @@ public class OperationController {
         model.addAttribute("operations", operationService.findAll(person));
     }
 
+    private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
+        List<DailyVolumesDto> result = new ArrayList<>();
+        LocalDate curDate = from;
+        for (Object[] volume : volumes) {
+            LocalDate date = ((Date) volume[0]).toLocalDate();
+            while (curDate.isBefore(date)) {
+                result.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
+                curDate = curDate.plusDays(1);
+            }
+            BigDecimal income = volume[1] != null ? (BigDecimal) volume[1] : null;
+            BigDecimal outcome = volume[2] != null ? (BigDecimal) volume[2] : null;
+            result.add(new DailyVolumesDto(date, income, outcome));
+            curDate = curDate.plusDays(1);
+        }
+        while (curDate.isBefore(till)) {
+            result.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
+            curDate = curDate.plusDays(1);
+        }
+        return result;
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor
@@ -149,5 +188,15 @@ public class OperationController {
         private int currentPage;
         private int totalPages;
         private List<Operation> operations;
+    }
+
+    @Getter
+    @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
+    private class DailyVolumesDto {
+        private LocalDate date;
+        private BigDecimal income;
+        private BigDecimal outcome;
     }
 }

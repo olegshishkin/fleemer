@@ -191,3 +191,26 @@ function fillPaginator(cur, total, size) {
     nextLi.find('a').html('>>');
     $('#pagination').append(nextLi);
 }
+
+function buildChart() {
+    $.ajax({
+        url: '/operations/dailyvolumes/json',
+        success: function (result) {
+                config = {
+                    data: result,
+                    xkey: 'date',
+                    ykeys: ['income', 'outcome'],
+                    labels: [$('#incomeChartText').text(), $('#outcomeChartText').text()],
+                    fillOpacity: 0.5,
+                    hideHover: 'auto',
+                    behaveLikeLine: true,
+                    resize: true,
+                    pointFillColors:['#ffffff'],
+                    pointStrokeColors: ['black'],
+                    lineColors:['green','red']
+                };
+            config.element = 'chart';
+            Morris.Area(config);
+        }
+    });
+}

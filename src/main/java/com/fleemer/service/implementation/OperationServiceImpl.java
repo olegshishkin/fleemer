@@ -11,6 +11,7 @@ import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,6 +68,11 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     @Override
     public List<Operation> findAllByAccount(Account account) {
         return repository.findAllByInAccountOrOutAccount(account, account);
+    }
+
+    @Override
+    public List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person) {
+        return repository.findAllDailyVolumes(fromDate, tillDate, person);
     }
 
     @Override

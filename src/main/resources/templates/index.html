@@ -15,10 +15,6 @@
                 </div>
 
                 <div class="col-md-8">
-                    <div class="text-center">
-                        <h5 class="text-center" th:text="#{index.add-operation}">Add operation</h5>
-                    </div>
-
                     <div class="d-block my-3 text-center">
                         <div class="custom-control custom-radio custom-control-inline">
                             <input id="outcome" name="operationType" type="radio" class="custom-control-input" required>
@@ -109,6 +105,12 @@
                 <div class="col-md-12 mb-3"></div>
             </div>
 
+            <div id="chart" class="row"></div>
+
+            <div class="row">
+                <div class="col-md-12 mb-5"></div>
+            </div>
+
             <div class="row">
                 <div id="operationTable" class="col-md-12 mb-3"></div>
             </div>
@@ -149,12 +151,11 @@
             </div>
 
             <div hidden>
-                <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
-            </div>
-
-            <div hidden>
                 <span id="edit-word" th:text="#{index.table.edit}">Edit</span>
                 <span id="delete-word" th:text="#{index.table.delete}">Delete</span>
+                <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
+                <span id="incomeChartText" th:text="#{index.chart.income}">Income</span>
+                <span id="outcomeChartText" th:text="#{index.chart.outcome}">Outcome</span>
             </div>
 
             <footer th:replace="footer::footer"></footer>
@@ -166,6 +167,7 @@
                     $('#outcome').click();
                     setTotalBalance();
                     fillAccountsList();
+                    buildChart();
                     getOperationsPage(0, 15);
                 });
             </script>
