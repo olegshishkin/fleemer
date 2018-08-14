@@ -24,7 +24,8 @@ function setDataPicker() {
         container: container,
         todayHighlight: true,
         setDate: new Date(),
-        autoclose: true
+        autoclose: true,
+        orientation: 'top left'
     };
     date_input.datepicker(options);
 }

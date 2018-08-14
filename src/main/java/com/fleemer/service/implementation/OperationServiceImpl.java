@@ -6,8 +6,6 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.CategoryType;
 import com.fleemer.repository.OperationRepository;
-import com.fleemer.service.AccountService;
-import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
 import java.math.BigDecimal;
@@ -31,16 +29,11 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     private static final String WRONG_CATEGORY_TYPE_ERR_KEY = "index.error.wrong-category-type-chosen";
 
     private final OperationRepository repository;
-    private final AccountService accountService;
-    private final CategoryService categoryService;
     private final MessageSource messageSource;
 
     @Autowired
-    public OperationServiceImpl(OperationRepository repository, AccountService accountService,
-                                CategoryService categoryService, MessageSource messageSource) {
+    public OperationServiceImpl(OperationRepository repository, MessageSource messageSource) {
         this.repository = repository;
-        this.accountService = accountService;
-        this.categoryService = categoryService;
         this.messageSource = messageSource;
     }
 
@@ -85,8 +78,6 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         if (category == null) {
             in.setBalance(in.getBalance().add(sum));
             out.setBalance(out.getBalance().subtract(sum));
-            accountService.save(in);
-            accountService.save(out);
             return super.save(entity);
         }
         if (category.getType() == CategoryType.INCOME) {
@@ -95,13 +86,6 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         if (category.getType() == CategoryType.OUTCOME) {
             out.setBalance(out.getBalance().subtract(sum));
         }
-        if (in != null) {
-            accountService.save(in);
-        }
-        if (out != null) {
-            accountService.save(out);
-        }
-        categoryService.save(category);
         return super.save(entity);
     }
 
