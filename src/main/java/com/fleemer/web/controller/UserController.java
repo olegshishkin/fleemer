@@ -4,9 +4,9 @@ import com.fleemer.model.Person;
 import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
 import javax.validation.Valid;
-import java.util.Locale;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -43,7 +43,7 @@ public class UserController {
         }
         String email = person.getEmail();
         if (personService.findByEmail(email).isPresent()) {
-            String message = messageSource.getMessage(USER_EXISTS_ERROR_MSG_KEY, null, Locale.getDefault());
+            String message = messageSource.getMessage(USER_EXISTS_ERROR_MSG_KEY, null, LocaleContextHolder.getLocale());
             bindingResult.rejectValue("email", "email.alreadyExists", message);
             return USER_FORM_VIEW;
         }

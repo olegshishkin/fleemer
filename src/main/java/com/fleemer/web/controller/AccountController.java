@@ -11,12 +11,12 @@ import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
 import java.security.Principal;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -69,7 +69,7 @@ public class AccountController {
         }
         Optional<Account> lookedAccount = accountService.findByNameAndPerson(account.getName(), person);
         if (lookedAccount.isPresent()) {
-            String message = messageSource.getMessage(ACCOUNT_EXISTS_ERROR_KEY, null, Locale.getDefault());
+            String message = messageSource.getMessage(ACCOUNT_EXISTS_ERROR_KEY, null, LocaleContextHolder.getLocale());
             bindingResult.rejectValue("name", "name.alreadyExists", message);
             fillModel(model, accountService.findAll(person));
             return ROOT_VIEW;
@@ -150,7 +150,7 @@ public class AccountController {
     }
 
     private String getMessage(String key) {
-        return messageSource.getMessage(key, null, Locale.getDefault());
+        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 
     private Person getCurrentPerson(@NotNull Principal principal) {
