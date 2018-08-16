@@ -157,6 +157,7 @@
                 <span id="incomeChartText" th:text="#{index.chart.income}">Income</span>
                 <span id="outcomeChartText" th:text="#{index.chart.outcome}">Outcome</span>
                 <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
+                <span id="datePickerLang" th:text="#{index.date-picker-lang}">en</span>
             </div>
 
             <footer th:replace="footer::footer"></footer>
@@ -164,6 +165,7 @@
                 $(document).ready(function(){
                     setValidationListener();
                     setDataPicker();
+                    $('#date').val(new Date().toISOString().substring(0, 10));
                     setOperationTypeListener(true);
                     $('#outcome').click();
                     setTotalBalance();

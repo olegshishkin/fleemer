@@ -10,9 +10,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface OperationService extends BaseService<Operation, Long> {
-    List<Operation> findAll(Person person);
+    List<Operation> findAllByPerson(Person person);
 
-    Page<Operation> findAll(Person person, Pageable pageable);
+    Page<Operation> findAllByPerson(Person person, Pageable pageable);
 
     List<Operation> findAllByCategory(Category category);
 

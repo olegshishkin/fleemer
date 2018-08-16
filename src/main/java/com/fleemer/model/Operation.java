@@ -16,6 +16,7 @@ import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.NumberFormat;
 
 @Entity
 @Table(name = "operation", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
@@ -51,6 +52,7 @@ public class Operation implements Serializable {
     private Category category;
 
     @NotNull
+    @NumberFormat(pattern = "#.##")
     @Digits(integer = 20, fraction = 10)
     @Column(nullable = false, precision = 20, scale = 10)
     private BigDecimal sum;

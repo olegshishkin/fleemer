@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.springframework.format.annotation.NumberFormat;
 
 @Entity
 @Table(name = "account", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
@@ -45,6 +46,7 @@ public class Account implements Serializable {
     private Currency currency;
 
     @NotNull
+    @NumberFormat(pattern = "#.##")
     @Digits(integer = 20, fraction = 10)
     @Column(nullable = false, precision = 20, scale = 10)
     private BigDecimal balance;

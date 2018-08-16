@@ -102,13 +102,17 @@
                                         <a href="#" th:href="@{/accounts/update(id=${a.id})}"
                                            th:text="#{accounts.edit}" class="small">Edit</a>
                                         <a href="#" th:href="@{/accounts/delete(id=${a.id})}"
-                                           th:text="#{accounts.delete}" class="small">Delete</a>
+                                           th:text="#{accounts.delete}" class="small" onclick="return confirmWindow();">Delete</a>
                                     </p>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <div hidden>
+                <span id="deleteConfirm" th:text="#{accounts.delete-confirm}">Do you really want to delete this account?</span>
             </div>
         </div>
     </main>

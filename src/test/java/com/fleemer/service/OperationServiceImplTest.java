@@ -173,14 +173,14 @@ public class OperationServiceImplTest {
     public void findAll_person() {
         List<Operation> expected = Collections.emptyList();
         when(repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person)).thenReturn(expected);
-        assertEquals(expected, service.findAll(person));
+        assertEquals(expected, service.findAllByPerson(person));
         verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person);
     }
 
     @Test
     public void findAll_personAndPageable() {
         when(repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person, pageable)).thenReturn(page);
-        assertEquals(page, service.findAll(person, pageable));
+        assertEquals(page, service.findAllByPerson(person, pageable));
         verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person, pageable);
     }
 

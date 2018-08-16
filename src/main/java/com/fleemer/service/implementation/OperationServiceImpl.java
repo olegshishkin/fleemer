@@ -43,14 +43,13 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    public List<Operation> findAll(Person person) {
-        return repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person);
+    public List<Operation> findAllByPerson(Person person) {
+        return repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
     }
 
     @Override
-    public Page<Operation> findAll(Person person, Pageable pageable) {
-        return repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person,
-                pageable);
+    public Page<Operation> findAllByPerson(Person person, Pageable pageable) {
+        return repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable);
     }
 
     @Override

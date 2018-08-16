@@ -17,15 +17,13 @@ function setValidationListener() {
 
 // Set bootstrap datepicker
 function setDataPicker() {
-    var date_input=$('input[name="date"]'); //our date input has the name "date"
-    var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+    var date_input=$('input[name="date"]');
     var options={
         format: 'yyyy-mm-dd',
-        container: container,
         todayHighlight: true,
-        setDate: new Date(),
         autoclose: true,
-        orientation: 'top left'
+        orientation: 'bottom left',
+        language: $('#datePickerLang').text()
     };
     date_input.datepicker(options);
 }
@@ -163,12 +161,13 @@ function fillTable(operations) {
                 categoryCell.text(category.name);
             }
             tr.append(categoryCell);
+            var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             if (isNotNull(outAccount) & isNotNull(category)) {
-                tr.append($("<td>").attr('align', 'right').addClass('text-danger').text('- ' + sum.toFixed(2)));
+                tr.append($("<td>").attr('align', 'right').addClass('text-danger').text('- ' + formattedSum));
             } else if (isNotNull(inAccount) & isNotNull(category)) {
-                tr.append($('<td>').attr('align', 'right').addClass('text-success').text('+ ' + sum.toFixed(2)));
+                tr.append($('<td>').attr('align', 'right').addClass('text-success').text('+ ' + formattedSum));
             } else {
-                tr.append($('<td>').attr('align', 'right').text(sum.toFixed(2)));
+                tr.append($('<td>').attr('align', 'right').text(formattedSum));
             }
             var editLink = $('<a>')
                 .attr('href', '/operations/update?id=' + value.id)
@@ -246,4 +245,8 @@ function buildChart() {
             Morris.Area(config);
         }
     });
+}
+
+function confirmWindow() {
+    return confirm($('#deleteConfirm').text());
 }

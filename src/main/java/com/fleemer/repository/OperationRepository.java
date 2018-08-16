@@ -15,11 +15,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface OperationRepository extends JpaRepository<Operation, Long> {
-    List<Operation> findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(Person inPerson, Person outPerson,
-                                                                               Person categoryPerson);
+    List<Operation> findAllByInAccountPersonOrOutAccountPerson(Person inPerson, Person outPerson);
 
-    Page<Operation> findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(Person inPerson, Person outPerson,
-                                                                               Person categoryPerson, Pageable pageable);
+    Page<Operation> findAllByInAccountPersonOrOutAccountPerson(Person inPerson, Person outPerson, Pageable pageable);
 
     List<Operation> findAllByCategory(Category category);
 

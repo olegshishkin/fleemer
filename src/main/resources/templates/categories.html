@@ -72,13 +72,17 @@
                                         <a href="#" th:href="@{/categories/update(id=${a.id})}"
                                            th:text="#{categories.edit}" class="small">Edit</a>
                                         <a href="#" th:href="@{/categories/delete(id=${a.id})}"
-                                           th:text="#{categories.delete}" class="small">Delete</a>
+                                           th:text="#{categories.delete}" class="small" onclick="return confirmWindow();">Delete</a>
                                     </p>
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
+            </div>
+
+            <div hidden>
+                <span id="deleteConfirm" th:text="#{categories.delete-confirm}">Do you really want to delete this category?</span>
             </div>
         </div>
     </main>

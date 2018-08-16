@@ -59,7 +59,7 @@ public class OperationController {
                                        Principal principal) {
         Person person = getCurrentPerson(principal);
         Pageable pageable = PageRequest.of(page, size, new Sort(Sort.Direction.DESC, "date"));
-        Page<Operation> operationPage = operationService.findAll(person, pageable);
+        Page<Operation> operationPage = operationService.findAllByPerson(person, pageable);
         return new OperationPageDto(operationPage.getNumber(), operationPage.getTotalPages(), operationPage.getContent());
     }
 
@@ -110,7 +110,7 @@ public class OperationController {
             model.addAttribute("accounts", accountService.findAll(person));
             return OPERATION_EDIT_VIEW;
         }
-        List<Operation> operations = operationService.findAll(person);
+        List<Operation> operations = operationService.findAllByPerson(person);
         if (!operations.contains(formOperation)) {
             return "redirect:/";
         }
@@ -147,7 +147,7 @@ public class OperationController {
     }
 
     private boolean isOwned(Person person, Operation operation) {
-        return operationService.findAll(person).contains(operation);
+        return operationService.findAllByPerson(person).contains(operation);
     }
 
     private Person getCurrentPerson(@NotNull Principal principal) {
@@ -156,7 +156,7 @@ public class OperationController {
 
     private void fillModel(@NotNull Model model, Person person) {
         model.addAttribute("accounts", accountService.findAll(person));
-        model.addAttribute("operations", operationService.findAll(person));
+        model.addAttribute("operations", operationService.findAllByPerson(person));
     }
 
     private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
