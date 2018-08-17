@@ -17,11 +17,11 @@ public class CategoryTest {
         Person p1 = new Person();
         p1.setId(101L);
         p1.setEmail("email1");
-        c1 = createCategory(11L, "Name1", CategoryType.INCOME, p1);
+        c1 = createCategory(11L, "Name1", CategoryType.INCOME, p1, 1);
         Person p2 = new Person();
         p2.setId(99L);
         p2.setEmail("email2");
-        c2 = createCategory(22L, "Name2", CategoryType.OUTCOME, p2);
+        c2 = createCategory(22L, "Name2", CategoryType.OUTCOME, p2, 1);
     }
 
     @Test

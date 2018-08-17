@@ -20,7 +20,7 @@ public class OperationTest {
         out1.setId(11111L);
         Category c1 = new Category();
         c1.setId(3333L);
-        o1 = createOperation(11L, LocalDate.of(1990, Month.JANUARY, 1), in1, out1, c1, 123.12, "comment1");
+        o1 = createOperation(11L, LocalDate.of(1990, Month.JANUARY, 1), in1, out1, c1, 123.12, "comment1", 1);
 
         Account in2 = new Account();
         in2.setId(2222L);
@@ -28,7 +28,7 @@ public class OperationTest {
         out2.setId(22222L);
         Category c2 = new Category();
         c2.setId(4444L);
-        o2 = createOperation(22L, LocalDate.of(2000, Month.MARCH, 8), in2, out2, c2, 0.008, "comment2");
+        o2 = createOperation(22L, LocalDate.of(2000, Month.MARCH, 8), in2, out2, c2, 0.008, "comment2", 1);
     }
 
     @Test

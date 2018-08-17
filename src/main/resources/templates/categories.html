@@ -9,9 +9,21 @@
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{categories.add-category}">Add category</h5>
 
-                    <div th:if="${param.deleteForbidden}">
+                    <div th:if="${#request.getParameter('deleteForbidden')}">
                         <div class="alert alert-danger text-center" role="alert">
                             <span th:text="#{categories.error.delete-forbidden}"></span><br>
+                        </div>
+                    </div>
+
+                    <div th:if="${#request.getParameter('success')}">
+                        <div class="alert alert-success text-center" role="alert">
+                            <span th:text="#{common.successfully-completed}"></span><br>
+                        </div>
+                    </div>
+
+                    <div th:if="${#request.getParameter('error') == 'lock'}">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <span th:text="#{common.error.already-modified}"></span><br>
                         </div>
                     </div>
 

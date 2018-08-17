@@ -100,7 +100,7 @@ public class AccountRepositoryTest {
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
         BigDecimal sum = new BigDecimal("111.8900000000");
-        Account account = createAccount(null, AccountType.BANK_ACCOUNT, Currency.EUR, "Bank!", sum, people.get(4));
+        Account account = createAccount(null, AccountType.BANK_ACCOUNT, Currency.EUR, "Bank!", sum, people.get(4), 0);
         repository.save(account);
         repository.flush();
     }
@@ -117,8 +117,10 @@ public class AccountRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Account account1 = createAccount(null, AccountType.DEPOSIT, Currency.RUB, "Depo", new BigDecimal("0.0000000000"), people.get(1));
-        Account account2 = createAccount(null, AccountType.CASH, Currency.USD, "My cash", new BigDecimal("0.1240000000"), people.get(2));
+        Account account1 = createAccount(null, AccountType.DEPOSIT, Currency.RUB, "Depo", new BigDecimal("0.0000000000"),
+                people.get(1), 0);
+        Account account2 = createAccount(null, AccountType.CASH, Currency.USD, "My cash", new BigDecimal("0.1240000000"),
+                people.get(2), 0);
         Account account = accounts.get(0);
         account.setName("Save all");
         repository.saveAll(List.of(account1, account2, account));

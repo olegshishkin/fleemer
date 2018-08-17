@@ -22,8 +22,8 @@ public class AccountTest {
         Person p2 = new Person();
         p2.setId(99L);
         p2.setEmail("email2");
-        a1 = createAccount(11L, AccountType.CASH, Currency.RUB, "Wallet", new BigDecimal(1234.56), p1);
-        a2 = createAccount(22L, AccountType.BANK_ACCOUNT, Currency.USD, "Depo", new BigDecimal(-0.99), p2);
+        a1 = createAccount(11L, AccountType.CASH, Currency.RUB, "Wallet", new BigDecimal(1234.56), p1, 1);
+        a2 = createAccount(22L, AccountType.BANK_ACCOUNT, Currency.USD, "Depo", new BigDecimal(-0.99), p2, 1);
     }
 
     @Test
@@ -51,7 +51,7 @@ public class AccountTest {
 
     @Test
     public void getRefactoredType_success() {
-        Account a = createAccount(11L, AccountType.CASH, Currency.USD, "Wallet", BigDecimal.TEN, null);
+        Account a = createAccount(11L, AccountType.CASH, Currency.USD, "Wallet", BigDecimal.TEN, null, 1);
         assertEquals("Cash", a.getRefactoredType());
         a.setType(AccountType.BANK_ACCOUNT);
         assertEquals("Bank account", a.getRefactoredType());

@@ -19,15 +19,18 @@
                                 <h6 class="my-0" th:text="${a.name}">Name</h6>
                                 <small class="text-muted" th:text="${a.type}">Type</small>
                             </div>
-                            <span class="text-muted" th:text="${#numbers.formatDecimal(a.balance, 1
-                            , 2)}">
-                                0.00
-                            </span>
+                            <span class="text-muted" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">0.00</span>
                         </li>
                     </ul>
                 </div>
 
                 <div class="col-md-8">
+                    <div th:if="${#request.getParameter('error') == 'lock'}">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <span th:text="#{common.error.already-modified}"></span><br>
+                        </div>
+                    </div>
+
                     <div class="d-block my-3 text-center">
                         <div class="custom-control custom-radio custom-control-inline">
                             <input id="outcome" name="operationType" type="radio" class="custom-control-input" required>

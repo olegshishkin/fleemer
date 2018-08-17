@@ -9,9 +9,21 @@
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{accounts.add-account}">Add account</h5>
 
-                    <div th:if="${param.deleteForbidden}">
+                    <div th:if="${#request.getParameter('deleteForbidden')}">
                         <div class="alert alert-danger text-center" role="alert">
                             <span th:text="#{accounts.error.delete-forbidden}"></span><br>
+                        </div>
+                    </div>
+
+                    <div th:if="${#request.getParameter('success')}">
+                        <div class="alert alert-success text-center" role="alert">
+                            <span th:text="#{common.successfully-completed}"></span><br>
+                        </div>
+                    </div>
+
+                    <div th:if="${#request.getParameter('error') == 'lock'}">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <span th:text="#{common.error.already-modified}"></span><br>
                         </div>
                     </div>
 
@@ -82,13 +94,14 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-8 mb-3">
                     <table class="table table-hover">
                         <thead align="right">
                         <tr>
                             <th scope="col" th:text="#{accounts.table.columns.name}">Name</th>
                             <th scope="col" th:text="#{accounts.table.columns.type}">Type</th>
                             <th scope="col" th:text="#{accounts.table.columns.currency}">Currency</th>
+                            <th scope="col" th:text="#{accounts.table.columns.balance}">Balance</th>
                             <th scope="col"></th>
                         </tr>
                         </thead>
@@ -97,6 +110,7 @@
                                 <td align="right" th:text="${a.name}">...</td>
                                 <td align="right" th:text="${a.getRefactoredType()}">...</td>
                                 <td align="right" th:text="${a.currency}">...</td>
+                                <td align="right" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">...</td>
                                 <td align="right">
                                     <p>
                                         <a href="#" th:href="@{/accounts/update(id=${a.id})}"

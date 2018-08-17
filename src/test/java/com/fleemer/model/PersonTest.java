@@ -13,8 +13,8 @@ public class PersonTest {
 
     @Before
     public void setUp() {
-        p1 = createPerson(11L, "First", "Last", "my@mail.org", "hash");
-        p2 = createPerson(22L, "First1", "Last1", "my1@mail.org", "hash1");
+        p1 = createPerson(11L, "First", "Last", "my@mail.org", "hash", 1);
+        p2 = createPerson(22L, "First1", "Last1", "my1@mail.org", "hash1", 1);
     }
 
     @Test

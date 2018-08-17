@@ -113,7 +113,7 @@ public class OperationRepositoryTest {
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
         repository.save(createOperation(null, LocalDate.of(2000, Month.FEBRUARY, 4), accounts.get(1), null,
-                categories.get(6), 7.98, "new comment"));
+                categories.get(6), 7.98, "new comment", 0));
         repository.flush();
     }
 
@@ -130,9 +130,9 @@ public class OperationRepositoryTest {
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
         Operation o1 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), accounts.get(1), accounts.get(2),
-                null, 7.98, "new comment1");
+                null, 7.98, "new comment1", 0);
         Operation o2 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), null, accounts.get(0),
-                categories.get(1), -17.98, "new comment2");
+                categories.get(1), -17.98, "new comment2", 0);
         Operation o = operations.get(3);
         o.setComment("Changed comment");
         repository.saveAll(List.of(o1, o2, o));

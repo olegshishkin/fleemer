@@ -3,12 +3,13 @@ package com.fleemer.web.controller;
 import com.fleemer.model.Person;
 import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
-
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -73,22 +74,23 @@ public class UserController {
         if (!person.getId().equals(currentUser.getId())) {
             return "redirect:/";
         }
-        String email = person.getEmail();
-        if (isEmailBelongsToAnotherUser(person, currentUser, email)) {
-            String message = messageSource.getMessage(USER_EXISTS_ERROR_MSG_KEY, null, LocaleContextHolder.getLocale());
-            bindingResult.rejectValue("email", "email.alreadyExists", message);
-            return USER_UPDATE_VIEW;
+        String email = currentUser.getEmail();
+        if (!email.equals(person.getEmail())) {
+            person.setEmail(email);
         }
-        if (!person.getHash().equals(currentUser.getHash())) {
-            String hash = passwordEncoder.encode(person.getHash());
-            person.setHash(hash);
+        String password = person.getHash();
+        if (!passwordEncoder.matches(password, currentUser.getHash())) {
+            person.setHash(passwordEncoder.encode(password));
+        } else {
+            person.setHash(currentUser.getHash());
         }
-        personService.save(person);
-        session.setAttribute(PERSON_SESSION_ATTR, person);
+        try {
+            personService.save(person);
+        } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElse(null));
+            return "redirect:/user/update?error=lock";
+        }
+        session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElseThrow());
         return "redirect:/user/update?success";
-    }
-
-    private boolean isEmailBelongsToAnotherUser(Person person, Person currentUser, String email) {
-        return !person.getEmail().equals(currentUser.getEmail()) && personService.findByEmail(email).isPresent();
     }
 }

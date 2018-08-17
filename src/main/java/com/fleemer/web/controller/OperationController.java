@@ -5,13 +5,13 @@ import com.fleemer.model.Person;
 import com.fleemer.service.*;
 import com.fleemer.service.exception.ServiceException;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import lombok.*;
@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -51,8 +52,11 @@ public class OperationController {
         model.addAttribute("operation", new Operation());
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (person == null) {
-            person = personService.findByEmail(principal.getName()).orElseThrow();
-            session.setAttribute(PERSON_SESSION_ATTR, person);
+            Optional<Person> optional = personService.findByEmail(principal.getName());
+            if (!optional.isPresent()) {
+                return "redirect:/logout";
+            }
+            session.setAttribute(PERSON_SESSION_ATTR, optional.get());
         }
         BigDecimal totalBalance = accountService.getTotalBalance(person);
         model.addAttribute("totalBalance", totalBalance);
@@ -123,16 +127,16 @@ public class OperationController {
         }
         long id = formOperation.getId();
         Operation operation = operationService.findById(id).orElse(null);
-        if (operation != null) {
-            operation.setInAccount(formOperation.getInAccount());
-            operation.setOutAccount(formOperation.getOutAccount());
-            operation.setCategory(formOperation.getCategory());
-            operation.setDate(formOperation.getDate());
-            operation.setSum(formOperation.getSum());
-            operation.setComment(formOperation.getComment());
-            operationService.save(operation);
+        if (operation == null) {
+            return "redirect:/";
         }
-        return "redirect:/";
+        String param = "";
+        try {
+            operationService.save(formOperation);
+        } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            param = "?error=lock";
+        }
+        return "redirect:/" + param;
     }
 
     @GetMapping("/operations/delete")

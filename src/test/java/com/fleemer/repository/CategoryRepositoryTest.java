@@ -96,7 +96,7 @@ public class CategoryRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        repository.save(createCategory(null, "new category", CategoryType.INCOME, people.get(2)));
+        repository.save(createCategory(null, "new category", CategoryType.INCOME, people.get(2), 0));
         repository.flush();
     }
 
@@ -112,8 +112,8 @@ public class CategoryRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Category newCategory1 = createCategory(null, "new category1", CategoryType.INCOME, people.get(3));
-        Category newCategory2 = createCategory(null, "new category2", CategoryType.OUTCOME, people.get(1));
+        Category newCategory1 = createCategory(null, "new category1", CategoryType.INCOME, people.get(3), 0);
+        Category newCategory2 = createCategory(null, "new category2", CategoryType.OUTCOME, people.get(1), 0);
         Category category = categories.get(5);
         category.setName("Changed name");
         repository.saveAll(List.of(newCategory1, newCategory2, category));

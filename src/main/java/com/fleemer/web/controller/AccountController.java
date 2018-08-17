@@ -8,12 +8,14 @@ import com.fleemer.service.AccountService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
 import java.util.Optional;
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -47,13 +49,6 @@ public class AccountController {
         return ROOT_VIEW;
     }
 
-//    @ResponseBody
-//    @GetMapping("/json")
-//    public List<Account> accounts(HttpSession session) {
-//        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);//todo remove
-//        return accountService.findAll(person);
-//    }
-
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Account account, BindingResult bindingResult, Model model,
                              HttpSession session) throws ServiceException {
@@ -62,10 +57,9 @@ public class AccountController {
             fillModel(model, accountService.findAll(person));
             return ROOT_VIEW;
         }
-        Optional<Account> lookedAccount = accountService.findByNameAndPerson(account.getName(), person);
-        if (lookedAccount.isPresent()) {
-            String message = messageSource.getMessage(ACCOUNT_EXISTS_ERROR_KEY, null, LocaleContextHolder.getLocale());
-            bindingResult.rejectValue("name", "name.alreadyExists", message);
+        Optional<Account> optional = accountService.findByNameAndPerson(account.getName(), person);
+        if (optional.isPresent()) {
+            bindingResult.rejectValue("name", "name.alreadyExists", getMessage(ACCOUNT_EXISTS_ERROR_KEY));
             fillModel(model, accountService.findAll(person));
             return ROOT_VIEW;
         }
@@ -105,12 +99,13 @@ public class AccountController {
             fillModel(model, accountService.findAll(person));
             return ACCOUNT_UPDATE_VIEW;
         }
-        account.setName(formAccount.getName());
-        account.setType(formAccount.getType());
-        account.setCurrency(formAccount.getCurrency());
-        account.setBalance(formAccount.getBalance());
-        accountService.save(account);
-        return "redirect:/accounts";
+        formAccount.setPerson(account.getPerson());
+        try {
+            accountService.save(formAccount);
+        } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            return "redirect:/accounts?error=lock";
+        }
+        return "redirect:/accounts?success";
     }
 
     @GetMapping("/delete")

@@ -10,21 +10,28 @@
 
                 <h5 class="text-center" th:text="#{user-update.edit-profile}">Edit profile</h5>
 
-                <div th:if="${param.success}">
+                <div th:if="${#request.getParameter('success')}">
                     <div class="alert alert-success text-center" role="alert">
                         <span th:text="#{user-update.success-update}"></span><br>
+                    </div>
+                </div>
+
+                <div th:if="${#request.getParameter('error') == 'lock'}">
+                    <div class="alert alert-danger text-center" role="alert">
+                        <span th:text="#{common.error.already-modified}"></span><br>
                     </div>
                 </div>
 
                 <form method="post" action="#" th:action="@{/user/update}" th:object="${person}" class="needs-validation" novalidate>
 
                     <input type="hidden" th:field="*{id}">
+                    <input type="hidden" th:field="*{version}">
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{email}">Email</label>
-                            <input th:field="*{email}" type="email" class="form-control"
-                                   pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" required autofocus/>
+                            <input th:field="*{email}" type="email" class="form-control disabled"
+                                   pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" required/>
                             <div th:if="${#fields.hasErrors('email')}">
                                 <span th:errors="*{email}" class="text-danger small"></span><br>
                             </div>

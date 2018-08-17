@@ -8,12 +8,14 @@ import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
 import java.util.List;
 import java.util.Optional;
+import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -103,9 +105,14 @@ public class CategoryController {
             fillModel(model, categoryService.findAll(person));
             return CATEGORY_UPDATE_VIEW;
         }
-        category.setName(formCategory.getName());
-        categoryService.save(category);
-        return "redirect:/categories";
+        formCategory.setType(category.getType());
+        formCategory.setPerson(category.getPerson());
+        try {
+            categoryService.save(formCategory);
+        } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            return "redirect:/categories?error=lock";
+        }
+        return "redirect:/categories?success";
     }
 
     @GetMapping("/delete")
