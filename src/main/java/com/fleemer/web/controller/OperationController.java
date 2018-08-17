@@ -5,14 +5,15 @@ import com.fleemer.model.Person;
 import com.fleemer.service.*;
 import com.fleemer.service.exception.ServiceException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/")
 public class OperationController {
     private static final String OPERATION_EDIT_VIEW = "operation_edit";
+    private static final String PERSON_SESSION_ATTR = "person";
     private static final String ROOT_VIEW = "index";
 
     private final AccountService accountService;
@@ -45,28 +47,33 @@ public class OperationController {
     }
 
     @GetMapping
-    public String operations(Model model, Principal principal, HttpSession session) {
+    public String operations(Model model, HttpSession session, Principal principal) {
         model.addAttribute("operation", new Operation());
-        Person person = getCurrentPerson(principal);
-        session.setAttribute("userName", person.getFirstName());
-        fillModel(model, person);
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        if (person == null) {
+            person = personService.findByEmail(principal.getName()).orElseThrow();
+            session.setAttribute(PERSON_SESSION_ATTR, person);
+        }
+        BigDecimal totalBalance = accountService.getTotalBalance(person);
+        model.addAttribute("totalBalance", totalBalance);
+        model.addAttribute("accounts", accountService.findAll(person));
         return ROOT_VIEW;
     }
 
     @ResponseBody
     @GetMapping("/operations/json")
     public OperationPageDto operations(@RequestParam("page") int page, @RequestParam("size") int size,
-                                       Principal principal) {
-        Person person = getCurrentPerson(principal);
+                                       HttpSession session) {
         Pageable pageable = PageRequest.of(page, size, new Sort(Sort.Direction.DESC, "date"));
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Page<Operation> operationPage = operationService.findAllByPerson(person, pageable);
         return new OperationPageDto(operationPage.getNumber(), operationPage.getTotalPages(), operationPage.getContent());
     }
 
     @ResponseBody
     @GetMapping("/operations/dailyvolumes/json")
-    public List<DailyVolumesDto> operations(Principal principal) {
-        Person person = getCurrentPerson(principal);
+    public List<DailyVolumesDto> operations(HttpSession session) {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         LocalDate today = LocalDate.now();
         int year = today.getYear();
         int month = today.getMonth().getValue();
@@ -79,10 +86,10 @@ public class OperationController {
 
     @PostMapping("/operations/create")
     public String create(@Valid @ModelAttribute Operation operation, BindingResult result, Model model,
-                         Principal principal) throws ServiceException {
-        Person person = getCurrentPerson(principal);
-        fillModel(model, person);
+                         HttpSession session) throws ServiceException {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (result.hasErrors()) {
+            model.addAttribute("accounts", accountService.findAll(person));
             return ROOT_VIEW;
         }
         operationService.save(operation);
@@ -90,13 +97,13 @@ public class OperationController {
     }
 
     @GetMapping("/operations/update")
-    public String update(@RequestParam("id") long id, Model model, Principal principal) {
-        Person person = getCurrentPerson(principal);
-        Operation operation = operationService.findById(id).orElse(null);
-        if (operation == null || !isOwned(person, operation)) {
+    public String update(@RequestParam("id") long id, Model model, HttpSession session) {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        Optional<Operation> operation = operationService.getByIdAndPerson(id, person);
+        if (!operation.isPresent()) {
             return "redirect:/";
         }
-        model.addAttribute("operation", operation);
+        model.addAttribute("operation", operation.get());
         model.addAttribute("accounts", accountService.findAll(person));
         model.addAttribute("categories", categoryService.findAll(person));
         return OPERATION_EDIT_VIEW;
@@ -104,8 +111,8 @@ public class OperationController {
 
     @PostMapping("/operations/update")
     public String update(@Valid @ModelAttribute("operation") Operation formOperation, BindingResult bindingResult,
-                         Model model, Principal principal) throws ServiceException {
-        Person person = getCurrentPerson(principal);
+                         Model model, HttpSession session) throws ServiceException {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (bindingResult.hasErrors()) {
             model.addAttribute("accounts", accountService.findAll(person));
             return OPERATION_EDIT_VIEW;
@@ -129,34 +136,14 @@ public class OperationController {
     }
 
     @GetMapping("/operations/delete")
-    public String delete(@RequestParam("id") long id, Principal principal) {
-        Person person = getCurrentPerson(principal);
-        Operation operation = operationService.findById(id).orElse(null);
-        if (operation == null || !isOwned(person, operation)) {
+    public String delete(@RequestParam("id") long id, HttpSession session) {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        Optional<Operation> operation = operationService.getByIdAndPerson(id, person);
+        if (!operation.isPresent()) {
             return "redirect:/";
         }
-        operationService.delete(operation);
+        operationService.delete(operation.get());
         return "redirect:/";
-    }
-
-    @ResponseBody
-    @GetMapping("/balance")
-    public double balance(Principal principal) {
-        Person person = getCurrentPerson(principal);
-        return accountService.getTotalBalance(person).doubleValue();
-    }
-
-    private boolean isOwned(Person person, Operation operation) {
-        return operationService.findAllByPerson(person).contains(operation);
-    }
-
-    private Person getCurrentPerson(@NotNull Principal principal) {
-        return personService.findByEmail(principal.getName()).orElseThrow();
-    }
-
-    private void fillModel(@NotNull Model model, Person person) {
-        model.addAttribute("accounts", accountService.findAll(person));
-        model.addAttribute("operations", operationService.findAllByPerson(person));
     }
 
     private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {

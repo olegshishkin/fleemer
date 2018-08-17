@@ -42,4 +42,8 @@ public class Person implements Serializable {
     @Size(min = 1, max = 255)
     @Column(nullable = false)
     private String hash;
+
+    @JsonIgnore
+    @Version
+    private int version;
 }

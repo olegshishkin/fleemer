@@ -96,33 +96,24 @@ function prepareOperationEditForm() {
     }).attr('selected', true);
 }
 
-function setTotalBalance(){
-    $.ajax({
-        url: '/balance',
-        success: function(result){
-            $("#totalBalance").html(result.toFixed(2));
-        }
-    });
-}
+// // Appends account summary
+// function fillAccountsList() {
+//     $.ajax({
+//         url: '/accounts/json',
+//         success: function (result) {
+//             $.each(result,
+//                 function appendAccountSummary(key, value) {
+//                     var newSummary = $('#accountSummary').clone(true).addClass('list-group-item').removeAttr('id');
+//                     newSummary.find('h6').html(value.name);
+//                     newSummary.find('small').html(value.type);
+//                     newSummary.find('span').html(value.balance.toFixed(2));
+//                     $('#accountSummaryPlace').append(newSummary);
+//                 });
+//         }
+//     })
+// }
 
-// Appends account summary
-function fillAccountsList() {
-    $.ajax({
-        url: '/accounts/json',
-        success: function (result) {
-            $.each(result,
-                function appendAccountSummary(key, value) {
-                    var newSummary = $('#accountSummary').clone(true).addClass('list-group-item').removeAttr('id');
-                    newSummary.find('h6').html(value.name);
-                    newSummary.find('small').html(value.type);
-                    newSummary.find('span').html(value.balance.toFixed(2));
-                    $('#accountSummaryPlace').append(newSummary);
-                });
-        }
-    })
-}
-
-// Fills operation table and paginator
+// Creates operation table and pagination links
 function getOperationsPage(page, size) {
     $.ajax({
         url: '/operations/json',
@@ -134,7 +125,7 @@ function getOperationsPage(page, size) {
     });
 }
 
-// Fills operation table
+// Builds operation table
 function fillTable(operations) {
     $('#operationTable').empty();
     var table = $('#operationTableSnippet').clone(true).removeAttr('id');
@@ -190,20 +181,25 @@ function isNotNull(value) {
     return value != undefined & value != 'null';
 }
 
-// Fills paginated links
+// Fills pagination links
 function fillPaginator(cur, total, size) {
+    var visiblePages = 10;
+
     $('#pagination').empty();
     var prevLi = $('#curPage').clone(true).removeAttr('id');
     if (cur == 0){
         prevLi.addClass('disabled');
     } else {
-        prevLi.removeAttr('disabled');
+        prevLi.removeClass('disabled');
     }
     prevLi.find('a').attr('onclick', 'getOperationsPage(' + (cur - 1) + ', ' + size + ')');
     prevLi.find('a').html('<<');
     $('#pagination').append(prevLi);
 
-    for (var i = 0; i < total; i++){
+    var firstVisiblePage = cur > visiblePages - 1 ? cur - (visiblePages - 1) : 0;
+    var lastVisiblePage = total < firstVisiblePage + visiblePages ? total : firstVisiblePage + visiblePages;
+
+    for (var i = firstVisiblePage; i < lastVisiblePage; i++){
         var curLi = $('#curPage').clone(true).removeAttr('id');
         if (i == cur) {
             curLi.addClass('active');
@@ -217,13 +213,14 @@ function fillPaginator(cur, total, size) {
     if (cur == total - 1){
         nextLi.addClass('disabled');
     } else {
-        nextLi.removeAttr('disabled');
+        nextLi.removeClass('disabled');
     }
     nextLi.find('a').attr('onclick', 'getOperationsPage(' + (cur + 1) + ', ' + size + ')');
     nextLi.find('a').html('>>');
     $('#pagination').append(nextLi);
 }
 
+// Chart building
 function buildChart() {
     $.ajax({
         url: '/operations/dailyvolumes/json',
@@ -247,6 +244,7 @@ function buildChart() {
     });
 }
 
+// Confirmation window for delete action
 function confirmWindow() {
     return confirm($('#deleteConfirm').text());
 }

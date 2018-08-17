@@ -31,10 +31,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                    .antMatchers("/user/**", "/static/**").permitAll()
+                    .antMatchers("/user/create", "/static/**").permitAll()//todo чтобы не обрабатывал эти url
                     .anyRequest().authenticated()
                 .and()
                 .formLogin()
+                    .defaultSuccessUrl("/", true)
                     .loginPage("/login")
                     .permitAll()
                 .and()

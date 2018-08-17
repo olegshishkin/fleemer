@@ -3,6 +3,8 @@ package com.fleemer.web.controller;
 import com.fleemer.model.Person;
 import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
+
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -16,8 +18,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    private static final String USER_EXISTS_ERROR_MSG_KEY = "userForm.error.user-exists";
-    private static final String USER_FORM_VIEW = "user_form";
+    private static final String PERSON_SESSION_ATTR = "person";
+    private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
+    private static final String USER_CREATE_VIEW = "user_create";
+    private static final String USER_UPDATE_VIEW = "user_update";
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
@@ -31,25 +35,60 @@ public class UserController {
         this.messageSource = messageSource;
     }
 
-    @GetMapping
-    public ModelAndView show() {
-        return new ModelAndView(USER_FORM_VIEW, "person", new Person());
+    @GetMapping("/create")
+    public ModelAndView create() {
+        return new ModelAndView(USER_CREATE_VIEW, "person", new Person());
     }
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) throws ServiceException {
         if (bindingResult.hasErrors()) {
-            return USER_FORM_VIEW;
+            return USER_CREATE_VIEW;
         }
         String email = person.getEmail();
         if (personService.findByEmail(email).isPresent()) {
             String message = messageSource.getMessage(USER_EXISTS_ERROR_MSG_KEY, null, LocaleContextHolder.getLocale());
             bindingResult.rejectValue("email", "email.alreadyExists", message);
-            return USER_FORM_VIEW;
+            return USER_CREATE_VIEW;
         }
         String hash = passwordEncoder.encode(person.getHash());
         person.setHash(hash);
         personService.save(person);
         return "redirect:/";
+    }
+
+    @GetMapping("/update")
+    public ModelAndView update(HttpSession session) {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        return new ModelAndView(USER_UPDATE_VIEW, "person", person);
+    }
+
+    @PostMapping("/update")
+    public String update(@Valid @ModelAttribute Person person, BindingResult bindingResult, HttpSession session)
+            throws ServiceException {
+        if (bindingResult.hasErrors()) {
+            return USER_UPDATE_VIEW;
+        }
+        Person currentUser = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        if (!person.getId().equals(currentUser.getId())) {
+            return "redirect:/";
+        }
+        String email = person.getEmail();
+        if (isEmailBelongsToAnotherUser(person, currentUser, email)) {
+            String message = messageSource.getMessage(USER_EXISTS_ERROR_MSG_KEY, null, LocaleContextHolder.getLocale());
+            bindingResult.rejectValue("email", "email.alreadyExists", message);
+            return USER_UPDATE_VIEW;
+        }
+        if (!person.getHash().equals(currentUser.getHash())) {
+            String hash = passwordEncoder.encode(person.getHash());
+            person.setHash(hash);
+        }
+        personService.save(person);
+        session.setAttribute(PERSON_SESSION_ATTR, person);
+        return "redirect:/user/update?success";
+    }
+
+    private boolean isEmailBelongsToAnotherUser(Person person, Person currentUser, String email) {
+        return !person.getEmail().equals(currentUser.getEmail()) && personService.findByEmail(email).isPresent();
     }
 }

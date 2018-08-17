@@ -4,7 +4,8 @@ create table if not exists `person`
   `first_name`    varchar(255)    not null,
   `last_name`     varchar(255)    null,
   `email`         varchar(255)    not null unique,
-  `hash`          varchar(255)    not null
+  `hash`          varchar(255)    not null,
+  `version`       int             not null
 ) engine = InnoDB;
 
 create table if not exists `account`
@@ -15,6 +16,7 @@ create table if not exists `account`
   `name`          varchar(255)    not null,
   `balance`       decimal(20, 10) not null,
   `person_id`     bigint unsigned not null,
+  `version`       int             not null,
   foreign key (`person_id`) references `person` (`id`),
   index (`person_id`)
 ) engine = InnoDB;
@@ -25,6 +27,7 @@ create table if not exists `category`
   `name`          varchar(255)    not null,
   `type`          tinyint         not null,
   `person_id`     bigint unsigned not null,
+  `version`       int             not null,
   foreign key (`person_id`) references `person` (`id`),
   index (`person_id`)
 ) engine = InnoDB;
@@ -38,6 +41,7 @@ create table if not exists `operation`
   `category_id`     bigint unsigned null,
   `sum`             decimal(20, 10) not null,
   `comment`         varchar(255)    null,
+  `version`         int             not null,
   foreign key (`in_account_id`) references `account` (`id`),
   foreign key (`out_account_id`) references `account` (`id`),
   foreign key (`category_id`) references `category` (`id`),

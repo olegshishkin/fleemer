@@ -9,9 +9,9 @@
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{accounts.add-account}">Add account</h5>
 
-                    <div th:if="${error}">
+                    <div th:if="${param.deleteForbidden}">
                         <div class="alert alert-danger text-center" role="alert">
-                            <span th:text="${error}"></span><br>
+                            <span th:text="#{accounts.error.delete-forbidden}"></span><br>
                         </div>
                     </div>
 
@@ -59,7 +59,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label th:for="balance" th:text="#{accounts.initial-balance}">Initial balance</label>
+                                <label th:for="balance" th:text="#{accounts.balance}">Initial balance</label>
                                 <input th:field="*{balance}" type="text" class="form-control" placeholder="0.0"
                                        pattern="[0-9]+(\.[0-9]+)?" required/>
                                 <div th:if="${#fields.hasErrors('balance')}">

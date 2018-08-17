@@ -6,6 +6,7 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -19,9 +20,15 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
 
     Page<Operation> findAllByInAccountPersonOrOutAccountPerson(Person inPerson, Person outPerson, Pageable pageable);
 
-    List<Operation> findAllByCategory(Category category);
+    @Query("SELECT o FROM Operation o LEFT OUTER JOIN o.inAccount a1 LEFT OUTER JOIN o.outAccount a2 " +
+            "WHERE o.id = :id AND (a1.person = :inPerson OR a2.person = :outPerson)")
+    Optional<Operation> getByIdAndInAccountPersonOrOutAccountPerson(@Param("id") Long id,
+                                                                    @Param("inPerson") Person inAccountPerson,
+                                                                    @Param("outPerson") Person outAccountPerson);
 
-    List<Operation> findAllByInAccountOrOutAccount(Account inAccount, Account outAccount);
+    long countOperationsByCategory(Category category);
+
+    long countOperationsByInAccountOrOutAccount(Account inAccount, Account outAccount);
 
     @Query(value =  "SELECT o.date, inSum, outSum\n" +
                     "FROM operation o\n" +

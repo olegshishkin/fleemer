@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -39,7 +40,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
 
     @Override
     protected OperationRepository getRepository() {
-        return repository;
+        return repository;// todo transactional on class
     }
 
     @Override
@@ -53,13 +54,18 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    public List<Operation> findAllByCategory(Category category) {
-        return repository.findAllByCategory(category);
+    public Optional<Operation> getByIdAndPerson(Long id, Person person) {
+        return repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
     }
 
     @Override
-    public List<Operation> findAllByAccount(Account account) {
-        return repository.findAllByInAccountOrOutAccount(account, account);
+    public long countOperationsByCategory(Category category) {
+        return repository.countOperationsByCategory(category);
+    }
+
+    @Override
+    public long countOperationsByAccounts(Account account) {
+        return repository.countOperationsByInAccountOrOutAccount(account, account);
     }
 
     @Override

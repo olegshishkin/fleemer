@@ -6,6 +6,7 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -14,9 +15,11 @@ public interface OperationService extends BaseService<Operation, Long> {
 
     Page<Operation> findAllByPerson(Person person, Pageable pageable);
 
-    List<Operation> findAllByCategory(Category category);
+    Optional<Operation> getByIdAndPerson(Long id, Person person);
 
-    List<Operation> findAllByAccount(Account account);
+    long countOperationsByCategory(Category category);
+
+    long countOperationsByAccounts(Account account);
 
     List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person);
 }

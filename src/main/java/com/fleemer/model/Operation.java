@@ -1,5 +1,6 @@
 package com.fleemer.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.io.Serializable;
@@ -60,4 +61,8 @@ public class Operation implements Serializable {
     @Size(max = 255)
     @Column
     private String comment;
+
+    @JsonIgnore
+    @Version
+    private int version;
 }

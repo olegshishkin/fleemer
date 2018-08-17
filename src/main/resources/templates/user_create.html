@@ -9,7 +9,7 @@
             </div>
             <div class="row justify-content-center">
                 <div class="col col-lg-4">
-                    <h5 class="text-center" th:text="#{userForm.create-user}">Create user</h5>
+                    <h5 class="text-center" th:text="#{user-create.create-user}">Create user</h5>
                     <form method="post" action="#" th:action="@{/user/create}" th:object="${person}" class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-md-12 mb-3">
@@ -19,24 +19,24 @@
                                 <div th:if="${#fields.hasErrors('email')}">
                                     <span th:errors="*{email}" class="text-danger small"></span><br>
                                 </div>
-                                <div class="invalid-feedback" th:text="#{userForm.error.not-empty}">The field cannot be empty</div>
+                                <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label th:for="*{firstName}" th:text="#{userForm.form.firstname}">Firstname</label>
+                                <label th:for="*{firstName}" th:text="#{user.form.firstname}">Firstname</label>
                                 <input th:field="*{firstName}" type="text" class="form-control" required/>
                                 <div th:if="${#fields.hasErrors('firstName')}">
                                     <span th:errors="*{firstName}" class="text-danger small"></span><br>
                                 </div>
-                                <div class="invalid-feedback" th:text="#{userForm.error.not-empty}">The field cannot be empty</div>
+                                <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label th:for="*{lastName}" th:text="#{userForm.form.lastname}">Lastname</label>
+                                <label th:for="*{lastName}" th:text="#{user.form.lastname}">Lastname</label>
                                 <input th:field="*{lastName}" type="text" class="form-control"/>
                                 <div th:if="${#fields.hasErrors('lastName')}">
                                     <span th:errors="*{lastName}" class="text-danger small"></span><br>
@@ -46,24 +46,24 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <label th:for="*{hash}" th:text="#{userForm.form.password}">Password</label>
+                                <label th:for="*{hash}" th:text="#{user.form.password}">Password</label>
                                 <input th:field="*{hash}" type="password" class="form-control" required/>
                                 <div th:if="${#fields.hasErrors('hash')}">
                                     <span th:errors="*{hash}" class="text-danger small"></span><br>
                                 </div>
-                                <div class="invalid-feedback" th:text="#{userForm.error.not-empty}">The field cannot be empty</div>
+                                <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <button class="btn btn-primary btn-block" type="submit" th:text="#{userForm.form.submit}">Submit</button>
+                                <button class="btn btn-primary btn-block" type="submit" th:text="#{user.form.submit}">Submit</button>
                             </div>
                         </div>
                     </form>
 
                     <div class="text-center">
-                        <a th:href="@{/login}" href="#" class="btn btn-link text-dark btn-sm" role="button" th:text="#{userForm.back}">
+                        <a th:href="@{/login}" href="#" class="btn btn-link text-dark btn-sm" role="button" th:text="#{user-create.back}">
                             Back
                         </a>
                     </div>

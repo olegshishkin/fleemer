@@ -9,9 +9,9 @@
                 <div class="col-lg-4">
                     <h5 class="text-center" th:text="#{categories.add-category}">Add category</h5>
 
-                    <div th:if="${error}">
+                    <div th:if="${param.deleteForbidden}">
                         <div class="alert alert-danger text-center" role="alert">
-                            <span th:text="${error}"></span><br>
+                            <span th:text="#{categories.error.delete-forbidden}"></span><br>
                         </div>
                     </div>
 

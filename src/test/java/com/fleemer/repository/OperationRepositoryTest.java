@@ -191,7 +191,7 @@ public class OperationRepositoryTest {
                 operations.get(6),
                 operations.get(7),
                 operations.get(8));
-        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person, person);
+        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
         RepositoryAssertions.assertIterableEquals(expected, actual);
     }
 
@@ -200,8 +200,7 @@ public class OperationRepositoryTest {
         Person person = people.get(1);
         List<Operation> expected = List.of(operations.get(3), operations.get(2));
         Pageable pageable = PageRequest.of(2, 2, new Sort(Sort.Direction.DESC, "date"));
-        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson(person, person,
-                person, pageable).getContent();
+        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable).getContent();
         RepositoryAssertions.assertIterableEquals(expected, actual);
     }
 }

@@ -24,10 +24,16 @@
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item">
-                    <a class="nav-link" th:href="@{/logout}" href="#" th:text="#{navbar.logout(${session.userName})}">
-                        Logout(username)
-                    </a>
+                <li class="nav-item dropdown" th:classappend="${pageName == 'options'}? 'active'">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="true" aria-expanded="false" th:text="#{navbar.menu.options}">Options</a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" th:href="@{/user/update}" href="#" th:text="#{navbar.menu.settings}">Settings</a>
+                        <a class="dropdown-item" th:href="@{/user/update}" href="#" th:text="#{navbar.menu.profile}">My profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" th:href="@{/logout}" href="#"
+                           th:text="#{navbar.menu.logout(${session.person.firstName})}">Logout(username)</a>
+                    </div>
                 </li>
             </ul>
         </div>

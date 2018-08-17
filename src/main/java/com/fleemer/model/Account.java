@@ -57,6 +57,10 @@ public class Account implements Serializable {
     @JoinColumn
     private Person person;
 
+    @JsonIgnore
+    @Version
+    private int version;
+
     @JsonGetter("type")
     public String getRefactoredType() {
         String text = type.name().toLowerCase().replace('_', ' ');
