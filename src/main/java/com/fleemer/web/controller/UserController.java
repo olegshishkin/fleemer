@@ -6,6 +6,8 @@ import com.fleemer.service.exception.ServiceException;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -19,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
     private static final String USER_CREATE_VIEW = "user_create";
@@ -87,6 +90,7 @@ public class UserController {
         try {
             personService.save(person);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            LOGGER.warn("Optimistic lock: {}", e.getMessage());
             session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElse(null));
             return "redirect:/user/update?error=lock";
         }

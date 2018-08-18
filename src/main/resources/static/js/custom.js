@@ -16,8 +16,7 @@ function setValidationListener() {
 }
 
 // Set bootstrap datepicker
-function setDataPicker() {
-    var date_input=$('input[name="date"]');
+function setDatePicker(elem) {
     var options={
         format: 'yyyy-mm-dd',
         todayHighlight: true,
@@ -25,7 +24,7 @@ function setDataPicker() {
         orientation: 'bottom left',
         language: $('#datePickerLang').text()
     };
-    date_input.datepicker(options);
+    elem.datepicker(options);
 }
 
 // operation type radiobuttons
@@ -96,31 +95,23 @@ function prepareOperationEditForm() {
     }).attr('selected', true);
 }
 
-// // Appends account summary
-// function fillAccountsList() {
-//     $.ajax({
-//         url: '/accounts/json',
-//         success: function (result) {
-//             $.each(result,
-//                 function appendAccountSummary(key, value) {
-//                     var newSummary = $('#accountSummary').clone(true).addClass('list-group-item').removeAttr('id');
-//                     newSummary.find('h6').html(value.name);
-//                     newSummary.find('small').html(value.type);
-//                     newSummary.find('span').html(value.balance.toFixed(2));
-//                     $('#accountSummaryPlace').append(newSummary);
-//                 });
-//         }
-//     })
-// }
-
 // Creates operation table and pagination links
-function getOperationsPage(page, size) {
+function getOperationsPage(page, size, from, till) {
+    var data;
+    if (from == null || from == '' || till == null || till == '') {
+        data = {page: page, size: size};
+    } else {
+        data = {page: page, size: size, from: from, till: till};
+    }
     $.ajax({
         url: '/operations/json',
-        data: { page: page, size: size },
+        data: data,
         success: function (result) {
             fillTable(result.operations);
-            fillPaginator(result.currentPage, result.totalPages, size);
+            $('#pagination').empty();
+            if (result.totalPages > 1) {
+                fillPaginator(result.currentPage, result.totalPages, size, from, till);
+            }
         }
     });
 }
@@ -131,6 +122,7 @@ function fillTable(operations) {
     var table = $('#operationTableSnippet').clone(true).removeAttr('id');
     $.each(operations,
         function addOperationRow(key, value) {
+            var redirectUrl = '&redirect=/operations';
             var inAccount = value.inAccount;
             var outAccount = value.outAccount;
             var category = value.category;
@@ -154,18 +146,18 @@ function fillTable(operations) {
             tr.append(categoryCell);
             var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             if (isNotNull(outAccount) & isNotNull(category)) {
-                tr.append($("<td>").attr('align', 'right').addClass('text-danger').text('- ' + formattedSum));
+                tr.append($("<td>").attr('align', 'right').addClass('text-danger').text('-' + formattedSum));
             } else if (isNotNull(inAccount) & isNotNull(category)) {
-                tr.append($('<td>').attr('align', 'right').addClass('text-success').text('+ ' + formattedSum));
+                tr.append($('<td>').attr('align', 'right').addClass('text-success').text('+' + formattedSum));
             } else {
                 tr.append($('<td>').attr('align', 'right').text(formattedSum));
             }
             var editLink = $('<a>')
-                .attr('href', '/operations/update?id=' + value.id)
+                .attr('href', '/operations/update?id=' + value.id + redirectUrl)
                 .addClass("small")
                 .text($('#edit-word').text());
             var deleteLink = $('<a>')
-                .attr('href', '/operations/delete?id=' + value.id)
+                .attr('href', '/operations/delete?id=' + value.id + redirectUrl)
                 .attr('onclick', 'return confirm("' + $('#deleteConfirm').html() +  '");')
                 .addClass("small")
                 .text($('#delete-word').text());
@@ -182,17 +174,16 @@ function isNotNull(value) {
 }
 
 // Fills pagination links
-function fillPaginator(cur, total, size) {
+function fillPaginator(cur, total, size, from, till) {
     var visiblePages = 10;
-
-    $('#pagination').empty();
+    var methodEnding = size + ',\'' + from + '\',\'' + till +'\'';
     var prevLi = $('#curPage').clone(true).removeAttr('id');
     if (cur == 0){
         prevLi.addClass('disabled');
     } else {
         prevLi.removeClass('disabled');
     }
-    prevLi.find('a').attr('onclick', 'getOperationsPage(' + (cur - 1) + ', ' + size + ')');
+    prevLi.find('a').attr('onclick', 'getOperationsPage(' + (cur - 1) + ',' + methodEnding + ')');
     prevLi.find('a').html('<<');
     $('#pagination').append(prevLi);
 
@@ -204,7 +195,7 @@ function fillPaginator(cur, total, size) {
         if (i == cur) {
             curLi.addClass('active');
         }
-        curLi.find('a').attr('onclick', 'getOperationsPage(' + i + ', ' + size + ')');
+        curLi.find('a').attr('onclick', 'getOperationsPage(' + i + ', ' + methodEnding + ')');
         curLi.find('a').html(i + 1);
         $('#pagination').append(curLi);
     }
@@ -215,7 +206,7 @@ function fillPaginator(cur, total, size) {
     } else {
         nextLi.removeClass('disabled');
     }
-    nextLi.find('a').attr('onclick', 'getOperationsPage(' + (cur + 1) + ', ' + size + ')');
+    nextLi.find('a').attr('onclick', 'getOperationsPage(' + (cur + 1) + ', ' + methodEnding + ')');
     nextLi.find('a').html('>>');
     $('#pagination').append(nextLi);
 }
@@ -228,7 +219,7 @@ function buildChart() {
                 config = {
                     data: result,
                     xkey: 'date',
-                    ykeys: ['income', 'outcome'],
+                    ykeys: ['outcome', 'income'],
                     labels: [$('#incomeChartText').text(), $('#outcomeChartText').text()],
                     fillOpacity: 0.5,
                     hideHover: 'auto',
@@ -236,7 +227,7 @@ function buildChart() {
                     resize: true,
                     pointFillColors:['#ffffff'],
                     pointStrokeColors: ['black'],
-                    lineColors:['green','red']
+                    lineColors:['red', 'green']
                 };
             config.element = 'chart';
             Morris.Area(config);

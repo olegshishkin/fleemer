@@ -12,6 +12,8 @@ import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private static final String CATEGORY_UPDATE_VIEW = "category_update";
     private static final String CATEGORY_EXISTS_ERROR_KEY = "categories.error.user-exists";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String ROOT_VIEW = "categories";
 
@@ -110,6 +113,7 @@ public class CategoryController {
         try {
             categoryService.save(formCategory);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            LOGGER.warn("Optimistic lock: {}", e.getMessage());
             return "redirect:/categories?error=lock";
         }
         return "redirect:/categories?success";

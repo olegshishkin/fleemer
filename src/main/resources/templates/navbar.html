@@ -16,6 +16,9 @@
                 <li class="nav-item" th:classappend="${pageName == 'home'}? 'active'">
                     <a th:href="@{/}" href="#" class="nav-link" th:text="#{navbar.menu.home}">Home</a>
                 </li>
+                <li class="nav-item" th:classappend="${pageName == 'operations'}? 'active'">
+                    <a th:href="@{/operations}" href="#" class="nav-link" th:text="#{navbar.menu.operations}">Operations</a>
+                </li>
                 <li class="nav-item" th:classappend="${pageName == 'accounts'}? 'active'">
                     <a th:href="@{/accounts}" href="#" class="nav-link" th:text="#{navbar.menu.accounts}">Accounts</a>
                 </li>

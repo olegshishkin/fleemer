@@ -21,6 +21,14 @@ public interface OperationRepository extends JpaRepository<Operation, Long> {
     Page<Operation> findAllByInAccountPersonOrOutAccountPerson(Person inPerson, Person outPerson, Pageable pageable);
 
     @Query("SELECT o FROM Operation o LEFT OUTER JOIN o.inAccount a1 LEFT OUTER JOIN o.outAccount a2 " +
+            "WHERE o.date BETWEEN :fromDate AND :tillDate AND (a1.person = :inPerson OR a2.person = :outPerson)")
+    Page<Operation> findAllByInAccountPersonOrOutAccountPersonAndDateBetween(@Param("inPerson") Person inPerson,
+                                                                             @Param("outPerson") Person outPerson,
+                                                                             @Param("fromDate") LocalDate fromDate,
+                                                                             @Param("tillDate") LocalDate tillDate,
+                                                                             Pageable pageable);
+
+    @Query("SELECT o FROM Operation o LEFT OUTER JOIN o.inAccount a1 LEFT OUTER JOIN o.outAccount a2 " +
             "WHERE o.id = :id AND (a1.person = :inPerson OR a2.person = :outPerson)")
     Optional<Operation> getByIdAndInAccountPersonOrOutAccountPerson(@Param("id") Long id,
                                                                     @Param("inPerson") Person inAccountPerson,

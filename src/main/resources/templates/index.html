@@ -118,49 +118,52 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-md-12 mb-3"></div>
-            </div>
-
+            <div class="row"><div class="col-md-12 mb-3"></div></div>
             <div id="chart" class="row"></div>
+            <div class="row"><div class="col-md-12 mb-3"></div></div>
+            <h5 class="text-center text-muted" th:text="${operations.hasContent()} ? #{index.today-operations} :
+            #{index.today-operations-empty}">
+                Today's operations
+            </h5>
+            <div class="row"><div class="col-md-12 mb-3"></div></div>
 
-            <div class="row">
-                <div class="col-md-12 mb-5"></div>
-            </div>
-
-            <div class="row">
-                <div id="operationTable" class="col-md-12 mb-3"></div>
-            </div>
-
-            <div class="row">
+            <div class="row" th:if="${operations.hasContent()}">
                 <div class="col-md-12 mb-3">
-                    <nav>
-                        <ul id="pagination" class="pagination justify-content-center"></ul>
-                    </nav>
+                    <table class="table table-hover">
+                        <thead align="right">
+                        <tr>
+                            <th scope="col" th:text="#{operations.table.date}">Date</th>
+                            <th scope="col" th:text="#{operations.table.from-account}">From account</th>
+                            <th scope="col" th:text="#{operations.table.to-account}">To account</th>
+                            <th scope="col" th:text="#{operations.table.category}">Category</th>
+                            <th scope="col" th:text="#{operations.table.sum}">Sum</th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="o : ${operations}" th:with="sum=${#numbers.formatDecimal(o.sum, 1, 2)}">
+                            <td align="right" th:text="${o.date}">...</td>
+                            <td align="right" th:text="${o.outAccount != null ? o.outAccount.name : ''}">...</td>
+                            <td align="right" th:text="${o.inAccount != null ? o.inAccount.name : ''}">...</td>
+                            <td align="right" th:text="${o.category != null ? o.category.name : ''}">...</td>
+                            <td align="right" class="text-danger" th:if="${o.outAccount != null && o.category != null}"
+                                th:text="'-' + ${sum}">...</td>
+                            <td align="right" class="text-success" th:if="${o.inAccount != null && o.category != null}"
+                                th:text="'+' + ${sum}">...</td>
+                            <td align="right" th:if="${o.outAccount != null && o.inAccount != null}" th:text="${sum}">...</td>
+                            <td align="right">
+                                <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}"
+                                   th:text="#{operations.table.edit}" class="small">Edit</a>
+                                <a href="#" th:href="@{/operations/delete(id=${o.id},redirect='/')}"
+                                   th:text="#{operations.table.delete}" class="small" onclick="return confirmWindow();">Delete</a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div hidden>
-                <table id="operationTableSnippet" class="table table-hover">
-                    <thead align="right">
-                    <tr>
-                        <th scope="col" th:text="#{index.table.date}">Date</th>
-                        <th scope="col" th:text="#{index.table.from-account}">From account</th>
-                        <th scope="col" th:text="#{index.table.to-account}">To account</th>
-                        <th scope="col" th:text="#{index.table.category}">Category</th>
-                        <th scope="col" th:text="#{index.table.sum}">Sum</th>
-                        <th scope="col"></th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    </tbody>
-                </table>
-            </div>
-
-            <div hidden>
-                <span id="edit-word" th:text="#{index.table.edit}">Edit</span>
-                <span id="delete-word" th:text="#{index.table.delete}">Delete</span>
-                <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
                 <span id="incomeChartText" th:text="#{index.chart.income}">Income</span>
                 <span id="outcomeChartText" th:text="#{index.chart.outcome}">Outcome</span>
                 <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
@@ -171,12 +174,12 @@
             <script>
                 $(document).ready(function(){
                     setValidationListener();
-                    setDataPicker();
-                    $('#date').val(new Date().toISOString().substring(0, 10));
+                    var elem = $('#date');
+                    setDatePicker(elem);
+                    elem.val(new Date().toISOString().substring(0, 10));
                     setOperationTypeListener(true);
                     $('#outcome').click();
                     buildChart();
-                    getOperationsPage(0, 15);
                 });
             </script>
         </div>

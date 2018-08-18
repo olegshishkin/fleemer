@@ -29,6 +29,7 @@
 
                     <input type="hidden" th:field="*{id}">
                     <input type="hidden" th:field="*{version}">
+                    <input type="hidden" name="redirect" th:value="${redirectUrl}">
 
                     <div class="row">
                         <div class="col-md-6 mb-3">
@@ -101,7 +102,7 @@
 
                     <div class="row">
                         <div class="col-md-12 mb-3 text-center">
-                            <a th:href="@{/}" href="#" class="btn btn-link text-dark btn-sm" role="button"
+                            <a th:href="@{${redirectUrl}}" href="#" class="btn btn-link text-dark btn-sm" role="button"
                                th:text="#{operation.back}">Back
                             </a>
                         </div>
@@ -115,7 +116,7 @@
 <script>
     $(document).ready(function(){
         setValidationListener();
-        setDataPicker();
+        setDatePicker($('#date'));
         setOperationTypeListener(false);
         prepareOperationEditForm();
     });

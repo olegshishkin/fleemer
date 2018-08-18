@@ -4,16 +4,19 @@ import com.fleemer.model.Account;
 import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
+import com.fleemer.service.exception.ServiceException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 
 public interface OperationService extends BaseService<Operation, Long> {
     List<Operation> findAllByPerson(Person person);
 
-    Page<Operation> findAllByPerson(Person person, Pageable pageable);
+    Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till, Pageable pageable)
+            throws ServiceException;
 
     Optional<Operation> getByIdAndPerson(Long id, Person person);
 

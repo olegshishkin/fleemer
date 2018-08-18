@@ -12,6 +12,8 @@ import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     private static final String ACCOUNT_UPDATE_VIEW = "account_update";
     private static final String ACCOUNT_EXISTS_ERROR_KEY = "accounts.error.name-exists";
+    private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String ROOT_VIEW = "accounts";
 
@@ -103,6 +106,7 @@ public class AccountController {
         try {
             accountService.save(formAccount);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
+            LOGGER.warn("Optimistic lock: {}", e.getMessage());
             return "redirect:/accounts?error=lock";
         }
         return "redirect:/accounts?success";

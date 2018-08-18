@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div th:replace="navbar::navbar('operations')"></div>
+<main role="main" class="container">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div th:if="${#request.getParameter('error') == 'lock'}">
+                    <div class="alert alert-danger text-center" role="alert">
+                        <span th:text="#{common.error.already-modified}"></span><br>
+                    </div>
+                </div>
+
+                <form action="#" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <input id="fromDate" class="form-control" type="text" placeholder="yyyy-mm-dd" required/>
+                            <small class="form-text text-muted" th:text="#{operations.form.period-begin}">Start date</small>
+                            <div class="invalid-feedback" th:text="#{operations.form.error.select-date}">Select a date of operation</div>
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <input id="tillDate" class="form-control" type="text" placeholder="yyyy-mm-dd" required/>
+                            <small class="form-text text-muted" th:text="#{operations.form.period-end}">Final date</small>
+                            <div class="invalid-feedback" th:text="#{operations.form.error.select-date}">Select a date of operation</div>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <button class="btn btn-primary btn-block" type="submit" th:text="#{common.ok}"
+                            onclick="getOperationsPage(0, 25, $('#fromDate').val(), $('#tillDate').val());">OK</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="row">
+            <div id="operationTable" class="col-md-12 mb-3"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-12 mb-3">
+                <nav>
+                    <ul id="pagination" class="pagination justify-content-center"></ul>
+                </nav>
+            </div>
+        </div>
+
+        <div hidden>
+            <table id="operationTableSnippet" class="table table-hover">
+                <thead align="right">
+                <tr>
+                    <th scope="col" th:text="#{operations.table.date}">Date</th>
+                    <th scope="col" th:text="#{operations.table.from-account}">From account</th>
+                    <th scope="col" th:text="#{operations.table.to-account}">To account</th>
+                    <th scope="col" th:text="#{operations.table.category}">Category</th>
+                    <th scope="col" th:text="#{operations.table.sum}">Sum</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
+        </div>
+
+        <div hidden>
+            <span id="edit-word" th:text="#{operations.table.edit}">Edit</span>
+            <span id="delete-word" th:text="#{operations.table.delete}">Delete</span>
+            <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
+            <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
+            <span id="datePickerLang" th:text="#{index.date-picker-lang}">en</span>
+        </div>
+
+        <footer th:replace="footer::footer"></footer>
+        <script>
+            $(document).ready(function(){
+                setValidationListener();
+                setDatePicker($('#fromDate'));
+                setDatePicker($('#tillDate'));
+                getOperationsPage(0, 25, '', '');
+            });
+        </script>
+    </div>
+</main>
+</body>
+</html>

@@ -2,7 +2,6 @@ package com.fleemer.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 
 import com.fleemer.model.Account;
@@ -16,14 +15,12 @@ import com.fleemer.service.implementation.OperationServiceImpl;
 import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -40,9 +37,6 @@ public class OperationServiceImplTest {
 
     @Mock
     private Operation operation;
-
-    @Mock
-    private MessageSource messageSource;
 
     @Mock
     private Pageable pageable;
@@ -178,9 +172,9 @@ public class OperationServiceImplTest {
     }
 
     @Test
-    public void findAll_personAndPageable() {
+    public void findAll_personAndPageable() throws ServiceException {
         when(repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable)).thenReturn(page);
-        assertEquals(page, service.findAllByPerson(person, pageable));
+        assertEquals(page, service.findAllByPerson(person, null, null, pageable));
         verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPerson(person, person, pageable);
     }
 
@@ -244,9 +238,7 @@ public class OperationServiceImplTest {
 
     @Test(expected = ServiceException.class)
     public void save_bothAccountsNull() throws ServiceException {
-        String code = "index.error.no-accounts-chosen";
         String errorMessage = "Both the income account and outcome account are missing.";
-        given(messageSource.getMessage(code, null, Locale.getDefault())).willReturn(errorMessage);
         Category category = new Category();
         category.setType(CategoryType.INCOME);
         Operation operation = new Operation();
@@ -263,9 +255,7 @@ public class OperationServiceImplTest {
 
     @Test(expected = ServiceException.class)
     public void save_categoryAndOneAccountNull() throws ServiceException {
-        String code = "index.error.no-accounts-and-category-chosen";
         String errorMessage = "The category and at least one account are missing.";
-        given(messageSource.getMessage(code, null, Locale.getDefault())).willReturn(errorMessage);
         Account in = new Account();
         in.setBalance(BigDecimal.valueOf(6.09));
         Operation operation = new Operation();
@@ -282,9 +272,7 @@ public class OperationServiceImplTest {
 
     @Test(expected = ServiceException.class)
     public void save_allNotNull() throws ServiceException {
-        String code = "index.error.no-way-operation-determine";
         String errorMessage = "Category and both the accounts are not null. There is no way to determine an operation type.";
-        given(messageSource.getMessage(code, null, Locale.getDefault())).willReturn(errorMessage);
         Category category = new Category();
         category.setType(CategoryType.OUTCOME);
 
@@ -310,9 +298,7 @@ public class OperationServiceImplTest {
 
     @Test(expected = ServiceException.class)
     public void save_wrongIncomeType() throws ServiceException {
-        String code = "index.error.wrong-category-type-chosen";
         String errorMessage = "Wrong category type for that operation: INCOME.";
-        given(messageSource.getMessage(code, new Object[]{CategoryType.INCOME}, Locale.getDefault())).willReturn(errorMessage);
         Category category = new Category();
         category.setType(CategoryType.INCOME);
 
@@ -334,9 +320,7 @@ public class OperationServiceImplTest {
 
     @Test(expected = ServiceException.class)
     public void save_wrongOutcomeType() throws ServiceException {
-        String code = "index.error.wrong-category-type-chosen";
         String errorMessage = "Wrong category type for that operation: OUTCOME.";
-        given(messageSource.getMessage(code, new Object[]{CategoryType.OUTCOME}, Locale.getDefault())).willReturn(errorMessage);
         Category category = new Category();
         category.setType(CategoryType.OUTCOME);
 
