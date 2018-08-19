@@ -121,12 +121,13 @@
             <div id="loader-container" class="row col-md-12 mb-10">
                 <div class="loader"></div>
             </div>
+
             <div id="chart" class="row"></div>
+
             <div class="row"><div class="col-md-12 mb-3"></div></div>
-            <h5 class="text-center text-muted" th:text="${operations.hasContent()} ? #{index.today-operations} :
-            #{index.today-operations-empty}">
-                Today's operations
-            </h5>
+            <h5 class="text-center text-muted"
+                th:text="${operations.hasContent()} ? #{index.today-operations} : #{index.today-operations-empty}">
+                Today's operations</h5>
             <div class="row"><div class="col-md-12 mb-3"></div></div>
 
             <div class="row" th:if="${operations.hasContent()}">

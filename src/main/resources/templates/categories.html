@@ -67,7 +67,11 @@
 
             <div class="row justify-content-center">
                 <div class="col-md-6 mb-3">
-                    <table class="table table-hover">
+                    <div id="loader-container" class="row col-md-12 mb-10">
+                        <div class="loader"></div>
+                    </div>
+
+                    <table class="table table-hover" hidden>
                         <thead align="right">
                         <tr>
                             <th scope="col" th:text="#{categories.table.columns.name}">Name</th>
@@ -102,7 +106,9 @@
     </main>
 <script>
     $(document).ready(function(){
+        preloadImages();
         setValidationListener();
+        showTable();
     });
 </script>
 <footer th:replace="footer::footer"></footer>

@@ -1,11 +1,10 @@
 // Starter JavaScript for disabling form submissions if there are invalid fields
 function preloadImages() {
-    $('body').style.visibility='hidden';
     var images = [];
     function preload() {
         for (var i = 0; i < preload.arguments.length; i++) {
             images[i] = new Image();
-            images[i].src = preload.arguments[i]
+            images[i].src = preload.arguments[i];
         }
     }
     preload(
@@ -14,7 +13,6 @@ function preloadImages() {
         "/static/images/logo_full.png",
         "/static/images/favicon.ico"
     );
-    $('body').style.visibility='visible';
 }
 
 function setValidationListener() {
@@ -184,7 +182,7 @@ function fillTable(operations) {
             table.find('tbody').append(tr);
         });
     $('#operationTable').append(table);
-    $('#loader-container').remove();
+    showTable();
 }
 
 function isNotNull(value) {
@@ -257,4 +255,9 @@ function buildChart() {
 // Confirmation window for delete action
 function confirmWindow() {
     return confirm($('#deleteConfirm').text());
+}
+
+function showTable() {
+    $('table').removeAttr('hidden');
+    $('#loader-container').remove();
 }
