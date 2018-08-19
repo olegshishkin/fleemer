@@ -2,7 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="header::header"></head>
 <body>
-<div th:replace="navbar::navbar('home')"></div>
+<div th:replace="navbar::navbar('operations')"></div>
 <main role="main" class="container">
     <div class="container">
         <div class="row justify-content-center">
@@ -77,7 +77,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <input th:field="*{sum}" type="text" class="form-control" placeholder="0.00"
-                                   pattern="[0-9]+(\.[0-9]+)?" required autofocus/>
+                                   pattern="[0-9]+([\.\,][0-9]+)?" required autofocus/>
                             <div th:if="${#fields.hasErrors('sum')}">
                                 <span th:errors="*{sum}" class="text-danger small"></span><br>
                             </div>

@@ -113,10 +113,12 @@
                                 <td align="right" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">...</td>
                                 <td align="right">
                                     <p>
-                                        <a href="#" th:href="@{/accounts/update(id=${a.id})}"
-                                           th:text="#{accounts.edit}" class="small">Edit</a>
-                                        <a href="#" th:href="@{/accounts/delete(id=${a.id})}"
-                                           th:text="#{accounts.delete}" class="small" onclick="return confirmWindow();">Delete</a>
+                                        <a href="#" th:href="@{/accounts/update(id=${a.id})}">
+                                            <img th:src="@{/static/images/edit.png}" width="24" height="24">
+                                        </a>
+                                        <a href="#" th:href="@{/accounts/delete(id=${a.id})}" onclick="return confirmWindow();">
+                                            <img th:src="@{/static/images/delete.png}" width="20" height="20">
+                                        </a>
                                     </p>
                                 </td>
                             </tr>

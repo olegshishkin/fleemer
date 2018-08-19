@@ -1,4 +1,22 @@
 // Starter JavaScript for disabling form submissions if there are invalid fields
+function preloadImages() {
+    $('body').style.visibility='hidden';
+    var images = [];
+    function preload() {
+        for (var i = 0; i < preload.arguments.length; i++) {
+            images[i] = new Image();
+            images[i].src = preload.arguments[i]
+        }
+    }
+    preload(
+        "/static/images/edit.png",
+        "/static/images/delete.png",
+        "/static/images/logo_full.png",
+        "/static/images/favicon.ico"
+    );
+    $('body').style.visibility='visible';
+}
+
 function setValidationListener() {
     'use strict';
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
@@ -153,20 +171,20 @@ function fillTable(operations) {
                 tr.append($('<td>').attr('align', 'right').text(formattedSum));
             }
             var editLink = $('<a>')
-                .attr('href', '/operations/update?id=' + value.id + redirectUrl)
-                .addClass("small")
-                .text($('#edit-word').text());
+                .attr('href', '/operations/update?id=' + value.id + redirectUrl);
+            var editImg = '<img src="/static/images/edit.png" height=24 width="24">';
+            editLink.html(editImg);
             var deleteLink = $('<a>')
                 .attr('href', '/operations/delete?id=' + value.id + redirectUrl)
-                .attr('onclick', 'return confirm("' + $('#deleteConfirm').html() +  '");')
-                .addClass("small")
-                .text($('#delete-word').text());
-            var editCell = $('<td>').attr('align', 'right').append(editLink).append(' ').append(deleteLink);
+                .attr('onclick', 'return confirm("' + $('#deleteConfirm').html() +  '");');
+            var deleteImg = '<img src="/static/images/delete.png" height=20 width="20">';
+            deleteLink.html(deleteImg);
+            var editCell = $('<td>').attr('align', 'left').append(editLink).append(' ').append(deleteLink);
             tr.append(editCell);
-
             table.find('tbody').append(tr);
         });
     $('#operationTable').append(table);
+    $('#loader-container').remove();
 }
 
 function isNotNull(value) {
@@ -183,7 +201,7 @@ function fillPaginator(cur, total, size, from, till) {
     } else {
         prevLi.removeClass('disabled');
     }
-    prevLi.find('a').attr('onclick', 'getOperationsPage(' + (cur - 1) + ',' + methodEnding + ')');
+    prevLi.find('a').attr('onclick', 'getOperationsPage(' + (cur - 1) + ',' + methodEnding + ')').attr('href', '#');
     prevLi.find('a').html('<<');
     $('#pagination').append(prevLi);
 
@@ -195,7 +213,7 @@ function fillPaginator(cur, total, size, from, till) {
         if (i == cur) {
             curLi.addClass('active');
         }
-        curLi.find('a').attr('onclick', 'getOperationsPage(' + i + ', ' + methodEnding + ')');
+        curLi.find('a').attr('onclick', 'getOperationsPage(' + i + ', ' + methodEnding + ')').attr('href', '#');
         curLi.find('a').html(i + 1);
         $('#pagination').append(curLi);
     }
@@ -206,7 +224,7 @@ function fillPaginator(cur, total, size, from, till) {
     } else {
         nextLi.removeClass('disabled');
     }
-    nextLi.find('a').attr('onclick', 'getOperationsPage(' + (cur + 1) + ', ' + methodEnding + ')');
+    nextLi.find('a').attr('onclick', 'getOperationsPage(' + (cur + 1) + ', ' + methodEnding + ')').attr('href', '#');
     nextLi.find('a').html('>>');
     $('#pagination').append(nextLi);
 }
@@ -216,21 +234,22 @@ function buildChart() {
     $.ajax({
         url: '/operations/dailyvolumes/json',
         success: function (result) {
-                config = {
-                    data: result,
-                    xkey: 'date',
-                    ykeys: ['outcome', 'income'],
-                    labels: [$('#incomeChartText').text(), $('#outcomeChartText').text()],
-                    fillOpacity: 0.5,
-                    hideHover: 'auto',
-                    behaveLikeLine: true,
-                    resize: true,
-                    pointFillColors:['#ffffff'],
-                    pointStrokeColors: ['black'],
-                    lineColors:['red', 'green']
-                };
+            var config = {
+                data: result,
+                xkey: 'date',
+                ykeys: ['outcome', 'income'],
+                labels: [$('#incomeChartText').text(), $('#outcomeChartText').text()],
+                fillOpacity: 0.5,
+                hideHover: 'auto',
+                behaveLikeLine: true,
+                resize: true,
+                pointFillColors: ['#ffffff'],
+                pointStrokeColors: ['black'],
+                lineColors: ['red', 'green']
+            };
             config.element = 'chart';
             Morris.Area(config);
+            $('#loader-container').remove();
         }
     });
 }

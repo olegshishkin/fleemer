@@ -34,8 +34,12 @@
             </div>
         </div>
 
-        <div class="row">
-            <div id="operationTable" class="col-md-12 mb-3"></div>
+        <div id="loader-container" class="row col-md-12 mb-10">
+            <div class="loader"></div>
+        </div>
+
+        <div id="qqq" class="row">
+            <div id="operationTable" class="col-md-12 mb-3" onload="$('#loader').hide();"></div>
         </div>
 
         <div class="row">
@@ -64,8 +68,6 @@
         </div>
 
         <div hidden>
-            <span id="edit-word" th:text="#{operations.table.edit}">Edit</span>
-            <span id="delete-word" th:text="#{operations.table.delete}">Delete</span>
             <li id="curPage" class="page-item"><a href="#pagination" class="page-link"></a></li>
             <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
             <span id="datePickerLang" th:text="#{index.date-picker-lang}">en</span>
@@ -73,11 +75,12 @@
 
         <footer th:replace="footer::footer"></footer>
         <script>
-            $(document).ready(function(){
+            $(window).ready(function(){
+                preloadImages();
                 setValidationListener();
                 setDatePicker($('#fromDate'));
                 setDatePicker($('#tillDate'));
-                getOperationsPage(0, 25, '', '');
+                getOperationsPage(0, 10, '', '');
             });
         </script>
     </div>

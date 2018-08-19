@@ -118,7 +118,9 @@
                 </div>
             </div>
 
-            <div class="row"><div class="col-md-12 mb-3"></div></div>
+            <div id="loader-container" class="row col-md-12 mb-10">
+                <div class="loader"></div>
+            </div>
             <div id="chart" class="row"></div>
             <div class="row"><div class="col-md-12 mb-3"></div></div>
             <h5 class="text-center text-muted" th:text="${operations.hasContent()} ? #{index.today-operations} :
@@ -151,11 +153,13 @@
                             <td align="right" class="text-success" th:if="${o.inAccount != null && o.category != null}"
                                 th:text="'+' + ${sum}">...</td>
                             <td align="right" th:if="${o.outAccount != null && o.inAccount != null}" th:text="${sum}">...</td>
-                            <td align="right">
-                                <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}"
-                                   th:text="#{operations.table.edit}" class="small">Edit</a>
-                                <a href="#" th:href="@{/operations/delete(id=${o.id},redirect='/')}"
-                                   th:text="#{operations.table.delete}" class="small" onclick="return confirmWindow();">Delete</a>
+                            <td align="left">
+                                <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}">
+                                    <img th:src="@{/static/images/edit.png}" width="24" height="24">
+                                </a>
+                                <a href="#" th:href="@{/operations/delete(id=${o.id},redirect='/')}" onclick="return confirmWindow();">
+                                    <img th:src="@{/static/images/delete.png}" width="20" height="20">
+                                </a>
                             </td>
                         </tr>
                         </tbody>
