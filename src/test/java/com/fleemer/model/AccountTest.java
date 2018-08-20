@@ -48,12 +48,4 @@ public class AccountTest {
         a2.setId(11L);
         assertEquals(hash, a2.hashCode());
     }
-
-    @Test
-    public void getRefactoredType_success() {
-        Account a = createAccount(11L, AccountType.CASH, Currency.USD, "Wallet", BigDecimal.TEN, null, 1);
-        assertEquals("Cash", a.getRefactoredType());
-        a.setType(AccountType.BANK_ACCOUNT);
-        assertEquals("Bank account", a.getRefactoredType());
-    }
 }

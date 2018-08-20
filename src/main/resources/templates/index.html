@@ -17,7 +17,7 @@
                         <li th:each="a : ${accounts}" class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
                                 <h6 class="my-0" th:text="${a.name}">Name</h6>
-                                <small class="text-muted" th:text="${a.type}">Type</small>
+                                <small class="text-muted" th:text="${a.getRefactoredType()}">Type</small>
                             </div>
                             <span class="text-muted" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">0.00</span>
                         </li>
@@ -172,7 +172,7 @@
                 <span id="incomeChartText" th:text="#{index.chart.income}">Income</span>
                 <span id="outcomeChartText" th:text="#{index.chart.outcome}">Outcome</span>
                 <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
-                <span id="datePickerLang" th:text="#{index.date-picker-lang}">en</span>
+                <span id="datePickerLang" th:text="#{common.lang}">en</span>
             </div>
 
             <footer th:replace="footer::footer"></footer>

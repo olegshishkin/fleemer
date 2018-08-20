@@ -13,10 +13,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.lang.Nullable;
 
 public interface OperationService extends BaseService<Operation, Long> {
-    List<Operation> findAllByPerson(Person person);
-
-    Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till, Pageable pageable)
+    List<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till)
             throws ServiceException;
+
+    Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till,
+                                    Pageable pageable) throws ServiceException;
 
     Optional<Operation> getByIdAndPerson(Long id, Person person);
 

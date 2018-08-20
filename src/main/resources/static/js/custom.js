@@ -128,6 +128,10 @@ function getOperationsPage(page, size, from, till) {
             if (result.totalPages > 1) {
                 fillPaginator(result.currentPage, result.totalPages, size, from, till);
             }
+        },
+        error: function () {
+            fillTable(null);
+            $('#pagination').empty();
         }
     });
 }
@@ -260,4 +264,20 @@ function confirmWindow() {
 function showTable() {
     $('table').removeAttr('hidden');
     $('#loader-container').remove();
+}
+
+function exportButtonClick() {
+    $('#message').empty();
+    $('#exportBtn').addClass('active');
+    $('#importBtn').removeClass('active');
+    $('#importForm').attr('hidden', true);
+    $('#exportForm').attr('hidden', false);
+}
+
+function importButtonClick() {
+    $('#message').empty();
+    $('#exportBtn').removeClass('active');
+    $('#importBtn').addClass('active');
+    $('#importForm').attr('hidden', false);
+    $('#exportForm').attr('hidden', true);
 }

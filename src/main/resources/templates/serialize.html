@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="header::header"></head>
+<body>
+<div th:replace="navbar::navbar('options')"></div>
+<main role="main" class="container">
+    <div class="container">
+
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div id="message" th:if="${#request.getParameter('success')}">
+                    <div class="alert alert-success text-center" role="alert">
+                        <span th:text="#{common.successfully-completed}"></span><br>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8 mb-3">
+                <nav class="nav nav-pills nav-justified">
+                    <a id="exportBtn" class="nav-item nav-link active" href="#" th:text="#{serialize.export.button}"
+                       onclick="exportButtonClick()">Export</a>
+                    <a id="importBtn" class="nav-item nav-link" href="#" th:text="#{serialize.import.button}"
+                       onclick="importButtonClick()">Link</a>
+                </nav>
+            </div>
+
+            <div class="col-lg-8 mb-3">
+                <form id="exportForm" th:action="@{/operations/export}" class="needs-validation" novalidate>
+                    <div class="row">
+                        <div class="col-md-5 mb-3">
+                            <input id="fromDate" name="from" class="form-control" type="text" placeholder="yyyy-mm-dd" required/>
+                            <small class="form-text text-muted" th:text="#{operations.form.period-begin}">Start date</small>
+                        </div>
+                        <div class="col-md-5 mb-3">
+                            <input id="tillDate" name="till" class="form-control" type="text" placeholder="yyyy-mm-dd" required/>
+                            <small class="form-text text-muted" th:text="#{operations.form.period-end}">Final date</small>
+                        </div>
+                        <div class="col-md-2 mb-3">
+                            <button type="submit" class="btn btn-primary btn-block" th:text="#{serialize.export.button}">Export</button>
+                        </div>
+                    </div>
+                </form>
+                <form id="importForm" th:action="@{/operations/import}" method="post" enctype="multipart/form-data" onchange="submit()" hidden>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <input class="form-control" id="fileInput" type="file" name="file"/>
+                            <small class="form-text text-muted" th:text="#{serialize.import.tooltip}">
+                                Import will be done immediately after selecting the file
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div hidden>
+            <span id="lang" th:text="#{common.lang}">en</span>
+        </div>
+
+        <footer th:replace="footer::footer"></footer>
+        <script>
+            $(window).ready(function(){
+                setDatePicker($('#fromDate'));
+                setDatePicker($('#tillDate'));
+                $('#fileInput').fileselect({
+                    language: $('#lang').text()
+                });
+            });
+        </script>
+    </div>
+</main>
+</body>
+</html>

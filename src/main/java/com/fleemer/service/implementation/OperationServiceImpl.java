@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -45,21 +46,27 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    public List<Operation> findAllByPerson(Person person) {
-        return repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
+    public List<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till)
+            throws ServiceException {
+        if (from == null & till == null) {
+            return repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
+        }
+        if (from != null & till != null) {
+            checkDatesSequence(from, till);
+            return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till);
+        }
+        String msg = "Missing one of the dates. From: " + from + ". Till: " + till + '.';
+        LOGGER.error("ServiceException: {}", msg);
+        throw new ServiceException(msg);
     }
 
     @Override
-    public Page<Operation> findAllByPerson(Person person, LocalDate from, LocalDate till, Pageable pageable)
-            throws ServiceException {
+    public Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till,
+                                           Pageable pageable) throws ServiceException {
         if (from == null || till == null) {
             return repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable);
         }
-        if (from.isAfter(till)) {
-            String msg = DATES_SEQUENCE_ERROR + ": from: " + from + ", till: " + till;
-            LOGGER.error("ServiceException: {}", msg);
-            throw new ServiceException(msg);
-        }
+        checkDatesSequence(from, till);
         return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till, pageable);
     }
 
@@ -102,6 +109,14 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             out.setBalance(out.getBalance().subtract(sum));
         }
         return super.save(entity);
+    }
+
+    private void checkDatesSequence(LocalDate from, LocalDate till) throws ServiceException {
+        if (from.isAfter(till)) {
+            String msg = DATES_SEQUENCE_ERROR + ": from: " + from + ", till: " + till;
+            LOGGER.error("ServiceException: {}", msg);
+            throw new ServiceException(msg);
+        }
     }
 
     private void checkLogicalConstraints(Account in, Account out, Category cat) throws ServiceException {

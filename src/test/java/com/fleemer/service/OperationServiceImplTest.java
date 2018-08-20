@@ -164,10 +164,10 @@ public class OperationServiceImplTest {
     }
 
     @Test
-    public void findAll_person() {
+    public void findAll_person() throws ServiceException {
         List<Operation> expected = Collections.emptyList();
         when(repository.findAllByInAccountPersonOrOutAccountPerson(person, person)).thenReturn(expected);
-        assertEquals(expected, service.findAllByPerson(person));
+        assertEquals(expected, service.findAllByPerson(person, null, null));
         verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPerson(person, person);
     }
 

@@ -1,6 +1,5 @@
 package com.fleemer.model;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fleemer.model.enums.AccountType;
 import com.fleemer.model.enums.Currency;
@@ -52,7 +51,7 @@ public class Account implements Serializable {
     private BigDecimal balance;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn
     private Person person;
@@ -61,7 +60,7 @@ public class Account implements Serializable {
     @Version
     private int version;
 
-    @JsonGetter("type")
+    @JsonIgnore
     public String getRefactoredType() {
         String text = type.name().toLowerCase().replace('_', ' ');
         return text.substring(0, 1).toUpperCase() + text.substring(1);
