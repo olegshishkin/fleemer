@@ -73,7 +73,7 @@
                             <div class="col-md-12 mb-3">
                                 <label th:for="balance" th:text="#{accounts.balance}">Initial balance</label>
                                 <input th:field="*{balance}" type="text" class="form-control" placeholder="0.0"
-                                       pattern="[0-9]+(\.[0-9]+)?" required/>
+                                       th:pattern="#{common.number.pattern}" required/>
                                 <div th:if="${#fields.hasErrors('balance')}">
                                     <span th:errors="*{balance}" class="text-danger small"></span><br>
                                 </div>

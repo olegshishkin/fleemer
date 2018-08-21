@@ -9,6 +9,7 @@
     <Account id="1" type="0" currency="0" name="Cash"   balance="00000000000000001012.1000000000" person_id="2" version="0"/>
     <Account id="2" type="1" currency="1" name="Bank"   balance="00000000000000000333.4500000000" person_id="4" version="0"/>
     <Account id="3" type="3" currency="0" name="Wallet" balance="00000000000000001001.0200000000" person_id="1" version="0"/>
+    <Account id="7" type="1" currency="1" name="Bank"   balance="00000000000000000333.4500000000" person_id="4" version="0"/>
 
     <Category id="1" name="Car"     type="1" person_id="1" version="0"/>
     <Category id="2" name="Home"    type="1" person_id="3" version="0"/>
@@ -17,6 +18,7 @@
     <Category id="5" name="Gifts"   type="1" person_id="1" version="0"/>
     <Category id="6" name="Home"    type="1" person_id="2" version="0"/>
     <Category id="7" name="Salary"  type="0" person_id="4" version="0"/>
+    <Category id="11" name="Salary"  type="0" person_id="4" version="0"/>
 
     <Operation id="1" date="2018-05-03" in_account_id="2"                    category_id="7" sum="00000000000000004567.9800000000" comment="comment1" version="0"/>
     <Operation id="2" date="2018-06-12"                   out_account_id="1" category_id="6" sum="00000000000000000334.0900000000" comment="comment2" version="0"/>
@@ -27,5 +29,5 @@
     <Operation id="7" date="2018-12-12" in_account_id="1"                    category_id="6" sum="00000000000000000146.5800000000" comment="comment7" version="0"/>
     <Operation id="8" date="2015-05-08" in_account_id="1" out_account_id="2"                 sum="00000000000000001176.9200000000" comment="comment8" version="0"/>
     <Operation id="9" date="2018-05-12"                   out_account_id="1" category_id="4" sum="00000000000000000006.0300000000" comment="comment9" version="0"/>
-    <Operation id="10" date="2000-02-04" in_account_id="2"                  category_id="7" sum="00000000000000000007.9800000000" comment="new comment" version="0"/>
+    <Operation id="10" date="2000-02-04" in_account_id="7"                  category_id="11" sum="00000000000000000007.9800000000" comment="new comment" version="0"/>
 </dataset>

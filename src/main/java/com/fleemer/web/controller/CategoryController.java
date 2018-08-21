@@ -5,7 +5,9 @@ import com.fleemer.model.Person;
 import com.fleemer.model.enums.CategoryType;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
+import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.OptimisticLockException;
@@ -35,13 +37,15 @@ public class CategoryController {
     private final CategoryService categoryService;
     private final MessageSource messageSource;
     private final OperationService operationService;
+    private final PersonService personService;
 
     @Autowired
     public CategoryController(CategoryService categoryService, OperationService operationService,
-                              MessageSource messageSource) {
+                              MessageSource messageSource, PersonService personService) {
         this.categoryService = categoryService;
         this.operationService = operationService;
         this.messageSource = messageSource;
+        this.personService = personService;
     }
 
     @GetMapping
@@ -61,8 +65,8 @@ public class CategoryController {
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Category category, BindingResult bindingResult, Model model,
-                                HttpSession session) throws ServiceException {
-        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+                         Principal principal) throws ServiceException {
+        Person person = personService.findByEmail(principal.getName()).orElseThrow();
         if (bindingResult.hasErrors()) {
             fillModel(model, categoryService.findAll(person));
             return ROOT_VIEW;
@@ -108,10 +112,10 @@ public class CategoryController {
             fillModel(model, categoryService.findAll(person));
             return CATEGORY_UPDATE_VIEW;
         }
-        formCategory.setType(category.getType());
-        formCategory.setPerson(category.getPerson());
+        category.setName(formCategory.getName());
+        category.setType(formCategory.getType());
         try {
-            categoryService.save(formCategory);
+            categoryService.save(category);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
             LOGGER.warn("Optimistic lock: {}", e.getMessage());
             return "redirect:/categories?error=lock";

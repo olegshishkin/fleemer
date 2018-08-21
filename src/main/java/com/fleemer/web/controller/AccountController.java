@@ -6,7 +6,9 @@ import com.fleemer.model.enums.AccountType;
 import com.fleemer.model.enums.Currency;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.OperationService;
+import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
+import java.security.Principal;
 import java.util.Optional;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
@@ -35,13 +37,15 @@ public class AccountController {
     private final AccountService accountService;
     private final MessageSource messageSource;
     private final OperationService operationService;
+    private final PersonService personService;
 
     @Autowired
     public AccountController(AccountService accountService, MessageSource messageSource,
-                             OperationService operationService) {
+                             OperationService operationService, PersonService personService) {
         this.accountService = accountService;
         this.messageSource = messageSource;
         this.operationService = operationService;
+        this.personService = personService;
     }
 
     @GetMapping
@@ -54,8 +58,8 @@ public class AccountController {
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Account account, BindingResult bindingResult, Model model,
-                             HttpSession session) throws ServiceException {
-        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+                         Principal principal) throws ServiceException {
+        Person person = personService.findByEmail(principal.getName()).orElseThrow();
         if (bindingResult.hasErrors()) {
             fillModel(model, accountService.findAll(person));
             return ROOT_VIEW;

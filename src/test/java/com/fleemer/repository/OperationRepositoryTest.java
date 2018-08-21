@@ -112,8 +112,12 @@ public class OperationRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        repository.save(createOperation(null, LocalDate.of(2000, Month.FEBRUARY, 4), accounts.get(1), null,
-                categories.get(6), 7.98, "new comment", 0));
+        Category category = categories.get(6);
+        category.setId(null);
+        Account inAccount = accounts.get(1);
+        inAccount.setId(null);
+        repository.save(createOperation(null, LocalDate.of(2000, Month.FEBRUARY, 4), inAccount, null,
+                category, 7.98, "new comment", 0));
         repository.flush();
     }
 
@@ -129,10 +133,18 @@ public class OperationRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Operation o1 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), accounts.get(1), accounts.get(2),
+        Account inAccount1 = accounts.get(1);
+        inAccount1.setId(null);
+        Account outAccount1 = accounts.get(2);
+        outAccount1.setId(null);
+        Operation o1 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), inAccount1, outAccount1,
                 null, 7.98, "new comment1", 0);
-        Operation o2 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), null, accounts.get(0),
-                categories.get(1), -17.98, "new comment2", 0);
+        Account outAccount2 = accounts.get(0);
+        outAccount2.setId(null);
+        Category category = categories.get(1);
+        category.setId(null);
+        Operation o2 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), null, outAccount2,
+                category, -17.98, "new comment2", 0);
         Operation o = operations.get(3);
         o.setComment("Changed comment");
         repository.saveAll(List.of(o1, o2, o));

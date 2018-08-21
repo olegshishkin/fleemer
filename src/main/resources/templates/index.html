@@ -92,7 +92,7 @@
                             <div class="col-md-6 mb-3">
                                 <input th:field="*{sum}" type="text" class="form-control"
                                        th:placeholder="#{index.form.sum.placeholder}"
-                                       pattern="[0-9]+([\,\.][0-9]+)?" required autofocus/>
+                                       th:pattern="#{common.number.pattern}" required autofocus/>
                                 <div th:if="${#fields.hasErrors('sum')}">
                                     <span th:errors="*{sum}" class="text-danger small"></span><br>
                                 </div>
