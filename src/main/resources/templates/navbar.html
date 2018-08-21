@@ -31,7 +31,8 @@
                     <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
                        aria-haspopup="true" aria-expanded="false" th:text="#{navbar.menu.options}">Options</a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" th:href="@{/user/update}" href="#" th:text="#{navbar.menu.settings}">Settings</a>
+                        <a class="dropdown-item" th:href="@{/options/locale(lang=${session.switchLocale})}" href="#"
+                           th:text="#{navbar.menu.switchLocale(${session.switchLocale.toUpperCase()})}">Switch locale: RU</a>
                         <a class="dropdown-item" th:href="@{/options/serialize}" href="#" th:text="#{navbar.menu.serialize}">Export/Import</a>
                         <a class="dropdown-item" th:href="@{/user/update}" href="#" th:text="#{navbar.menu.profile}">My profile</a>
                         <div class="dropdown-divider"></div>

@@ -12,7 +12,13 @@
 </head>
 <body>
     <form th:action="@{/login}" method="post" class="form-signin text-center">
-        <img class="mb-4" th:src="@{/static/images/logo_full.png}" src="../static/images/logo_full.png" alt="" width="259" height="75">
+        <img class="mb-1" th:src="@{/static/images/logo_full.png}" src="../static/images/logo_full.png" alt="" width="259" height="75">
+
+        <div class="text-right">
+            <a th:href="@{/options/locale(lang=${locale})}" href="#" class="btn btn-link text-dark btn-sm text-right">
+                <span class="text-muted" th:text="${locale.toUpperCase()}">EN</span>
+            </a>
+        </div>
         <div th:if="${param.error}">
             <div class="alert alert-danger text-center" role="alert">
                 <span th:text="#{login.unsuccessful-login}">Invalid username or password.</span>
@@ -36,12 +42,12 @@
             <span th:text="#{login.no-password}">Please input password</span>
         </div>
 
-        <button type="submit" class="btn btn-outline-primary">
+        <button type="submit" class="btn btn-outline-primary btn-block">
             <span th:text="#{login.sign-in}">Sign in</span>
         </button>
-        <br><br>
+
         <div>
-            <a th:href="@{/user/create}" href="#" class="btn btn-link text-dark btn-sm" role="button">
+            <a th:href="@{/user/create}" href="#" class="btn btn-link text-dark btn-sm mb-5" role="button">
                 <span th:text="#{login.to-register}">Register</span>
             </a>
         </div>

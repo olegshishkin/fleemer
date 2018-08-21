@@ -26,6 +26,7 @@ public class UserController {
     private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
     private static final String USER_CREATE_VIEW = "user_create";
     private static final String USER_UPDATE_VIEW = "user_update";
+    private static final String WRONG_PASSWD_CONFIRM_MSG_KEY = "user.error.password-not-equals";
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final MessageSource messageSource;
@@ -45,14 +46,20 @@ public class UserController {
     }
 
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute Person person, BindingResult bindingResult) throws ServiceException {
+    public String create(@Valid @ModelAttribute Person person, @RequestParam("confirm") String confirmPassword,
+                         BindingResult bindingResult) throws ServiceException {
         if (bindingResult.hasErrors()) {
+            return USER_CREATE_VIEW;
+        }
+        if (!confirmPassword.equals(person.getHash())) {
+            String msg = getMessage(WRONG_PASSWD_CONFIRM_MSG_KEY);
+            bindingResult.rejectValue("hash", "hash.confirmNotEquals", msg);
             return USER_CREATE_VIEW;
         }
         String email = person.getEmail();
         if (personService.findByEmail(email).isPresent()) {
-            String message = messageSource.getMessage(USER_EXISTS_ERROR_MSG_KEY, null, LocaleContextHolder.getLocale());
-            bindingResult.rejectValue("email", "email.alreadyExists", message);
+            String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
+            bindingResult.rejectValue("email", "email.alreadyExists", msg);
             return USER_CREATE_VIEW;
         }
         String hash = passwordEncoder.encode(person.getHash());
@@ -96,5 +103,9 @@ public class UserController {
         }
         session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElseThrow());
         return "redirect:/user/update?success";
+    }
+
+    private String getMessage(String wrongPasswdConfirmMsgKey) {
+        return messageSource.getMessage(wrongPasswdConfirmMsgKey, null, LocaleContextHolder.getLocale());
     }
 }

@@ -1,4 +1,4 @@
-package com.fleemer.web.serialization;
+package com.fleemer.web.other;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

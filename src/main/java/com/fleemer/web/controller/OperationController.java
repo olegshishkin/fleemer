@@ -13,7 +13,7 @@ import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
-import com.fleemer.web.serialization.OperationXmlMixIn;
+import com.fleemer.web.other.OperationXmlMixIn;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;

@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 import javax.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -46,6 +47,10 @@ public class IndexController {
             }
             person = optional.get();
             session.setAttribute(PERSON_SESSION_ATTR, person);
+        }
+        if (session.getAttribute("switchLocale") == null) {
+            String language = LocaleContextHolder.getLocale().getLanguage();
+            session.setAttribute("switchLocale", language.equals("en") ? "ru" : "en");
         }
         model.addAttribute("accounts", accountService.findAll(person));
         BigDecimal totalBalance = accountService.getTotalBalance(person);

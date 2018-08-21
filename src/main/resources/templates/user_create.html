@@ -57,6 +57,14 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
+                                <label th:for="confirm" th:text="#{user.form.password}">Confirm password</label>
+                                <input name="confirm" type="password" class="form-control" required/>
+                                <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
                                 <button class="btn btn-primary btn-block" type="submit" th:text="#{user.form.submit}">Submit</button>
                             </div>
                         </div>
