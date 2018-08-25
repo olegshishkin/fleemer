@@ -42,7 +42,7 @@ public class AccountServiceImpl extends AbstractService<Account, Long, AccountRe
     }
 
     @Override
-    public Optional<Account> getByIdAndPerson(Long id, Person person) {
-        return repository.getByIdAndPerson(id, person);
+    public Optional<Account> findByIdAndPerson(Long id, Person person) {
+        return repository.findByIdAndPerson(id, person);
     }
 }

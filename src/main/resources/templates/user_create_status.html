@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" class="center">
+<head th:replace="header::header"></head>
+<body class="center">
+    <div class="container h-100">
+        <div class="row h-100 justify-content-center align-items-center">
+            <div class="col-md-10">
+                <div th:switch="${confirm}">
+                    <div th:case="'notification'" class="alert alert-warning text-center" role="alert">
+                        <span th:text="#{verification.confirm.message}">
+                            A message with profile activation details has been sent to your e-mail address. Please check your inbox.
+                        </span>
+                    </div>
+                    <div th:case="'success'" class="alert alert-success text-center" role="alert">
+                        <span th:text="#{verification.activation.success}">Profile activation completed successfully</span>
+                    </div>
+                    <div th:case="'failed'" class="alert alert-danger text-center" role="alert">
+                        <span th:text="#{verification.activation.failed}">Profile activation failed</span>
+                    </div>
+                </div>
+                <div class="text-muted text-center small">
+                    After <span id="delay" class="text-danger">10</span> seconds you will be automatically
+                    redirected to the <a id="home" th:href="@{/}">main page</a>
+                </div>
+                <footer th:replace="footer::footer"></footer>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            beforPageForwardCountDown($('#home'));
+        });
+    </script>
+</body>
+</html>

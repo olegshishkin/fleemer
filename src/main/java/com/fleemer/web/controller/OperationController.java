@@ -116,7 +116,7 @@ public class OperationController {
     public String update(@RequestParam("id") long id, Model model, HttpSession session,
                          @RequestParam("redirect") String url) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Operation> operation = operationService.getByIdAndPerson(id, person);
+        Optional<Operation> operation = operationService.findByIdAndPerson(id, person);
         if (!operation.isPresent()) {
             return "redirect:" + url;
         }
@@ -158,7 +158,7 @@ public class OperationController {
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id, HttpSession session, @RequestParam("redirect") String url) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Operation> operation = operationService.getByIdAndPerson(id, person);
+        Optional<Operation> operation = operationService.findByIdAndPerson(id, person);
         if (!operation.isPresent()) {
             return "redirect:" + url;
         }

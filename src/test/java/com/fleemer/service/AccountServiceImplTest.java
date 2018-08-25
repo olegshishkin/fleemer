@@ -190,4 +190,13 @@ public class AccountServiceImplTest {
         when(repository.getTotalBalance(person)).thenReturn(decimal);
         assertEquals(decimal, repository.getTotalBalance(person));
     }
+
+    @Test
+    public void findByIdAndPerson() {
+        Optional<Account> expected = Optional.of(account);
+        long id = 11L;
+        when(repository.findByIdAndPerson(id, person)).thenReturn(expected);
+        assertEquals(expected, service.findByIdAndPerson(id, person));
+        verify(repository, times(1)).findByIdAndPerson(id, person);
+    }
 }

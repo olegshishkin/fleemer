@@ -2,10 +2,7 @@ package com.fleemer.repository;
 
 import static org.hamcrest.Matchers.comparesEqualTo;
 
-import com.fleemer.model.Account;
-import com.fleemer.model.Category;
-import com.fleemer.model.Operation;
-import com.fleemer.model.Person;
+import com.fleemer.model.*;
 import java.io.Serializable;
 import java.util.Iterator;
 import org.junit.Assert;
@@ -22,6 +19,7 @@ public class RepositoryAssertions {
         Assert.assertEquals(expected.getName(), actual.getName());
         Assert.assertEquals(expected.getPerson(), actual.getPerson());
         Assert.assertThat(actual.getBalance(), comparesEqualTo(expected.getBalance()));
+        Assert.assertEquals(expected.getVersion(), actual.getVersion());
     }
 
     public static void assertEquals(Person expected, Person actual) {
@@ -34,6 +32,7 @@ public class RepositoryAssertions {
         Assert.assertEquals(expected.getLastName(), actual.getLastName());
         Assert.assertEquals(expected.getEmail(), actual.getEmail());
         Assert.assertEquals(expected.getHash(), actual.getHash());
+        Assert.assertEquals(expected.getVersion(), actual.getVersion());
     }
 
     public static void assertEquals(Category expected, Category actual) {
@@ -45,6 +44,7 @@ public class RepositoryAssertions {
         Assert.assertEquals(expected.getName(), actual.getName());
         Assert.assertEquals(expected.getType(), actual.getType());
         Assert.assertEquals(expected.getPerson(), actual.getPerson());
+        Assert.assertEquals(expected.getVersion(), actual.getVersion());
     }
 
     public static void assertEquals(Operation expected, Operation actual) {
@@ -59,6 +59,18 @@ public class RepositoryAssertions {
         assertEquals(expected.getCategory(), actual.getCategory());
         Assert.assertThat(actual.getSum(), comparesEqualTo(expected.getSum()));
         Assert.assertEquals(expected.getComment(), actual.getComment());
+        Assert.assertEquals(expected.getVersion(), actual.getVersion());
+    }
+
+    public static void assertEquals(Confirmation expected, Confirmation actual) {
+        if (expected == null || actual == null) {
+            Assert.assertTrue(expected == null & actual == null);
+            return;
+        }
+        Assert.assertEquals(expected.getId(), actual.getId());
+        Assert.assertEquals(expected.getToken(), actual.getToken());
+        Assert.assertEquals(expected.getPerson(), actual.getPerson());
+        Assert.assertEquals(expected.getVersion(), actual.getVersion());
     }
 
     public static <T extends Serializable> void assertIterableEquals(Iterable<T> expected, Iterable<T> actual) {
@@ -82,7 +94,9 @@ public class RepositoryAssertions {
                 assertEquals((Category) expectedElement, (Category) actualElement);
             } else if (expectedElement instanceof Operation) {
                 assertEquals((Operation) expectedElement, (Operation) actualElement);
-            } else {
+            } else if (expectedElement instanceof Confirmation) {
+                assertEquals((Confirmation) expectedElement, (Confirmation) actualElement);
+            }else {
                 String msg = "Unknown class for comparison: ";
                 throw new ClassCastException(msg + expectedElement.getClass().getCanonicalName());
             }

@@ -19,11 +19,11 @@ public interface OperationService extends BaseService<Operation, Long> {
     Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till,
                                     Pageable pageable) throws ServiceException;
 
-    Optional<Operation> getByIdAndPerson(Long id, Person person);
+    Optional<Operation> findByIdAndPerson(Long id, Person person);
 
     long countOperationsByCategory(Category category);
 
-    long countOperationsByAccounts(Account account);
+    long countOperationsByAccount(Account account);
 
     List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person);
 }

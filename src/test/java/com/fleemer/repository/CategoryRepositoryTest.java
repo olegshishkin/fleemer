@@ -1,6 +1,6 @@
 package com.fleemer.repository;
 
-import static com.fleemer.model.EntityCreator.createCategory;
+import static com.fleemer.model.EntityCreator.create;
 
 import com.fleemer.FleemerApplication;
 import com.fleemer.model.Category;
@@ -28,7 +28,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Transactional
 @DatabaseSetup({CategoryRepositoryTest.INIT_DB_PATH})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ContextConfiguration(classes = {FleemerApplication.class})
+@ContextConfiguration(classes = {FleemerApplication.class, TestConfigForMail.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class})
 @RunWith(SpringRunner.class)
@@ -96,7 +96,7 @@ public class CategoryRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        repository.save(createCategory(null, "new category", CategoryType.INCOME, people.get(2), 0));
+        repository.save(create(null, "new category", CategoryType.INCOME, people.get(2), 0));
         repository.flush();
     }
 
@@ -112,8 +112,8 @@ public class CategoryRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Category newCategory1 = createCategory(null, "new category1", CategoryType.INCOME, people.get(3), 0);
-        Category newCategory2 = createCategory(null, "new category2", CategoryType.OUTCOME, people.get(1), 0);
+        Category newCategory1 = create(null, "new category1", CategoryType.INCOME, people.get(3), 0);
+        Category newCategory2 = create(null, "new category2", CategoryType.OUTCOME, people.get(1), 0);
         Category category = categories.get(5);
         category.setName("Changed name");
         repository.saveAll(List.of(newCategory1, newCategory2, category));
@@ -179,5 +179,17 @@ public class CategoryRepositoryTest {
     public void findAllByTypeAndPerson() {
         Iterable<Category> actual = repository.findAllByTypeAndPerson(CategoryType.OUTCOME, people.get(1));
         RepositoryAssertions.assertIterableEquals(List.of(categories.get(3), categories.get(5)), actual);
+    }
+
+    @Test
+    public void findByIdAndPerson() {
+        Category actual = repository.findByIdAndPerson(4L, people.get(1)).orElseThrow();
+        RepositoryAssertions.assertEquals(categories.get(3), actual);
+    }
+
+    @Test
+    public void findByIdAndPerson_failed() {
+        Optional<Category> actual = repository.findByIdAndPerson(3L, people.get(1));
+        Assert.assertFalse(actual.isPresent());
     }
 }

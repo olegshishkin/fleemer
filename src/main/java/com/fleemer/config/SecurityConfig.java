@@ -1,5 +1,6 @@
 package com.fleemer.config;
 
+import com.fleemer.service.ConfirmationService;
 import com.fleemer.service.PersonService;
 import com.fleemer.service.PersonUserDetailsService;
 import com.fleemer.service.implementation.PersonUserDetailsServiceImpl;
@@ -16,10 +17,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+    private final ConfirmationService confirmationService;
     private final PersonService personService;
 
     @Autowired
-    public SecurityConfig(PersonService personService) {
+    public SecurityConfig(ConfirmationService confirmationService, PersonService personService) {
+        this.confirmationService = confirmationService;
         this.personService = personService;
     }
 
@@ -30,7 +33,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) {
-        web.ignoring().antMatchers("/static/**", "/user/create", "/options/locale");
+        web.ignoring().antMatchers("/static/**", "/user/create/**", "/options/locale");
     }
 
     @Override
@@ -56,6 +59,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public PersonUserDetailsService customUserDetailsService() {
-        return new PersonUserDetailsServiceImpl(personService);
+        return new PersonUserDetailsServiceImpl(confirmationService, personService);
     }
 }

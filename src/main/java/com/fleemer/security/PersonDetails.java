@@ -1,6 +1,7 @@
 package com.fleemer.security;
 
 import com.fleemer.model.Person;
+import com.fleemer.service.ConfirmationService;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,9 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class PersonDetails implements UserDetails {
     private Person person;
+    private final ConfirmationService service;
 
-    public PersonDetails(Person person) {
+    public PersonDetails(Person person, ConfirmationService service) {
         this.person = person;
+        this.service = service;
     }
 
     @Override
@@ -47,6 +50,6 @@ public class PersonDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return service.isPersonEnabled(person);
     }
 }

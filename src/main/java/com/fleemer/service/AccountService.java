@@ -13,5 +13,5 @@ public interface AccountService extends BaseService<Account, Long> {
 
     BigDecimal getTotalBalance(Person person);
 
-    Optional<Account> getByIdAndPerson(Long id, Person person);
+    Optional<Account> findByIdAndPerson(Long id, Person person);
 }

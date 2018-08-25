@@ -24,6 +24,7 @@
         <java.version>10</java.version>
 
         <dbunit.version>2.5.4</dbunit.version>
+        <jasypt.version>2.1.0</jasypt.version>
         <jaxb.version>2.3.0</jaxb.version>
         <springtestdbunit.version>1.3.0</springtestdbunit.version>
         <woodstox.version>5.1.0</woodstox.version>
@@ -45,6 +46,15 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.github.ulisesbocchio</groupId>
+            <artifactId>jasypt-spring-boot-starter</artifactId>
+            <version>${jasypt.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

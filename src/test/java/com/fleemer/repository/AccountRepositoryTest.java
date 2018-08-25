@@ -1,6 +1,6 @@
 package com.fleemer.repository;
 
-import static com.fleemer.model.EntityCreator.createAccount;
+import static com.fleemer.model.EntityCreator.create;
 
 import com.fleemer.FleemerApplication;
 import com.fleemer.model.Account;
@@ -31,7 +31,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Transactional
 @DatabaseSetup({AccountRepositoryTest.INIT_DB_PATH})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ContextConfiguration(classes = {FleemerApplication.class})
+@ContextConfiguration(classes = {FleemerApplication.class, TestConfigForMail.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class})
 @RunWith(SpringRunner.class)
@@ -100,7 +100,7 @@ public class AccountRepositoryTest {
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
         BigDecimal sum = new BigDecimal("111.8900000000");
-        Account account = createAccount(null, AccountType.BANK_ACCOUNT, Currency.EUR, "Bank!", sum, people.get(4), 0);
+        Account account = create(null, AccountType.BANK_ACCOUNT, Currency.EUR, "Bank!", sum, people.get(4), 0);
         repository.save(account);
         repository.flush();
     }
@@ -117,9 +117,9 @@ public class AccountRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Account account1 = createAccount(null, AccountType.DEPOSIT, Currency.RUB, "Depo", new BigDecimal("0.0000000000"),
+        Account account1 = create(null, AccountType.DEPOSIT, Currency.RUB, "Depo", new BigDecimal("0.0000000000"),
                 people.get(1), 0);
-        Account account2 = createAccount(null, AccountType.CASH, Currency.USD, "My cash", new BigDecimal("0.1240000000"),
+        Account account2 = create(null, AccountType.CASH, Currency.USD, "My cash", new BigDecimal("0.1240000000"),
                 people.get(2), 0);
         Account account = accounts.get(0);
         account.setName("Save all");
@@ -178,11 +178,24 @@ public class AccountRepositoryTest {
 
     @Test
     public void findByNameAndPerson() {
-        RepositoryAssertions.assertEquals(accounts.get(1), repository.findByNameAndPerson("Bank", people.get(3)).orElseThrow());
+        Account actual = repository.findByNameAndPerson("Bank", people.get(3)).orElseThrow();
+        RepositoryAssertions.assertEquals(accounts.get(1), actual);
     }
 
     @Test
     public void getTotalBalance() {
         Assert.assertEquals(new BigDecimal("1001.0200000000"), repository.getTotalBalance(people.get(0)));
+    }
+
+    @Test
+    public void findByIdAndPerson() {
+        Account actual = repository.findByIdAndPerson(2L, people.get(3)).orElseThrow();
+        RepositoryAssertions.assertEquals(accounts.get(1), actual);
+    }
+
+    @Test
+    public void findByIdAndPerson_failed() {
+        Optional<Account> actual = repository.findByIdAndPerson(1L, people.get(3));
+        Assert.assertFalse(actual.isPresent());
     }
 }

@@ -42,7 +42,7 @@ public class CategoryServiceImpl extends AbstractService<Category, Long, Categor
     }
 
     @Override
-    public Optional<Category> getByIdAndPerson(Long id, Person person) {
-        return repository.getByIdAndPerson(id, person);
+    public Optional<Category> findByIdAndPerson(Long id, Person person) {
+        return repository.findByIdAndPerson(id, person);
     }
 }

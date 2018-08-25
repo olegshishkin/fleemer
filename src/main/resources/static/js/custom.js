@@ -281,3 +281,14 @@ function importButtonClick() {
     $('#importForm').attr('hidden', false);
     $('#exportForm').attr('hidden', true);
 }
+
+function beforPageForwardCountDown(elem) {
+    var t = 10;
+    setInterval(function () {
+        if (t <= 0) {
+            window.location = elem.attr('href');
+        } else {
+            $('#delay').text(t--);
+        }
+    }, 1000);
+}

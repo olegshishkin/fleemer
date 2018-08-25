@@ -6,6 +6,10 @@
     <Person id="4" first_name="FirstName4" last_name="LastName4" email="mail5@mail.ma"      hash="hash4" version="0"/>
     <Person id="5" first_name="FirstName5" last_name="LastName5" email="mail@mail.ma"       hash="hash5" version="0"/>
 
+    <Confirmation id="1" token="1c58fa7f-f3ce-4886-bce3-02be9c23fcdd" enabled="1" person_id="1" version="0"/>
+    <Confirmation id="2" token="2c58fa7f-f3ce-4886-bce3-02be9c23fcdd" enabled="1" person_id="2" version="0"/>
+    <Confirmation id="3" token="3c58fa7f-f3ce-4886-bce3-02be9c23fcdd" enabled="0" person_id="3" version="0"/>
+
     <Account id="1" type="0" currency="0" name="Cash"   balance="00000000000000001012.1000000000" person_id="2" version="0"/>
     <Account id="2" type="1" currency="1" name="Bank"   balance="00000000000000000333.4500000000" person_id="4" version="0"/>
     <Account id="3" type="3" currency="0" name="Wallet" balance="00000000000000001001.0200000000" person_id="1" version="0"/>

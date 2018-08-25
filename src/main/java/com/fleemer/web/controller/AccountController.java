@@ -78,7 +78,7 @@ public class AccountController {
     @GetMapping("/update")
     public String update(@RequestParam("id") long id, Model model, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Account> account = accountService.getByIdAndPerson(id, person);
+        Optional<Account> account = accountService.findByIdAndPerson(id, person);
         if (!account.isPresent()) {
             return "redirect:/accounts";
         }
@@ -96,7 +96,7 @@ public class AccountController {
             return ACCOUNT_UPDATE_VIEW;
         }
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Account> optional = accountService.getByIdAndPerson(formAccount.getId(), person);
+        Optional<Account> optional = accountService.findByIdAndPerson(formAccount.getId(), person);
         if (!optional.isPresent()) {
             return "redirect:/accounts";
         }
@@ -119,10 +119,10 @@ public class AccountController {
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Account> optional = accountService.getByIdAndPerson(id, person);
+        Optional<Account> optional = accountService.findByIdAndPerson(id, person);
         if (optional.isPresent()) {
             Account account = optional.get();
-            long operationsCount = operationService.countOperationsByAccounts(account);
+            long operationsCount = operationService.countOperationsByAccount(account);
             if (operationsCount > 0) {
                 return "redirect:/accounts?deleteForbidden";
             }

@@ -18,7 +18,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Transactional
 @DatabaseSetup({DatabaseInitTest.INIT_DB_PATH})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ContextConfiguration(classes = {FleemerApplication.class})
+@ContextConfiguration(classes = {FleemerApplication.class, TestConfigForMail.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class})
 @RunWith(SpringRunner.class)

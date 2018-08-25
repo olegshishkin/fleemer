@@ -8,6 +8,17 @@ create table if not exists `person`
   `version`       int             not null
 ) engine = InnoDB;
 
+create table if not exists `confirmation`
+(
+  `id`            bigint unsigned auto_increment unique primary key,
+  `token`         char(36)        not null,
+  `enabled`       boolean         not null,
+  `person_id`     bigint unsigned not null,
+  `version`       int             not null,
+  foreign key (`person_id`) references `person` (`id`),
+  index (`person_id`)
+) engine = InnoDB;
+
 create table if not exists `account`
 (
   `id`            bigint unsigned auto_increment unique primary key,

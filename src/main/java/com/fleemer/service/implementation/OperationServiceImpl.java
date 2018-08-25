@@ -71,7 +71,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    public Optional<Operation> getByIdAndPerson(Long id, Person person) {
+    public Optional<Operation> findByIdAndPerson(Long id, Person person) {
         return repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
     }
 
@@ -81,7 +81,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    public long countOperationsByAccounts(Account account) {
+    public long countOperationsByAccount(Account account) {
         return repository.countOperationsByInAccountOrOutAccount(account, account);
     }
 

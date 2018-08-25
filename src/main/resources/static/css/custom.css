@@ -28,3 +28,8 @@
 #loader-container {
     height: 342px;
 }
+
+html.center,
+body.center {
+    height: 100%
+}

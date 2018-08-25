@@ -1,6 +1,7 @@
 package com.fleemer.repository;
 
-import static com.fleemer.model.EntityCreator.createOperation;
+import static com.fleemer.model.EntityCreator.create;
+import static java.sql.Date.valueOf;
 
 import com.fleemer.FleemerApplication;
 import com.fleemer.model.Account;
@@ -10,6 +11,8 @@ import com.fleemer.model.Person;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import java.math.BigDecimal;
+import java.sql.Date;
 import java.time.*;
 import java.util.*;
 import javax.transaction.Transactional;
@@ -32,7 +35,7 @@ import org.springframework.test.context.transaction.TransactionalTestExecutionLi
 @Transactional
 @DatabaseSetup({OperationRepositoryTest.INIT_DB_PATH})
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
-@ContextConfiguration(classes = {FleemerApplication.class})
+@ContextConfiguration(classes = {FleemerApplication.class, TestConfigForMail.class})
 @TestExecutionListeners({DependencyInjectionTestExecutionListener.class, DirtiesContextTestExecutionListener.class,
         TransactionalTestExecutionListener.class, DbUnitTestExecutionListener.class})
 @RunWith(SpringRunner.class)
@@ -116,7 +119,7 @@ public class OperationRepositoryTest {
         category.setId(null);
         Account inAccount = accounts.get(1);
         inAccount.setId(null);
-        repository.save(createOperation(null, LocalDate.of(2000, Month.FEBRUARY, 4), inAccount, null,
+        repository.save(create(null, LocalDate.of(2000, Month.FEBRUARY, 4), inAccount, null,
                 category, 7.98, "new comment", 0));
         repository.flush();
     }
@@ -137,13 +140,13 @@ public class OperationRepositoryTest {
         inAccount1.setId(null);
         Account outAccount1 = accounts.get(2);
         outAccount1.setId(null);
-        Operation o1 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), inAccount1, outAccount1,
+        Operation o1 = create(null, LocalDate.of(2018, Month.MAY, 14), inAccount1, outAccount1,
                 null, 7.98, "new comment1", 0);
         Account outAccount2 = accounts.get(0);
         outAccount2.setId(null);
         Category category = categories.get(1);
         category.setId(null);
-        Operation o2 = createOperation(null, LocalDate.of(2018, Month.MAY, 14), null, outAccount2,
+        Operation o2 = create(null, LocalDate.of(2018, Month.MAY, 14), null, outAccount2,
                 category, -17.98, "new comment2", 0);
         Operation o = operations.get(3);
         o.setComment("Changed comment");
@@ -194,7 +197,7 @@ public class OperationRepositoryTest {
     }
 
     @Test
-    public void findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson() {
+    public void findAllByInAccountPersonOrOutAccountPerson() {
         Person person = people.get(1);
         List<Operation> expected = List.of(operations.get(1),
                 operations.get(2),
@@ -208,11 +211,92 @@ public class OperationRepositoryTest {
     }
 
     @Test
-    public void findAllByInAccountPersonOrOutAccountPersonOrCategoryPerson_pageable() {
+    public void findAllByInAccountPersonOrOutAccountPerson_pageable() {
         Person person = people.get(1);
         List<Operation> expected = List.of(operations.get(3), operations.get(2));
         Pageable pageable = PageRequest.of(2, 2, new Sort(Sort.Direction.DESC, "date"));
         List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable).getContent();
         RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findAllByInAccountPersonOrOutAccountPersonAndDateBetween() {
+        Person person = people.get(3);
+        LocalDate from = LocalDate.of(2018, 1, 1);
+        LocalDate till = LocalDate.of(2018, 12, 31);
+        List<Operation> expected = List.of(operations.get(0), operations.get(4));
+        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person,
+                from, till);
+        RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findAllByInAccountPersonOrOutAccountPersonAndDateBetween_pageable() {
+        Person person = people.get(1);
+        LocalDate from = LocalDate.of(2018, 1, 1);
+        LocalDate till = LocalDate.of(2018, 12, 31);
+        List<Operation> expected = List.of(operations.get(1), operations.get(4));
+        Pageable pageable = PageRequest.of(1, 2, new Sort(Sort.Direction.ASC, "date"));
+        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person,
+                from, till, pageable).getContent();
+        RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void getByIdAndInAccountPersonOrOutAccountPerson() {
+        Person person = people.get(1);
+        Operation actual = repository.getByIdAndInAccountPersonOrOutAccountPerson(4L, person, person).orElseThrow();
+        RepositoryAssertions.assertEquals(operations.get(3), actual);
+    }
+
+    @Test
+    public void countOperationsByCategory() {
+        Assert.assertEquals(2L, repository.countOperationsByCategory(categories.get(6)));
+    }
+
+    @Test
+    public void countOperationsByInAccountOrOutAccount() {
+        Account account = accounts.get(1);
+        Assert.assertEquals(4L, repository.countOperationsByInAccountOrOutAccount(account, account));
+    }
+
+    @Test
+    public void findAllDailyVolumes() {
+        Person person = people.get(3);
+        LocalDate from = LocalDate.of(2018, 1, 1);
+        LocalDate till = LocalDate.of(2018, 12, 31);
+        Object[] object = new Object[]{valueOf(LocalDate.of(2018, 5, 3)), new BigDecimal("00000000000000004567.9800000000")};
+        List<Object[]> expected = new ArrayList<>();
+        expected.add(object);
+        List<Object[]> actual = repository.findAllDailyVolumes(from, till, person);
+        assertIterableEquals(expected, actual);
+    }
+
+    public static void assertIterableEquals(List<Object[]> expected, List<Object[]> actual) {
+        if (expected == actual) {
+            return;
+        }
+        Assert.assertTrue(expected != null & actual != null);
+        Iterator<Object[]> expectedIterator = expected.iterator();
+        Iterator<Object[]> actualIterator = actual.iterator();
+        while (expectedIterator.hasNext() && actualIterator.hasNext()) {
+            Object[] expectedElement = expectedIterator.next();
+            Object[] actualElement = actualIterator.next();
+            if (expectedElement == actualElement) {
+                continue;
+            }
+            if (expectedElement[0] != null) {
+                Date actualDate = (Date) actualElement[0];
+                Assert.assertEquals(expectedElement[0], actualDate);
+            }
+            if (expectedElement[1] != null) {
+                Assert.assertEquals(expectedElement[1], actualElement[1]);
+            }
+            if (expectedElement.length > 2) {
+                Assert.assertEquals(expectedElement[2], actualElement[2]);
+            }
+        }
+        Assert.assertFalse(expectedIterator.hasNext());
+        Assert.assertFalse(actualIterator.hasNext());
     }
 }

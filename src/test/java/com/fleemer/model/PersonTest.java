@@ -1,6 +1,6 @@
 package com.fleemer.model;
 
-import static com.fleemer.model.EntityCreator.createPerson;
+import static com.fleemer.model.EntityCreator.create;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -13,8 +13,8 @@ public class PersonTest {
 
     @Before
     public void setUp() {
-        p1 = createPerson(11L, "First", "Last", "my@mail.org", "hash", 1);
-        p2 = createPerson(22L, "First1", "Last1", "my1@mail.org", "hash1", 1);
+        p1 = create(11L, "First", "Last", "my@mail.org", "hash", 1);
+        p2 = create(22L, "First1", "Last1", "my1@mail.org", "hash1", 1);
     }
 
     @Test

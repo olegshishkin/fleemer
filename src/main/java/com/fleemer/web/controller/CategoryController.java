@@ -85,7 +85,7 @@ public class CategoryController {
     @GetMapping("/update")
     public String update(@RequestParam("id") long id, Model model, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Category> category = categoryService.getByIdAndPerson(id, person);
+        Optional<Category> category = categoryService.findByIdAndPerson(id, person);
         if (!category.isPresent()) {
             return "redirect:/categories";
         }
@@ -102,7 +102,7 @@ public class CategoryController {
             return CATEGORY_UPDATE_VIEW;
         }
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Category> optional = categoryService.getByIdAndPerson(formCategory.getId(), person);
+        Optional<Category> optional = categoryService.findByIdAndPerson(formCategory.getId(), person);
         if (!optional.isPresent()) {
             return "redirect:/categories";
         }
@@ -126,7 +126,7 @@ public class CategoryController {
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        Optional<Category> optional = categoryService.getByIdAndPerson(id, person);
+        Optional<Category> optional = categoryService.findByIdAndPerson(id, person);
         if (optional.isPresent()) {
             Category category = optional.get();
             long operationsCount = operationService.countOperationsByCategory(category);

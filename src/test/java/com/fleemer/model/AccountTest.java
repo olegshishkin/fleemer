@@ -1,6 +1,6 @@
 package com.fleemer.model;
 
-import static com.fleemer.model.EntityCreator.createAccount;
+import static com.fleemer.model.EntityCreator.create;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
@@ -22,8 +22,8 @@ public class AccountTest {
         Person p2 = new Person();
         p2.setId(99L);
         p2.setEmail("email2");
-        a1 = createAccount(11L, AccountType.CASH, Currency.RUB, "Wallet", new BigDecimal(1234.56), p1, 1);
-        a2 = createAccount(22L, AccountType.BANK_ACCOUNT, Currency.USD, "Depo", new BigDecimal(-0.99), p2, 1);
+        a1 = create(11L, AccountType.CASH, Currency.RUB, "Wallet", new BigDecimal(1234.56), p1, 1);
+        a2 = create(22L, AccountType.BANK_ACCOUNT, Currency.USD, "Depo", new BigDecimal(-0.99), p2, 1);
     }
 
     @Test

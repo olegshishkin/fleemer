@@ -13,6 +13,8 @@ import com.fleemer.repository.OperationRepository;
 import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.OperationServiceImpl;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -338,5 +340,40 @@ public class OperationServiceImplTest {
             assertEquals(e.getMessage(), errorMessage);
             throw e;
         }
+    }
+
+    @Test
+    public void findByIdAndPerson() {
+        long id = 11L;
+        Optional<Operation> expected = Optional.of(operation);
+        when(repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person)).thenReturn(expected);
+        assertEquals(expected, service.findByIdAndPerson(id, person));
+        verify(repository, times(1)).getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
+    }
+
+    @Test
+    public void countOperationsByCategory() {
+        Category category = new Category();
+        when(repository.countOperationsByCategory(category)).thenReturn(11L);
+        assertEquals(11L, service.countOperationsByCategory(category));
+        verify(repository, times(1)).countOperationsByCategory(category);
+    }
+
+    @Test
+    public void countOperationsByAccounts() {
+        Account account = new Account();
+        when(repository.countOperationsByInAccountOrOutAccount(account, account)).thenReturn(11L);
+        assertEquals(11L, service.countOperationsByAccount(account));
+        verify(repository, times(1)).countOperationsByInAccountOrOutAccount(account, account);
+    }
+
+    @Test
+    public void findAllDailyVolumes() {
+        LocalDate from = LocalDate.of(2018, 1, 1);
+        LocalDate till = LocalDate.of(2018, 12, 31);
+        List<Object[]> expected = new ArrayList<>();
+        when(repository.findAllDailyVolumes(from, till, person)).thenReturn(expected);
+        assertEquals(expected, service.findAllDailyVolumes(from, till, person));
+        verify(repository, times(1)).findAllDailyVolumes(from, till, person);
     }
 }

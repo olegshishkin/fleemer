@@ -190,4 +190,13 @@ public class CategoryServiceImplTest {
         assertEquals(expected, service.findAllByTypeAndPerson(CategoryType.INCOME, person));
         verify(repository, times(1)).findAllByTypeAndPerson(CategoryType.INCOME, person);
     }
+
+    @Test
+    public void findByIdAndPerson() {
+        long id = 11L;
+        Optional<Category> expected = Optional.of(category);
+        when(repository.findByIdAndPerson(id, person)).thenReturn(expected);
+        assertEquals(expected, service.findByIdAndPerson(id, person));
+        verify(repository, times(1)).findByIdAndPerson(id, person);
+    }
 }
