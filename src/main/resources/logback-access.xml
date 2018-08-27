@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty name="host" source="spring.data.mongodb.host"/>
+    <springProperty name="port" source="spring.data.mongodb.port"/>
+    <springProperty name="database" source="spring.data.mongodb.database"/>
+    <springProperty name="collection" source="spring.data.mongodb.database.collection"/>
+    <springProperty name="username" source="spring.data.mongodb.username"/>
+    <springProperty name="password" source="spring.data.mongodb.password"/>
+
+    <appender name="mongo" class="ch.qos.logback.contrib.mongodb.MongoDBAccessEventAppender">
+        <uri>mongodb://${username}:${password}@${host}:${port}/${database}.${collection}</uri>
+    </appender>
+    <appender-ref ref="mongo" />
+</configuration>

@@ -174,12 +174,12 @@ function fillTable(operations) {
             }
             var editLink = $('<a>')
                 .attr('href', '/operations/update?id=' + value.id + redirectUrl);
-            var editImg = '<img src="/static/images/edit.png" height=24 width="24">';
+            var editImg = '<img src="/static/images/edit.png" height="24" width="24">';
             editLink.html(editImg);
             var deleteLink = $('<a>')
                 .attr('href', '/operations/delete?id=' + value.id + redirectUrl)
                 .attr('onclick', 'return confirm("' + $('#deleteConfirm').html() +  '");');
-            var deleteImg = '<img src="/static/images/delete.png" height=20 width="20">';
+            var deleteImg = '<img src="/static/images/delete.png" height="20" width="20">';
             deleteLink.html(deleteImg);
             var editCell = $('<td>').attr('align', 'left').append(editLink).append(' ').append(deleteLink);
             tr.append(editCell);

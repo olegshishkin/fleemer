@@ -84,14 +84,12 @@
                                 <td align="right" th:text="${a.name}">...</td>
                                 <td align="right" th:text="${a.getRefactoredType()}">...</td>
                                 <td align="right">
-                                    <p>
-                                        <a href="#" th:href="@{/categories/update(id=${a.id})}">
-                                            <img th:src="@{/static/images/edit.png}" width="24" height="24">
-                                        </a>
-                                        <a href="#" th:href="@{/categories/delete(id=${a.id})}" onclick="return confirmWindow();">
-                                            <img th:src="@{/static/images/delete.png}" width="20" height="20">
-                                        </a>
-                                    </p>
+                                    <a href="#" th:href="@{/categories/update(id=${a.id})}">
+                                        <img th:src="@{/static/images/edit.png}" width="24" height="24">
+                                    </a>
+                                    <a href="#" th:href="@{/categories/delete(id=${a.id})}" onclick="return confirmWindow();">
+                                        <img th:src="@{/static/images/delete.png}" width="20" height="20">
+                                    </a>
                                 </td>
                             </tr>
                         </tbody>

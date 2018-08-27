@@ -33,6 +33,7 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         <a class="dropdown-item" th:href="@{/options/locale(locale=${session.locale})}" href="#"
                            th:text="#{navbar.menu.switchLocale(${session.locale.toUpperCase()})}">Switch locale: RU</a>
+                        <a class="dropdown-item" th:href="@{/options/requests/stats}" href="#" th:text="#{access.stats.name}">Access statistics</a>
                         <a class="dropdown-item" th:href="@{/options/serialize}" href="#" th:text="#{navbar.menu.serialize}">Export/Import</a>
                         <a class="dropdown-item" th:href="@{/user/update}" href="#" th:text="#{navbar.menu.profile}">My profile</a>
                         <div class="dropdown-divider"></div>
