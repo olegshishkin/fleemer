@@ -46,7 +46,8 @@
                                 <label th:for="*{type}" th:text="#{categories.form.type}">Type</label>
                                 <select th:field="*{type}" class="custom-select d-block w-100" required>
                                     <option value="" th:text="#{accounts.form.select-type}">Select type</option>
-                                    <option th:each="type : ${categoryTypes}" th:value="${type}" th:text="${type}"></option>
+                                    <option th:each="type : ${categoryTypes}" th:value="${type}"
+                                            th:text="${#messages.msg('common.category.type.' + type.toString().toLowerCase())}"></option>
                                 </select>
                                 <div th:if="${#fields.hasErrors('type')}">
                                     <span th:errors="*{type}" class="text-danger small"></span><br>
@@ -82,7 +83,7 @@
                         <tbody>
                             <tr th:each="a : ${categories}">
                                 <td align="right" th:text="${a.name}">...</td>
-                                <td align="right" th:text="${a.getRefactoredType()}">...</td>
+                                <td align="right" th:text="${#messages.msg('common.category.type.' + a.type.toString().toLowerCase())}">...</td>
                                 <td align="right">
                                     <a href="#" th:href="@{/categories/update(id=${a.id})}">
                                         <img th:src="@{/static/images/edit.png}" width="24" height="24">

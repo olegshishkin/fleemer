@@ -43,10 +43,4 @@ public class Category implements Serializable {
     @JsonIgnore
     @Version
     private int version;
-
-    @JsonIgnore
-    public String getRefactoredType() {
-        String text = type.name().toLowerCase();
-        return text.substring(0, 1).toUpperCase() + text.substring(1);
-    }
 }

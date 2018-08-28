@@ -30,7 +30,8 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:text="#{categories.form.type}">Type</label>
-                            <input type="text" th:value="${category.type}" class="form-control" required disabled>
+                            <input th:value="${#messages.msg('common.category.type.' + category.type.toString().toLowerCase())}"
+                                   type="text" class="form-control" required disabled>
                         </div>
                     </div>
 

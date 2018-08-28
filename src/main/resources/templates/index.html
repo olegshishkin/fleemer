@@ -17,7 +17,9 @@
                         <li th:each="a : ${accounts}" class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
                                 <h6 class="my-0" th:text="${a.name}">Name</h6>
-                                <small class="text-muted" th:text="${a.getRefactoredType()}">Type</small>
+                                <small class="text-muted" th:text="${#messages.msg('common.account.type.' + a.type.toString().toLowerCase())}">
+                                    Type
+                                </small>
                             </div>
                             <span class="text-muted" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">0.00</span>
                         </li>
