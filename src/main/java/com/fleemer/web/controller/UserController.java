@@ -1,5 +1,6 @@
 package com.fleemer.web.controller;
 
+import com.fleemer.aop.LogAfterReturning;
 import com.fleemer.model.Confirmation;
 import com.fleemer.model.Person;
 import com.fleemer.service.ConfirmationService;
@@ -30,7 +31,6 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String SUBJECT_TEXT_MSG_KEY = "mail.subject";
     private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
@@ -40,6 +40,7 @@ public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationService confirmationService;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MailService mailService;
     private final MessageSource messageSource;
     private final PersonService personService;
@@ -60,6 +61,7 @@ public class UserController {
         return new ModelAndView(USER_CREATE_VIEW, "person", new Person());
     }
 
+    @LogAfterReturning
     @PostMapping("/create")
     public String create(HttpServletRequest request, @Valid @ModelAttribute Person person,
                          @RequestParam("confirm") String confirmPassword, BindingResult bindingResult)
@@ -107,6 +109,7 @@ public class UserController {
         return new ModelAndView(USER_UPDATE_VIEW, "person", person);
     }
 
+    @LogAfterReturning
     @PostMapping("/update")
     public String update(@Valid @ModelAttribute Person person, BindingResult bindingResult, HttpSession session)
             throws ServiceException {

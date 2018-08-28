@@ -1,14 +1,13 @@
 package com.fleemer.web.controller;
 
+import com.fleemer.aop.LogAfterReturning;
 import com.fleemer.model.Account;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.AccountType;
 import com.fleemer.model.enums.Currency;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.OperationService;
-import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
-import java.security.Principal;
 import java.util.Optional;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
@@ -30,22 +29,20 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     private static final String ACCOUNT_UPDATE_VIEW = "account_update";
     private static final String ACCOUNT_EXISTS_ERROR_KEY = "accounts.error.name-exists";
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String ROOT_VIEW = "accounts";
 
     private final AccountService accountService;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MessageSource messageSource;
     private final OperationService operationService;
-    private final PersonService personService;
 
     @Autowired
     public AccountController(AccountService accountService, MessageSource messageSource,
-                             OperationService operationService, PersonService personService) {
+                             OperationService operationService) {
         this.accountService = accountService;
         this.messageSource = messageSource;
         this.operationService = operationService;
-        this.personService = personService;
     }
 
     @GetMapping
@@ -56,10 +53,11 @@ public class AccountController {
         return ROOT_VIEW;
     }
 
+    @LogAfterReturning
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Account account, BindingResult bindingResult, Model model,
-                         Principal principal) throws ServiceException {
-        Person person = personService.findByEmail(principal.getName()).orElseThrow();
+                         HttpSession session) throws ServiceException {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (bindingResult.hasErrors()) {
             fillModel(model, accountService.findAll(person));
             return ROOT_VIEW;
@@ -88,6 +86,7 @@ public class AccountController {
         return ACCOUNT_UPDATE_VIEW;
     }
 
+    @LogAfterReturning
     @PostMapping("/update")
     public String update(@Valid @ModelAttribute("account") Account formAccount, BindingResult bindingResult,
                          Model model, HttpSession session) throws ServiceException {
@@ -116,6 +115,7 @@ public class AccountController {
         return "redirect:/accounts?success";
     }
 
+    @LogAfterReturning
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);

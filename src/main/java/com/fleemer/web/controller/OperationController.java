@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fleemer.aop.LogAfterReturning;
 import com.fleemer.model.Account;
 import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
@@ -21,7 +22,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.io.*;
 import java.math.BigDecimal;
-import java.security.Principal;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.*;
@@ -48,23 +48,21 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/operations")
 public class OperationController {
     private static final String CHARSET_NAME = "UTF-8";
-    private static final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
     private static final String OPERATION_UPDATE_VIEW = "operation_update";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String ROOT_VIEW = "operations";
 
     private final AccountService accountService;
     private final CategoryService categoryService;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final OperationService operationService;
-    private final PersonService personService;
 
     @Autowired
     public OperationController(AccountService accountService, CategoryService categoryService,
-                               OperationService operationService, PersonService personService) {
+                               OperationService operationService) {
         this.accountService = accountService;
         this.categoryService = categoryService;
         this.operationService = operationService;
-        this.personService = personService;
     }
 
     @GetMapping
@@ -100,6 +98,7 @@ public class OperationController {
         return convertDailyVolumes(from, till, volumes);
     }
 
+    @LogAfterReturning
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Operation operation, BindingResult result, Model model,
                          HttpSession session) throws ServiceException {
@@ -127,6 +126,7 @@ public class OperationController {
         return OPERATION_UPDATE_VIEW;
     }
 
+    @LogAfterReturning
     @PostMapping("/update")
     public String update(@Valid @ModelAttribute("operation") Operation formOperation, BindingResult bindingResult,
                          Model model, HttpSession session, @RequestParam("redirect") String url)
@@ -155,6 +155,7 @@ public class OperationController {
         return "redirect:" + url + param;
     }
 
+    @LogAfterReturning
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id, HttpSession session, @RequestParam("redirect") String url) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
@@ -190,8 +191,8 @@ public class OperationController {
     }
 
     @PostMapping("/import")
-    public String importXml(@RequestParam MultipartFile file, Principal principal) throws IOException {
-        Person person = personService.findByEmail(principal.getName()).orElseThrow();
+    public String importXml(@RequestParam MultipartFile file, HttpSession session) throws IOException {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         try (InputStream in = file.getInputStream();
              BufferedReader reader = new BufferedReader(new InputStreamReader(in, CHARSET_NAME))) {
             StringBuilder builder = new StringBuilder();

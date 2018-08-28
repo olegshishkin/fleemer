@@ -1,13 +1,12 @@
 package com.fleemer.web.controller;
 
+import com.fleemer.aop.LogAfterReturning;
 import com.fleemer.model.Category;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.CategoryType;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
-import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
-import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.OptimisticLockException;
@@ -30,22 +29,20 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private static final String CATEGORY_UPDATE_VIEW = "category_update";
     private static final String CATEGORY_EXISTS_ERROR_KEY = "categories.error.user-exists";
-    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String ROOT_VIEW = "categories";
 
     private final CategoryService categoryService;
+    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MessageSource messageSource;
     private final OperationService operationService;
-    private final PersonService personService;
 
     @Autowired
     public CategoryController(CategoryService categoryService, OperationService operationService,
-                              MessageSource messageSource, PersonService personService) {
+                              MessageSource messageSource) {
         this.categoryService = categoryService;
         this.operationService = operationService;
         this.messageSource = messageSource;
-        this.personService = personService;
     }
 
     @GetMapping
@@ -63,10 +60,11 @@ public class CategoryController {
         return categoryService.findAllByTypeAndPerson(type, person);
     }
 
+    @LogAfterReturning
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute Category category, BindingResult bindingResult, Model model,
-                         Principal principal) throws ServiceException {
-        Person person = personService.findByEmail(principal.getName()).orElseThrow();
+                         HttpSession session) throws ServiceException {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (bindingResult.hasErrors()) {
             fillModel(model, categoryService.findAll(person));
             return ROOT_VIEW;
@@ -94,6 +92,7 @@ public class CategoryController {
         return CATEGORY_UPDATE_VIEW;
     }
 
+    @LogAfterReturning
     @PostMapping("/update")
     public String update(@Valid @ModelAttribute("category") Category formCategory, BindingResult bindingResult, 
                          Model model, HttpSession session) throws ServiceException {
@@ -123,6 +122,7 @@ public class CategoryController {
         return "redirect:/categories?success";
     }
 
+    @LogAfterReturning
     @GetMapping("/delete")
     public String delete(@RequestParam("id") long id, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
