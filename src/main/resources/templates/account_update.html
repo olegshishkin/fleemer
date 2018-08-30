@@ -10,7 +10,7 @@
                 <h5 class="text-center" th:text="#{accounts.edit-account}">Edit account</h5>
 
                 <form method="post" th:action="@{/accounts/update}" action="#" th:object="${account}"
-                      class="needs-validation" novalidate=>
+                      class="needs-validation" novalidate>
 
                     <input type="hidden" th:field="*{id}">
                     <input type="hidden" th:field="*{version}">

@@ -12,7 +12,6 @@ import com.fleemer.model.Person;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
-import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
 import com.fleemer.web.other.OperationXmlMixIn;
 import javax.persistence.OptimisticLockException;
@@ -232,7 +231,8 @@ public class OperationController {
             dto.add(new DailyVolumesDto(date, income, outcome));
             curDate = curDate.plusDays(1);
         }
-        while (curDate.isBefore(till)) {
+        LocalDate endDate = till.plusDays(1);
+        while (curDate.isBefore(endDate)) {
             dto.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
             curDate = curDate.plusDays(1);
         }

@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class CategoryServiceImpl extends AbstractService<Category, Long, CategoryRepository> implements CategoryService {
     private final CategoryRepository repository;
 
@@ -27,21 +26,25 @@ public class CategoryServiceImpl extends AbstractService<Category, Long, Categor
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Category> findAll(Person person) {
         return repository.findAllByPersonOrderByName(person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Category> findByNameAndPerson(String name, Person person) {
         return repository.findByNameAndPerson(name, person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Category> findAllByTypeAndPerson(CategoryType type, Person person) {
         return repository.findAllByTypeAndPerson(type, person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Category> findByIdAndPerson(Long id, Person person) {
         return repository.findByIdAndPerson(id, person);
     }

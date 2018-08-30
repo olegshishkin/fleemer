@@ -24,6 +24,7 @@ public class PersonServiceImpl extends AbstractService<Person, Long, PersonRepos
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Person> findByEmail(String email) {
         return repository.findByEmail(email);
     }

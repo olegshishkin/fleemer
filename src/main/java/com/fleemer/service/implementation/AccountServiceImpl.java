@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class AccountServiceImpl extends AbstractService<Account, Long, AccountRepository> implements AccountService {
     private final AccountRepository repository;
 
@@ -27,21 +26,25 @@ public class AccountServiceImpl extends AbstractService<Account, Long, AccountRe
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Account> findByNameAndPerson(String name, Person person) {
         return repository.findByNameAndPerson(name, person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Account> findAll(Person person) {
         return repository.findAllByPersonOrderByName(person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public BigDecimal getTotalBalance(Person person) {
         return repository.getTotalBalance(person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Account> findByIdAndPerson(Long id, Person person) {
         return repository.findByIdAndPerson(id, person);
     }

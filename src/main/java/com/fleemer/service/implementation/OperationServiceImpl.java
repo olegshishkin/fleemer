@@ -22,7 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class OperationServiceImpl extends AbstractService<Operation, Long, OperationRepository>
         implements OperationService {
     private static final String DATES_SEQUENCE_ERROR = "Starting date is more than the ending date";
@@ -42,10 +41,11 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
 
     @Override
     protected OperationRepository getRepository() {
-        return repository;// todo transactional on class
+        return repository;
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till)
             throws ServiceException {
         if (from == null & till == null) {
@@ -61,6 +61,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till,
                                            Pageable pageable) throws ServiceException {
         if (from == null || till == null) {
@@ -71,26 +72,31 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Operation> findByIdAndPerson(Long id, Person person) {
         return repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countOperationsByCategory(Category category) {
         return repository.countOperationsByCategory(category);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public long countOperationsByAccount(Account account) {
         return repository.countOperationsByInAccountOrOutAccount(account, account);
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person) {
         return repository.findAllDailyVolumes(fromDate, tillDate, person);
     }
 
     @Override
+    @Transactional
     public <S extends Operation> S save(S entity) throws ServiceException {
         Account in = entity.getInAccount();
         Account out = entity.getOutAccount();

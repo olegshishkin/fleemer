@@ -12,10 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class PersonUserDetailsServiceImpl implements PersonUserDetailsService {
     private static final Logger LOGGER = LoggerFactory.getLogger(PersonUserDetailsServiceImpl.class);
     private static final String NO_PERSON_ERROR = "No person with such email.";

@@ -6,7 +6,7 @@ create table if not exists `person`
   `email`         varchar(255)    not null unique,
   `hash`          varchar(255)    not null,
   `version`       int             not null
-) engine = InnoDB;
+) CHARACTER SET utf8 COLLATE utf8_unicode_ci engine = InnoDB;
 
 create table if not exists `confirmation`
 (
@@ -17,7 +17,7 @@ create table if not exists `confirmation`
   `version`       int             not null,
   foreign key (`person_id`) references `person` (`id`),
   index (`person_id`)
-) engine = InnoDB;
+) CHARACTER SET utf8 COLLATE utf8_unicode_ci engine = InnoDB;
 
 create table if not exists `account`
 (
@@ -30,7 +30,7 @@ create table if not exists `account`
   `version`       int             not null,
   foreign key (`person_id`) references `person` (`id`),
   index (`person_id`)
-) engine = InnoDB;
+) CHARACTER SET utf8 COLLATE utf8_unicode_ci engine = InnoDB;
 
 create table if not exists `category`
 (
@@ -41,7 +41,7 @@ create table if not exists `category`
   `version`       int             not null,
   foreign key (`person_id`) references `person` (`id`),
   index (`person_id`)
-) engine = InnoDB;
+) CHARACTER SET utf8 COLLATE utf8_unicode_ci engine = InnoDB;
 
 create table if not exists `operation`
 (
@@ -59,4 +59,4 @@ create table if not exists `operation`
   index (`in_account_id`),
   index (`out_account_id`),
   index (`category_id`)
-) engine = InnoDB;
+) CHARACTER SET utf8 COLLATE utf8_unicode_ci engine = InnoDB;

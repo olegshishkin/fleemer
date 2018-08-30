@@ -26,11 +26,13 @@ public class ConfirmationServiceImpl extends AbstractService<Confirmation, Long,
     }
 
     @Override
+    @Transactional(readOnly = true)
     public boolean isPersonEnabled(Person person) {
         return repository.findByPersonAndEnabledIsTrue(person).isPresent();
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Optional<Confirmation> findByPersonEmail(String email) {
         return repository.findByPersonEmail(email);
     }
