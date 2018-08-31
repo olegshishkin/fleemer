@@ -42,17 +42,17 @@ public class Operation implements Serializable {
     @Column(nullable = false)
     private LocalDate date;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "in_account_id")
     private Account inAccount;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
-    @OnDelete(action = OnDeleteAction.CASCADE)
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)//todo remove?
     @JoinColumn(name = "out_account_id")
     private Account outAccount;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST})
+    @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn
     private Category category;

@@ -55,9 +55,8 @@ public class IndexController {
         model.addAttribute("accounts", accountService.findAll(person));
         BigDecimal totalBalance = accountService.getTotalBalance(person);
         model.addAttribute("totalBalance", totalBalance);
-        Pageable pageable = PageRequest.of(0, 7, new Sort(Sort.Direction.DESC, "date"));
         LocalDate today = LocalDate.now();
-        model.addAttribute("operations", operationService.findAllByPerson(person, today, today, pageable));
+        model.addAttribute("operations", operationService.findAllByPerson(person, today, today));
         return ROOT_VIEW;
     }
 }

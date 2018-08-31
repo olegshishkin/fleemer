@@ -15,6 +15,7 @@ import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.*;
 import java.util.*;
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import org.junit.Assert;
 import org.junit.Before;
@@ -48,6 +49,9 @@ public class OperationRepositoryTest {
     private List<Category> categories;
     private List<Operation> operations;
     private List<Person> people;
+
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private OperationRepository repository;
@@ -117,10 +121,12 @@ public class OperationRepositoryTest {
     public void save_new() {
         Category category = categories.get(6);
         category.setId(null);
+        entityManager.persist(category);
         Account inAccount = accounts.get(1);
         inAccount.setId(null);
-        repository.save(create(null, LocalDate.of(2000, Month.FEBRUARY, 4), inAccount, null,
-                category, 7.98, "new comment", 0));
+        entityManager.persist(inAccount);
+        repository.save(create(null, LocalDate.of(2000, Month.FEBRUARY, 4), inAccount, null, category, 7.98,
+                "new comment", 0));
         repository.flush();
     }
 
@@ -138,16 +144,20 @@ public class OperationRepositoryTest {
     public void saveAll() {
         Account inAccount1 = accounts.get(1);
         inAccount1.setId(null);
+        entityManager.persist(inAccount1);
         Account outAccount1 = accounts.get(2);
         outAccount1.setId(null);
-        Operation o1 = create(null, LocalDate.of(2018, Month.MAY, 14), inAccount1, outAccount1,
-                null, 7.98, "new comment1", 0);
+        entityManager.persist(outAccount1);
+        Operation o1 = create(null, LocalDate.of(2018, Month.MAY, 14), inAccount1, outAccount1, null, 7.98,
+                "new comment1", 0);
         Account outAccount2 = accounts.get(0);
         outAccount2.setId(null);
+        entityManager.persist(outAccount2);
         Category category = categories.get(1);
         category.setId(null);
-        Operation o2 = create(null, LocalDate.of(2018, Month.MAY, 14), null, outAccount2,
-                category, -17.98, "new comment2", 0);
+        entityManager.persist(category);
+        Operation o2 = create(null, LocalDate.of(2018, Month.MAY, 14), null, outAccount2, category, -17.98,
+                "new comment2", 0);
         Operation o = operations.get(3);
         o.setComment("Changed comment");
         repository.saveAll(List.of(o1, o2, o));

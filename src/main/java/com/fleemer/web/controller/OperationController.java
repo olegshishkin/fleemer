@@ -166,10 +166,10 @@ public class OperationController {
         return "redirect:" + url;
     }
 
-    @GetMapping("/export")
     @ResponseBody
-    public void export(@RequestParam(value = "from") String from, @RequestParam("till") String till,
-                      HttpSession session, HttpServletResponse response) throws ServiceException, IOException {
+    @GetMapping("/export")
+    public void exportXml(@RequestParam(value = "from") String from, @RequestParam("till") String till,
+                          HttpSession session, HttpServletResponse response) throws ServiceException, IOException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         LocalDate fromDate = from == null || from.isEmpty() ? null : LocalDate.parse(from);
         LocalDate tillDate = till == null || till.isEmpty() ? null : LocalDate.parse(till);
@@ -231,8 +231,8 @@ public class OperationController {
             dto.add(new DailyVolumesDto(date, income, outcome));
             curDate = curDate.plusDays(1);
         }
-        LocalDate endDate = till.plusDays(1);
-        while (curDate.isBefore(endDate)) {
+        LocalDate outOfBoundDate = till.plusDays(1);
+        while (curDate.isBefore(outOfBoundDate)) {
             dto.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
             curDate = curDate.plusDays(1);
         }

@@ -6,12 +6,13 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.CategoryType;
 import com.fleemer.repository.OperationRepository;
+import com.fleemer.service.AccountService;
+import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,11 +33,16 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             "no way to determine an operation type.";
     private static final String WRONG_CATEGORY_TYPE_ERROR = "Wrong category type for that operation: ";
 
+    private final AccountService accountService;
+    private final CategoryService categoryService;
     private final OperationRepository repository;
 
     @Autowired
-    public OperationServiceImpl(OperationRepository repository) {
+    public OperationServiceImpl(OperationRepository repository, AccountService accountService,
+                                CategoryService categoryService) {
         this.repository = repository;
+        this.accountService = accountService;
+        this.categoryService = categoryService;
     }
 
     @Override
@@ -106,6 +112,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         if (category == null) {
             in.setBalance(in.getBalance().add(sum));
             out.setBalance(out.getBalance().subtract(sum));
+            saveParents(entity, in, out, category);
             return super.save(entity);
         }
         if (category.getType() == CategoryType.INCOME) {
@@ -114,7 +121,36 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         if (category.getType() == CategoryType.OUTCOME) {
             out.setBalance(out.getBalance().subtract(sum));
         }
+        saveParents(entity, in, out, category);
         return super.save(entity);
+    }
+
+    @Override
+    @Transactional
+    public <S extends Operation> Iterable<S> saveAll(Iterable<S> entities) {
+        Map<String, Account> accounts = new HashMap<>();
+        Map<String, Category> categories = new HashMap<>();
+        entities.forEach(entity -> {
+            Account inAccount = entity.getInAccount();
+            if (inAccount != null) {
+                accounts.put(inAccount.getName(), inAccount);
+            }
+            Account outAccount = entity.getOutAccount();
+            if (outAccount != null) {
+                accounts.put(outAccount.getName(), outAccount);
+            }
+            Category category = entity.getCategory();
+            if (category != null) {
+                categories.put(category.getName(), category);
+            }
+        });
+        if (!accounts.isEmpty()) {
+            accountService.saveAll(accounts.values());
+        }
+        if (!categories.isEmpty()) {
+            categoryService.saveAll(categories.values());
+        }
+        return super.saveAll(entities);
     }
 
     private void checkDatesSequence(LocalDate from, LocalDate till) throws ServiceException {
@@ -146,6 +182,19 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             String msg = WRONG_CATEGORY_TYPE_ERROR + categoryType + '.';
             LOGGER.error("ServiceException: {}", msg);
             throw new ServiceException(msg);
+        }
+    }
+
+    private <S extends Operation> void saveParents(S entity, Account in, Account out, Category category)
+            throws ServiceException {
+        if (in != null) {
+            entity.setInAccount(accountService.save(in));
+        }
+        if (out != null) {
+            entity.setOutAccount(accountService.save(out));
+        }
+        if (category != null) {
+            entity.setCategory(categoryService.save(category));
         }
     }
 }

@@ -35,6 +35,12 @@ public class OperationServiceImplTest {
     private OperationServiceImpl service;
 
     @Mock
+    private AccountService accountService;
+
+    @Mock
+    private CategoryService categoryService;
+
+    @Mock
     private OperationRepository repository;
 
     @Mock
@@ -194,6 +200,8 @@ public class OperationServiceImplTest {
         operation.setCategory(category);
         operation.setInAccount(in);
         when(repository.save(operation)).thenReturn(operation);
+        when(accountService.save(in)).thenReturn(in);
+        when(categoryService.save(category)).thenReturn(category);
         assertEquals(operation, service.save(operation));
         assertEquals(13.46, in.getBalance().doubleValue(), 0.0);
         verify(repository, times(1)).save(operation);
@@ -213,6 +221,8 @@ public class OperationServiceImplTest {
         operation.setCategory(category);
         operation.setOutAccount(out);
         when(repository.save(operation)).thenReturn(operation);
+        when(accountService.save(out)).thenReturn(out);
+        when(categoryService.save(category)).thenReturn(category);
         assertEquals(operation, service.save(operation));
         assertEquals(6.56, out.getBalance().doubleValue(), 0.0);
         verify(repository, times(1)).save(operation);
@@ -232,6 +242,8 @@ public class OperationServiceImplTest {
         operation.setInAccount(in);
         operation.setOutAccount(out);
         when(repository.save(operation)).thenReturn(operation);
+        when(accountService.save(in)).thenReturn(in);
+        when(accountService.save(out)).thenReturn(out);
         assertEquals(operation, service.save(operation));
         assertEquals(9.54, in.getBalance().doubleValue(), 0.0);
         assertEquals(6.56, out.getBalance().doubleValue(), 0.0);
