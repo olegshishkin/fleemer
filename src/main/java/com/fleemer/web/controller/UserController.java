@@ -31,6 +31,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String SUBJECT_TEXT_MSG_KEY = "mail.subject";
     private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
@@ -40,7 +41,6 @@ public class UserController {
 
     private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationService confirmationService;
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MailService mailService;
     private final MessageSource messageSource;
     private final PersonService personService;

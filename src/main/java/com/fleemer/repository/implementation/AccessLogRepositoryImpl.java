@@ -98,7 +98,7 @@ public class AccessLogRepositoryImpl implements AccessLogRepository {
                 Fields.field(URI, "_id.uri"),
                 Fields.field(AGENT, "_id.agent"),
                 Fields.field(COUNT)));
-        SortOperation sortOperation = Aggregation.sort(new Sort(Sort.Direction.ASC, DATE, IP, HOST, URI, AGENT));
+        SortOperation sortOperation = Aggregation.sort(Sort.Direction.ASC, DATE, IP, HOST, URI, AGENT);
         TypedAggregation<AccessLog> aggregation = Aggregation.newAggregation(AccessLog.class,
                 matchOperation,
                 initProjectionOperation,

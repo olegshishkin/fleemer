@@ -130,7 +130,7 @@ public class ConfirmationServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws ServiceException {
         doNothing().when(repository).delete(confirmation);
         service.delete(confirmation);
         verify(repository, times(1)).delete(confirmation);

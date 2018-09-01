@@ -54,7 +54,7 @@
         </div>
 
         <div hidden>
-            <span id="lang" th:text="#{common.lang}">en</span>
+            <span id="datePickerLang" th:text="#{common.lang}">en</span>
         </div>
 
         <footer th:replace="footer::footer"></footer>
@@ -63,7 +63,7 @@
                 setDatePicker($('#fromDate'));
                 setDatePicker($('#tillDate'));
                 $('#fileInput').fileselect({
-                    language: $('#lang').text()
+                    language: $('#datePickerLang').text()
                 });
             });
         </script>

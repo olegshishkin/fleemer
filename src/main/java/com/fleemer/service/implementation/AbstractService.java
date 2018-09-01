@@ -78,7 +78,7 @@ public abstract class AbstractService <T, ID, R extends JpaRepository<T, ID>> im
 
     @Override
     @Transactional
-    public void delete(T entity) {
+    public void delete(T entity) throws ServiceException {
         getRepository().delete(entity);
     }
 

@@ -29,11 +29,12 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private static final String CATEGORY_UPDATE_VIEW = "category_update";
     private static final String CATEGORY_EXISTS_ERROR_KEY = "categories.error.user-exists";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
     private static final String PERSON_SESSION_ATTR = "person";
+    private static final String REDIRECT_CATEGORIES_URL = "redirect:/categories";
     private static final String ROOT_VIEW = "categories";
 
     private final CategoryService categoryService;
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final MessageSource messageSource;
     private final OperationService operationService;
 
@@ -77,7 +78,7 @@ public class CategoryController {
         }
         category.setPerson(person);
         categoryService.save(category);
-        return "redirect:/categories";
+        return REDIRECT_CATEGORIES_URL;
     }
 
     @GetMapping("/update")
@@ -85,7 +86,7 @@ public class CategoryController {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Category> category = categoryService.findByIdAndPerson(id, person);
         if (!category.isPresent()) {
-            return "redirect:/categories";
+            return REDIRECT_CATEGORIES_URL;
         }
         model.addAttribute("category", category.get());
         model.addAttribute("categoryTypes", CategoryType.values());
@@ -103,7 +104,7 @@ public class CategoryController {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Category> optional = categoryService.findByIdAndPerson(formCategory.getId(), person);
         if (!optional.isPresent()) {
-            return "redirect:/categories";
+            return REDIRECT_CATEGORIES_URL;
         }
         Category category = optional.get();
         if (!canUseName(category, formCategory, person)) {
@@ -111,31 +112,30 @@ public class CategoryController {
             fillModel(model, categoryService.findAll(person));
             return CATEGORY_UPDATE_VIEW;
         }
-        category.setName(formCategory.getName());
-        category.setType(formCategory.getType());
+        formCategory.setPerson(category.getPerson());
         try {
-            categoryService.save(category);
+            categoryService.save(formCategory);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
             LOGGER.warn("Optimistic lock: {}", e.getMessage());
-            return "redirect:/categories?error=lock";
+            return REDIRECT_CATEGORIES_URL + "?error=lock";
         }
-        return "redirect:/categories?success";
+        return REDIRECT_CATEGORIES_URL + "?success";
     }
 
     @LogAfterReturning
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") long id, HttpSession session) {
+    public String delete(@RequestParam("id") long id, HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Category> optional = categoryService.findByIdAndPerson(id, person);
         if (optional.isPresent()) {
             Category category = optional.get();
             long operationsCount = operationService.countOperationsByCategory(category);
             if (operationsCount > 0) {
-                return "redirect:/categories?deleteForbidden";
+                return REDIRECT_CATEGORIES_URL + "?deleteForbidden";
             }
             categoryService.delete(category);
         }
-        return "redirect:/categories";
+        return REDIRECT_CATEGORIES_URL;
     }
 
     private boolean canUseName(Category category, Category formCategory, Person person) {

@@ -47,13 +47,15 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/operations")
 public class OperationController {
     private static final String CHARSET_NAME = "UTF-8";
+    private static final String IO_ERROR_EXCEPTION_TEMPLATE = "IO Error: Exception: {}";
+    private static final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
     private static final String OPERATION_UPDATE_VIEW = "operation_update";
     private static final String PERSON_SESSION_ATTR = "person";
+    private static final String REDIRECT = "redirect:";
     private static final String ROOT_VIEW = "operations";
 
     private final AccountService accountService;
     private final CategoryService categoryService;
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private final OperationService operationService;
 
     @Autowired
@@ -107,7 +109,7 @@ public class OperationController {
             return ROOT_VIEW;
         }
         operationService.save(operation);
-        return "redirect:/";
+        return REDIRECT + "/";
     }
 
     @GetMapping("/update")
@@ -116,7 +118,7 @@ public class OperationController {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Operation> operation = operationService.findByIdAndPerson(id, person);
         if (!operation.isPresent()) {
-            return "redirect:" + url;
+            return REDIRECT + url;
         }
         model.addAttribute("accounts", accountService.findAll(person));
         model.addAttribute("categories", categoryService.findAll(person));
@@ -137,12 +139,12 @@ public class OperationController {
         }
         List<Operation> operations = operationService.findAllByPerson(person, null, null);
         if (!operations.contains(formOperation)) {
-            return "redirect:" + url;
+            return REDIRECT + url;
         }
         long id = formOperation.getId();
         Operation operation = operationService.findById(id).orElse(null);
         if (operation == null) {
-            return "redirect:" + url;
+            return REDIRECT + url;
         }
         String param = "";
         try {
@@ -151,19 +153,20 @@ public class OperationController {
             LOGGER.warn("Optimistic lock: {}", e.getMessage());
             param = "?error=lock";
         }
-        return "redirect:" + url + param;
+        return REDIRECT + url + param;
     }
 
     @LogAfterReturning
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") long id, HttpSession session, @RequestParam("redirect") String url) {
+    public String delete(@RequestParam("id") long id, HttpSession session, @RequestParam("redirect") String url)
+            throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Operation> operation = operationService.findByIdAndPerson(id, person);
         if (!operation.isPresent()) {
-            return "redirect:" + url;
+            return REDIRECT + url;
         }
         operationService.delete(operation.get());
-        return "redirect:" + url;
+        return REDIRECT + url;
     }
 
     @ResponseBody
@@ -184,7 +187,7 @@ public class OperationController {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             mapper.writer().withRootName("Operations").writeValue(out, operations);
         } catch (IOException e) {
-            LOGGER.error("IO Error: Exception: {}", e.getMessage());
+            LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
             throw e;
         }
     }
@@ -211,10 +214,10 @@ public class OperationController {
             }
             operationService.saveAll(operations);
         } catch (IOException e) {
-            LOGGER.error("IO Error: Exception: {}", e.getMessage());
+            LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
             throw e;
         }
-        return "redirect:/options/serialize?success";
+        return REDIRECT + "/options/serialize?success";
     }
 
     private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
@@ -249,7 +252,7 @@ public class OperationController {
             if (!cached.getName().equals(a.getName()) || !cached.getType().equals(a.getType()) ||
             !cached.getCurrency().equals(a.getCurrency()) || !cached.getBalance().equals(a.getBalance())) {
                 String msg = "Same accounts have different fields' values: 1) " + cached + ", 2) " + a + '.';
-                LOGGER.error("IO Error: Exception: {}", msg);
+                LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, msg);
                 throw new IOException(msg);
             }
             return cached;
@@ -277,7 +280,7 @@ public class OperationController {
         if (cached != null) {
             if (!cached.getName().equals(c.getName()) || !cached.getType().equals(c.getType())) {
                 String msg = "Same categories have different fields' values: 1) " + cached + ", 2) " + c + '.';
-                LOGGER.error("IO Error: Exception: {}", msg);
+                LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, msg);
                 throw new IOException(msg);
             }
             return cached;

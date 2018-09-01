@@ -126,7 +126,7 @@ public class PersonServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws ServiceException {
         doNothing().when(repository).delete(person);
         service.delete(person);
         verify(repository, times(1)).delete(person);

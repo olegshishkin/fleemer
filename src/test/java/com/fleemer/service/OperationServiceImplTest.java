@@ -58,6 +58,9 @@ public class OperationServiceImplTest {
     @Mock
     private Sort sort;
 
+    @Mock
+    private Account account;
+
     @Test
     public void count() {
         when(repository.count()).thenReturn(id);
@@ -135,10 +138,19 @@ public class OperationServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws ServiceException {
         doNothing().when(repository).delete(operation);
+        when(operation.getInAccount()).thenReturn(account);
+        when(operation.getOutAccount()).thenReturn(account);
+        when(operation.getSum()).thenReturn(BigDecimal.TEN);
+        when(repository.getOne(any())).thenReturn(operation);
+        when(account.getBalance()).thenReturn(BigDecimal.ZERO);
         service.delete(operation);
         verify(repository, times(1)).delete(operation);
+        verify(operation, times(1)).getInAccount();
+        verify(operation, times(1)).getOutAccount();
+        verify(operation, times(1)).getSum();
+        verify(repository, times(1)).getOne(any());
     }
 
     @Test

@@ -30,10 +30,11 @@ public class AccountController {
     private static final String ACCOUNT_UPDATE_VIEW = "account_update";
     private static final String ACCOUNT_EXISTS_ERROR_KEY = "accounts.error.name-exists";
     private static final String PERSON_SESSION_ATTR = "person";
+    private static final String REDIRECT_ACCOUNTS_URL = "redirect:/accounts";
     private static final String ROOT_VIEW = "accounts";
 
     private final AccountService accountService;
-    private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final MessageSource messageSource;
     private final OperationService operationService;
 
@@ -70,7 +71,7 @@ public class AccountController {
         }
         account.setPerson(person);
         accountService.save(account);
-        return "redirect:/accounts";
+        return REDIRECT_ACCOUNTS_URL;
     }
 
     @GetMapping("/update")
@@ -78,7 +79,7 @@ public class AccountController {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Account> account = accountService.findByIdAndPerson(id, person);
         if (!account.isPresent()) {
-            return "redirect:/accounts";
+            return REDIRECT_ACCOUNTS_URL;
         }
         model.addAttribute("account", account.get());
         model.addAttribute("accountTypes", AccountType.values());
@@ -97,7 +98,7 @@ public class AccountController {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Account> optional = accountService.findByIdAndPerson(formAccount.getId(), person);
         if (!optional.isPresent()) {
-            return "redirect:/accounts";
+            return REDIRECT_ACCOUNTS_URL;
         }
         Account account = optional.get();
         if (!canUseName(account, formAccount, person)) {
@@ -109,26 +110,26 @@ public class AccountController {
         try {
             accountService.save(formAccount);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic lock: {}", e.getMessage());
-            return "redirect:/accounts?error=lock";
+            logger.warn("Optimistic lock: {}", e.getMessage());
+            return REDIRECT_ACCOUNTS_URL + "?error=lock";
         }
-        return "redirect:/accounts?success";
+        return REDIRECT_ACCOUNTS_URL + "?success";
     }
 
     @LogAfterReturning
     @GetMapping("/delete")
-    public String delete(@RequestParam("id") long id, HttpSession session) {
+    public String delete(@RequestParam("id") long id, HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Optional<Account> optional = accountService.findByIdAndPerson(id, person);
         if (optional.isPresent()) {
             Account account = optional.get();
             long operationsCount = operationService.countOperationsByAccount(account);
             if (operationsCount > 0) {
-                return "redirect:/accounts?deleteForbidden";
+                return REDIRECT_ACCOUNTS_URL + "?deleteForbidden";
             }
             accountService.delete(account);
         }
-        return "redirect:/accounts";
+        return REDIRECT_ACCOUNTS_URL;
     }
 
     private boolean canUseName(Account account, Account formAccount, Person person) {

@@ -131,7 +131,7 @@ public class AccountServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws ServiceException {
         doNothing().when(repository).delete(account);
         service.delete(account);
         verify(repository, times(1)).delete(account);

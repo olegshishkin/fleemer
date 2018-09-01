@@ -48,7 +48,7 @@ public class Operation implements Serializable {
     private Account inAccount;
 
     @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)//todo remove?
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "out_account_id")
     private Account outAccount;
 

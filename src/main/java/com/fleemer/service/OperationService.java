@@ -6,7 +6,6 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.service.exception.ServiceException;
 import java.time.LocalDate;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.domain.Page;

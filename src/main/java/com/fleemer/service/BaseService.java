@@ -29,7 +29,7 @@ public interface BaseService<T, ID> {
 
     void deleteById(ID id);
 
-    void delete(T entity);
+    void delete(T entity) throws ServiceException;
 
     void deleteAll(Iterable<? extends T> entities);
 

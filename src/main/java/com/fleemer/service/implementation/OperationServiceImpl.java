@@ -31,6 +31,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     private static final String NO_ACCOUNTS_ERROR = "Both the income account and outcome account are missing.";
     private static final String NO_OPERATION_TYPE_ERROR = "Category and both the accounts are not null. There is " +
             "no way to determine an operation type.";
+    private static final String SERVICE_EXCEPTION_TEMPLATE = "ServiceException: {}";
     private static final String WRONG_CATEGORY_TYPE_ERROR = "Wrong category type for that operation: ";
 
     private final AccountService accountService;
@@ -62,7 +63,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till);
         }
         String msg = "Missing one of the dates. From: " + from + ". Till: " + till + '.';
-        LOGGER.error("ServiceException: {}", msg);
+        LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, msg);
         throw new ServiceException(msg);
     }
 
@@ -108,19 +109,12 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         Account out = entity.getOutAccount();
         Category category = entity.getCategory();
         checkLogicalConstraints(in, out, category);
-        BigDecimal sum = entity.getSum();
-        if (category == null) {
-            in.setBalance(in.getBalance().add(sum));
-            out.setBalance(out.getBalance().subtract(sum));
-            saveParents(entity, in, out, category);
-            return super.save(entity);
+        Operation storedOperation = null;
+        if (entity.getId() != null) {
+            storedOperation = repository.getOne(entity.getId());
         }
-        if (category.getType() == CategoryType.INCOME) {
-            in.setBalance(in.getBalance().add(sum));
-        }
-        if (category.getType() == CategoryType.OUTCOME) {
-            out.setBalance(out.getBalance().subtract(sum));
-        }
+        BigDecimal sum = storedOperation == null ? entity.getSum() : entity.getSum().subtract(storedOperation.getSum());
+        transfer(in, out, category, sum);
         saveParents(entity, in, out, category);
         return super.save(entity);
     }
@@ -153,35 +147,61 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         return super.saveAll(entities);
     }
 
-    private void checkDatesSequence(LocalDate from, LocalDate till) throws ServiceException {
+    @Override
+    @Transactional
+    public void delete(Operation entity) throws ServiceException {
+        Account in = entity.getInAccount();
+        Account out = entity.getOutAccount();
+        Category category = entity.getCategory();
+        checkLogicalConstraints(in, out, category);
+        BigDecimal sum = repository.getOne(entity.getId()).getSum().negate();
+        transfer(in, out, category, sum);
+        saveParents(entity, in, out, category);
+        super.delete(entity);
+    }
+
+    private static void checkDatesSequence(LocalDate from, LocalDate till) throws ServiceException {
         if (from.isAfter(till)) {
             String msg = DATES_SEQUENCE_ERROR + ": from: " + from + ", till: " + till;
-            LOGGER.error("ServiceException: {}", msg);
+            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
         }
     }
 
-    private void checkLogicalConstraints(Account in, Account out, Category cat) throws ServiceException {
+    private static void checkLogicalConstraints(Account in, Account out, Category cat) throws ServiceException {
         if (in == null & out == null) {
-            LOGGER.error("ServiceException: {}", NO_ACCOUNTS_ERROR);
+            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_ERROR);
             throw new ServiceException(NO_ACCOUNTS_ERROR);
         }
         if (cat == null & (in == null || out == null)) {
-            LOGGER.error("ServiceException: {}", NO_ACCOUNTS_AND_CATEGORY_ERROR);
+            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_AND_CATEGORY_ERROR);
             throw new ServiceException(NO_ACCOUNTS_AND_CATEGORY_ERROR);
         }
         if (cat == null) {
             return;
         }
         if (in != null && out != null) {
-            LOGGER.error("ServiceException: {}", NO_OPERATION_TYPE_ERROR);
+            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, NO_OPERATION_TYPE_ERROR);
             throw new ServiceException(NO_OPERATION_TYPE_ERROR);
         }
-        CategoryType categoryType = cat.getType();
-        if ((in != null && categoryType != CategoryType.INCOME) || (out != null && categoryType != CategoryType.OUTCOME)) {
-            String msg = WRONG_CATEGORY_TYPE_ERROR + categoryType + '.';
-            LOGGER.error("ServiceException: {}", msg);
+        CategoryType type = cat.getType();
+        if ((in != null && type != CategoryType.INCOME) || (out != null && type != CategoryType.OUTCOME)) {
+            String msg = WRONG_CATEGORY_TYPE_ERROR + type + '.';
+            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
+        }
+    }
+
+    private static void transfer(Account in, Account out, Category category, BigDecimal sum) {
+        if (category == null) {
+            in.setBalance(in.getBalance().add(sum));
+            out.setBalance(out.getBalance().subtract(sum));
+        }
+        if (category != null && category.getType() == CategoryType.INCOME) {
+            in.setBalance(in.getBalance().add(sum));
+        }
+        if (category != null && category.getType() == CategoryType.OUTCOME) {
+            out.setBalance(out.getBalance().subtract(sum));
         }
     }
 

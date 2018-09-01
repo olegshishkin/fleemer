@@ -131,7 +131,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void delete() {
+    public void delete() throws ServiceException {
         doNothing().when(repository).delete(category);
         service.delete(category);
         verify(repository, times(1)).delete(category);
