@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <dataset>
-    <Person id="1" first_name="FirstName1" last_name="LastName1" email="mail100@mail.ma" hash="hash1" version="0"/>
-    <Person id="2" first_name="FirstName2" last_name="LastName2" email="mail95@mail.ma"  hash="hash2" version="0"/>
-    <Person id="3" first_name="FirstName3" last_name="LastName3" email="mail3@mail.ma"   hash="hash3" version="0"/>
-    <Person id="5" first_name="FirstName5" last_name="LastName5" email="mail@mail.ma"    hash="hash5" version="0"/>
+    <Person id="1" first_name="FirstName1" last_name="LastName1" nickname="Fred"    email="mail100@mail.ma" hash="hash1" version="0"/>
+    <Person id="2" first_name="FirstName2" last_name="LastName2" nickname="Richard" email="mail95@mail.ma"  hash="hash2" version="0"/>
+    <Person id="3" first_name="FirstName3" last_name="LastName3" nickname="Patric"  email="mail3@mail.ma"   hash="hash3" version="0"/>
+    <Person id="5" first_name="FirstName5" last_name="LastName5" nickname="Peter"   email="mail@mail.ma"    hash="hash5" version="0"/>
 
     <Confirmation id="1" token="1c58fa7f-f3ce-4886-bce3-02be9c23fcdd" enabled="1" person_id="1" version="0"/>
     <Confirmation id="2" token="2c58fa7f-f3ce-4886-bce3-02be9c23fcdd" enabled="1" person_id="2" version="0"/>

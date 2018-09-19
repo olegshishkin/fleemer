@@ -32,6 +32,10 @@ public class Person implements Serializable {
     @Column(name = "last_name")
     private String lastName;
 
+    @Size(min = 1, max = 255)
+    @Column(unique = true, nullable = false)
+    private String nickname;
+
     @NotNull
     @Email
     @Column(unique = true, nullable = false)

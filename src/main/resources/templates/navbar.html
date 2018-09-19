@@ -11,7 +11,7 @@
             <span class="navbar-toggler-icon"></span>
         </button>
 
-        <div class="collapse navbar-collapse" id="navbarsExampleDefault">
+        <div id="main-navbar" class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item" th:classappend="${pageName == 'home'}? 'active'">
                     <a th:href="@{/}" href="#" class="nav-link" th:text="#{navbar.menu.home}">Home</a>
@@ -24,6 +24,10 @@
                 </li>
                 <li class="nav-item" th:classappend="${pageName == 'categories'}? 'active'">
                     <a th:href="@{/categories}" href="#" class="nav-link" th:text="#{navbar.menu.categories}">Categories</a>
+                </li>
+                <li class="nav-item">
+                    <a th:href="@{/chat}" href="#" target="_blank" rel="noopener noreferrer" class="nav-link"
+                       th:text="#{navbar.menu.chat}">Chat</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">

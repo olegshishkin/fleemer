@@ -1,5 +1,6 @@
 package com.fleemer.model.mongodb;
 
+import java.io.Serializable;
 import java.util.Date;
 import lombok.Data;
 import org.springframework.data.annotation.Id;
@@ -8,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "log")
 @Data
-public class AccessLog {
+public class AccessLog implements Serializable {
     @Id
     private String id;
 

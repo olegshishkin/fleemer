@@ -52,7 +52,7 @@
                           class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <select id="outAccount" th:field="*{outAccount}" class="custom-select d-block w-100">
+                                <select id="out-account" th:field="*{outAccount}" class="custom-select d-block w-100">
                                     <option value="" th:text="#{index.form.select-account}"></option>
                                     <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
                                 </select>
@@ -62,7 +62,7 @@
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <select id="inAccount" th:field="*{inAccount}" class="custom-select d-block w-100" disabled>
+                                <select id="in-account" th:field="*{inAccount}" class="custom-select d-block w-100" disabled>
                                     <option value="" th:text="#{index.form.select-account}"></option>
                                     <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
                                 </select>
@@ -76,7 +76,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <select id="category" th:field="*{category}" class="custom-select d-block w-100" title="">
-                                    <option id="categoryNameBlankValue" value="" th:text="#{index.form.select-category}"></option>
+                                    <option id="category-name-blank-value" value="" th:text="#{index.form.select-category}"></option>
                                 </select>
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
                             </div>
@@ -137,7 +137,6 @@
                     <table class="table table-hover">
                         <thead align="right">
                         <tr>
-                            <th scope="col" th:text="#{operations.table.date}">Date</th>
                             <th scope="col" th:text="#{operations.table.from-account}">From account</th>
                             <th scope="col" th:text="#{operations.table.to-account}">To account</th>
                             <th scope="col" th:text="#{operations.table.category}">Category</th>
@@ -147,7 +146,6 @@
                         </thead>
                         <tbody>
                         <tr th:each="o : ${operations}" th:with="sum=${#numbers.formatDecimal(o.sum, 1, 2)}">
-                            <td align="right" th:text="${o.date}">...</td>
                             <td align="right" th:text="${o.outAccount != null ? o.outAccount.name : ''}">...</td>
                             <td align="right" th:text="${o.inAccount != null ? o.inAccount.name : ''}">...</td>
                             <td align="right" th:text="${o.category != null ? o.category.name : ''}">...</td>
@@ -171,13 +169,13 @@
             </div>
 
             <div hidden>
-                <span id="incomeChartText" th:text="#{index.chart.income}">Income</span>
-                <span id="outcomeChartText" th:text="#{index.chart.outcome}">Outcome</span>
-                <span id="deleteConfirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
-                <span id="datePickerLang" th:text="#{common.lang}">en</span>
+                <span id="income-chart-text" th:text="#{index.chart.income}">Income</span>
+                <span id="outcome-chart-text" th:text="#{index.chart.outcome}">Outcome</span>
+                <span id="delete-confirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
+                <span id="date-picker-lang" th:text="#{common.lang}">en</span>
             </div>
 
-            <footer th:replace="footer::footer"></footer>
+            <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>
             <script>
                 $(document).ready(function(){
                     setValidationListener();

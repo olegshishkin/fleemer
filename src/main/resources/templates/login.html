@@ -11,6 +11,12 @@
     <script th:src="@{/static/js/custom.js}" src="../static/js/custom.js" defer></script>
 </head>
 <body>
+    <div id="lang-link" class="text-right">
+        <a th:href="@{/options/locale(locale=${session.locale})}" href="#" class="btn btn-link btn-sm text-dark text-right">
+            <span class="text-muted" th:text="#{navbar.menu.switchLocale(${session.locale.toUpperCase()})}">EN</span>
+        </a>
+    </div>
+
     <form th:action="@{/login}" method="post" class="form-signin text-center">
         <img th:src="@{/static/images/logo_full.png}" src="../static/images/logo_full.png" alt="" width="259" height="75">
 
@@ -23,12 +29,6 @@
             <div class="alert alert-warning text-center" role="alert">
                 <span th:text="#{login.just-logged-out}">You've just logged out.</span>
             </div>
-        </div>
-
-        <div class="text-right">
-            <a th:href="@{/options/locale(locale=${session.locale})}" href="#" class="btn btn-link btn-sm text-dark text-right">
-                <span class="text-muted" th:text="${session.locale.toUpperCase()}">EN</span>
-            </a>
         </div>
 
         <input type="email" id="username" name="username" class="form-control" th:placeholder="#{login.placeholder-email}"
@@ -52,7 +52,7 @@
                 <span th:text="#{login.signup}">Register</span>
             </a>
         </div>
-        <footer th:replace="footer::footer"></footer>
+        <footer th:replace="footer::footer(enableMessageNotification=false)"></footer>
     </form>
 </body>
 </html>

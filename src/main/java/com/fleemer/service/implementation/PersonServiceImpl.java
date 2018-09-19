@@ -5,6 +5,8 @@ import com.fleemer.repository.PersonRepository;
 import com.fleemer.service.PersonService;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,5 +29,15 @@ public class PersonServiceImpl extends AbstractService<Person, Long, PersonRepos
     @Transactional(readOnly = true)
     public Optional<Person> findByEmail(String email) {
         return repository.findByEmail(email);
+    }
+
+    @Override
+    public Page<Person> findAllByNicknamePart(String text, Pageable pageable) {
+        return repository.findAllByNicknameContainsIgnoreCase(text, pageable);
+    }
+
+    @Override
+    public Optional<Person> findByNickname(String nickname) {
+        return repository.findByNickname(nickname);
     }
 }

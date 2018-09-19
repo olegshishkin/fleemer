@@ -2,6 +2,8 @@ package com.fleemer.repository;
 
 import com.fleemer.model.Person;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -18,4 +20,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     }
 
     Optional<Person> findByEmail(String email);
+
+    Page<Person> findAllByNicknameContainsIgnoreCase(String text, Pageable pageable);
+
+    Optional<Person> findByNickname(String nickname);
 }

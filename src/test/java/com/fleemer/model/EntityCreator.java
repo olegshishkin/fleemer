@@ -44,11 +44,13 @@ public class EntityCreator {
         return o;
     }
 
-    public static Person create(Long id, String firstName, String lastName, String email, String hash, int version) {
+    public static Person create(Long id, String firstName, String lastName, String nickname, String email, String hash,
+                                int version) {
         Person p = new Person();
         p.setId(id);
         p.setFirstName(firstName);
         p.setLastName(lastName);
+        p.setNickname(nickname);
         p.setEmail(email);
         p.setHash(hash);
         p.setVersion(version);

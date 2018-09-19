@@ -15,6 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
@@ -91,7 +94,8 @@ public class PersonRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
     public void save_new() {
-        Person person = create(null, "test firstname", "test lastname", "test@email.com", "test hash", 0);
+        String firstName = "test firstname";
+        Person person = create(null, firstName, "test lastname", "test nickname", "test@email.com", "test hash", 0);
         repository.save(person);
         repository.flush();
     }
@@ -108,8 +112,10 @@ public class PersonRepositoryTest {
     @Test
     @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
     public void saveAll() {
-        Person newPerson1 = create(null, "New Firstname1", "New Lastname1", "New@email1.co", "New hash1", 0);
-        Person newPerson2 = create(null, "New Firstname2", "New Lastname2", "New@email2.ui", "New hash2", 0);
+        String firstName1 = "New Firstname1";
+        Person newPerson1 = create(null, firstName1, "New Lastname1", "New Nickname1", "New@email1.co", "New hash1", 0);
+        String firstName2 = "New Firstname2";
+        Person newPerson2 = create(null, firstName2, "New Lastname2", "New Nickname2", "New@email2.ui", "New hash2", 0);
         Person person = people.get(1);
         person.setEmail("Changed@email.ill");
         repository.saveAll(List.of(newPerson1, newPerson2, person));
@@ -169,5 +175,20 @@ public class PersonRepositoryTest {
     @Test
     public void findByEmail() {
         RepositoryAssertions.assertEquals(people.get(2), repository.findByEmail("mail3@mail.ma").orElseThrow());
+        Assert.assertEquals(Optional.empty(), repository.findByEmail("Mail3@mail.ma"));
+    }
+
+    @Test
+    public void findAllByNicknameContainsIgnoreCase() {
+        List<Person> expected = List.of(people.get(1), people.get(2));
+        Pageable pageable = PageRequest.of(0, 1000, new Sort(Sort.Direction.ASC, "id"));
+        Page<Person> actual = repository.findAllByNicknameContainsIgnoreCase("iC", pageable);
+        RepositoryAssertions.assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findByNickname() {
+        RepositoryAssertions.assertEquals(people.get(3), repository.findByNickname("Samuel").orElseThrow());
+        Assert.assertEquals(Optional.empty(), repository.findByNickname("samuel"));
     }
 }

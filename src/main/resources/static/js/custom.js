@@ -38,7 +38,7 @@ function setDatePicker(elem) {
         todayHighlight: true,
         autoclose: true,
         orientation: 'bottom left',
-        language: $('#datePickerLang').text()
+        language: $('#date-picker-lang').text()
     };
     elem.datepicker(options);
 }
@@ -46,8 +46,8 @@ function setDatePicker(elem) {
 // operation type radiobuttons
 function setOperationTypeListener(async){
     $("input[name=operationType]:radio").change(function() {
-        var inAcc = $('#inAccount');
-        var outAcc = $('#outAccount');
+        var inAcc = $('#in-account');
+        var outAcc = $('#out-account');
         var category = $('#category');
         if ($('#outcome').prop('checked')) {
             fillCategories('OUTCOME', async);
@@ -69,7 +69,7 @@ function setOperationTypeListener(async){
 }
 
 function fillCategories(catType, async) {
-    $('#categoryNameBlankValue').siblings().remove();
+    $('#category-name-blank-value').siblings().remove();
     var selectTag = $('#category');
     if (catType == 'TRANSFER') {
         return;
@@ -88,8 +88,8 @@ function fillCategories(catType, async) {
 }
 
 function prepareOperationEditForm() {
-    var inElem = $('#inAccount');
-    var outElem = $('#outAccount');
+    var inElem = $('#in-account');
+    var outElem = $('#out-account');
     var catVal = $('#category').val();
     var catText = $('#category option:selected').text();
     var tempVal;
@@ -138,8 +138,8 @@ function getOperationsPage(page, size, from, till) {
 
 // Builds operation table
 function fillTable(operations) {
-    $('#operationTable').empty();
-    var table = $('#operationTableSnippet').clone(true).removeAttr('id');
+    $('#operation-table').empty();
+    var table = $('#operation-table-snippet').clone(true).removeAttr('id');
     $.each(operations,
         function addOperationRow(key, value) {
             var redirectUrl = '&redirect=/operations';
@@ -178,14 +178,14 @@ function fillTable(operations) {
             editLink.html(editImg);
             var deleteLink = $('<a>')
                 .attr('href', '/operations/delete?id=' + value.id + redirectUrl)
-                .attr('onclick', 'return confirm("' + $('#deleteConfirm').html() +  '");');
+                .attr('onclick', 'return confirm("' + $('#delete-confirm').html() +  '");');
             var deleteImg = '<img src="/static/images/delete.png" height="20" width="20">';
             deleteLink.html(deleteImg);
             var editCell = $('<td>').attr('align', 'left').append(editLink).append(' ').append(deleteLink);
             tr.append(editCell);
             table.find('tbody').append(tr);
         });
-    $('#operationTable').append(table);
+    $('#operation-table').append(table);
     showTable();
 }
 
@@ -197,7 +197,7 @@ function isNotNull(value) {
 function fillPaginator(cur, total, size, from, till) {
     var visiblePages = 10;
     var methodEnding = size + ',\'' + from + '\',\'' + till +'\'';
-    var prevLi = $('#curPage').clone(true).removeAttr('id');
+    var prevLi = $('#current-page').clone(true).removeAttr('id');
     if (cur == 0){
         prevLi.addClass('disabled');
     } else {
@@ -211,7 +211,7 @@ function fillPaginator(cur, total, size, from, till) {
     var lastVisiblePage = total < firstVisiblePage + visiblePages ? total : firstVisiblePage + visiblePages;
 
     for (var i = firstVisiblePage; i < lastVisiblePage; i++){
-        var curLi = $('#curPage').clone(true).removeAttr('id');
+        var curLi = $('#current-page').clone(true).removeAttr('id');
         if (i == cur) {
             curLi.addClass('active');
         }
@@ -220,7 +220,7 @@ function fillPaginator(cur, total, size, from, till) {
         $('#pagination').append(curLi);
     }
 
-    var nextLi = $('#curPage').clone(true).removeAttr('id');
+    var nextLi = $('#current-page').clone(true).removeAttr('id');
     if (cur == total - 1){
         nextLi.addClass('disabled');
     } else {
@@ -239,15 +239,15 @@ function buildChart() {
             var config = {
                 data: result,
                 xkey: 'date',
-                ykeys: ['outcome', 'income'],
-                labels: [$('#incomeChartText').text(), $('#outcomeChartText').text()],
+                ykeys: ['income', 'outcome'],
+                labels: [$('#income-chart-text').text(), $('#outcome-chart-text').text()],
                 fillOpacity: 0.5,
                 hideHover: 'auto',
                 behaveLikeLine: true,
                 resize: true,
                 pointFillColors: ['#ffffff'],
                 pointStrokeColors: ['black'],
-                lineColors: ['red', 'green']
+                lineColors: ['green', 'red']
             };
             config.element = 'chart';
             Morris.Area(config);
@@ -258,7 +258,7 @@ function buildChart() {
 
 // Confirmation window for delete action
 function confirmWindow() {
-    return confirm($('#deleteConfirm').text());
+    return confirm($('#delete-confirm').text());
 }
 
 function showTable() {
@@ -268,18 +268,18 @@ function showTable() {
 
 function exportButtonClick() {
     $('#message').empty();
-    $('#exportBtn').addClass('active');
-    $('#importBtn').removeClass('active');
-    $('#importForm').attr('hidden', true);
-    $('#exportForm').attr('hidden', false);
+    $('#export-btn').addClass('active');
+    $('#import-btn').removeClass('active');
+    $('#import-form').attr('hidden', true);
+    $('#export-form').attr('hidden', false);
 }
 
 function importButtonClick() {
     $('#message').empty();
-    $('#exportBtn').removeClass('active');
-    $('#importBtn').addClass('active');
-    $('#importForm').attr('hidden', false);
-    $('#exportForm').attr('hidden', true);
+    $('#export-btn').removeClass('active');
+    $('#import-btn').addClass('active');
+    $('#import-form').attr('hidden', false);
+    $('#export-form').attr('hidden', true);
 }
 
 function beforPageForwardCountDown(elem) {

@@ -62,6 +62,17 @@
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
+                            <label th:for="*{nickname}" th:text="#{user.form.nickname}">Nickname</label>
+                            <input th:field="*{nickname}" type="text" class="form-control" required/>
+                            <div th:if="${#fields.hasErrors('nickname')}">
+                                <span th:errors="*{nickname}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
                             <label th:for="*{hash}" th:text="#{user.form.password}">Password</label>
                             <input th:field="*{hash}" type="password" class="form-control" required/>
                             <div th:if="${#fields.hasErrors('hash')}">
@@ -88,7 +99,7 @@
         </div>
     </div>
 </main>
-<footer th:replace="footer::footer"></footer>
+<footer th:replace="footer::footer(enableMessageNotification=true)"></footer>
 <script>
     $(document).ready(function(){
         setValidationListener();

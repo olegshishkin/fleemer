@@ -28,6 +28,8 @@
         <jaxb.version>2.3.0</jaxb.version>
         <logback.access.mongodb.version>0.1.5</logback.access.mongodb.version>
         <logback.access.spring.boot.starter.version>2.7.1</logback.access.spring.boot.starter.version>
+        <netty.version>4.1.29.Final</netty.version>
+        <netty.reactor.version>0.7.9.RELEASE</netty.reactor.version>
         <springtestdbunit.version>1.3.0</springtestdbunit.version>
         <ua.parser.version>1.4.0</ua.parser.version>
         <woodstox.version>5.1.0</woodstox.version>
@@ -61,6 +63,33 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-stomp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-kahadb-store</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor.ipc</groupId>
+            <artifactId>reactor-netty</artifactId>
+            <version>${netty.reactor.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty-all</artifactId>
+            <version>${netty.version}</version>
         </dependency>
         <dependency>
             <groupId>com.github.ulisesbocchio</groupId>

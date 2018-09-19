@@ -3,6 +3,7 @@ create table if not exists `person`
   `id`            bigint unsigned auto_increment unique primary key,
   `first_name`    varchar(255)    not null,
   `last_name`     varchar(255)    null,
+  `nickname`      varchar(255)    not null unique,
   `email`         varchar(255)    not null unique,
   `hash`          varchar(255)    not null,
   `version`       int             not null

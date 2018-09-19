@@ -10,11 +10,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public class PersonDetails implements UserDetails {
     private Person person;
-    private final ConfirmationService service;
+    private final ConfirmationService confirmationService;
 
-    public PersonDetails(Person person, ConfirmationService service) {
+    public PersonDetails(Person person, ConfirmationService confirmationService) {
         this.person = person;
-        this.service = service;
+        this.confirmationService = confirmationService;
     }
 
     @Override
@@ -50,6 +50,6 @@ public class PersonDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return service.isPersonEnabled(person);
+        return confirmationService.isPersonEnabled(person);
     }
 }

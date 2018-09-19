@@ -37,12 +37,12 @@ public class UserController {
     private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
     private static final String USER_CREATE_VIEW = "user_create";
     private static final String USER_UPDATE_VIEW = "user_update";
-    private static final String PASSWD_CONFIRM_FAILD_MSG_KEY = "user.error.password-not-equals";
+    private static final String PASSWD_CONFIRM_FAILED_MSG_KEY = "user.error.password-not-equals";
 
-    private final BCryptPasswordEncoder passwordEncoder;
     private final ConfirmationService confirmationService;
     private final MailService mailService;
     private final MessageSource messageSource;
+    private final BCryptPasswordEncoder passwordEncoder;
     private final PersonService personService;
 
     @Autowired
@@ -70,7 +70,7 @@ public class UserController {
             return USER_CREATE_VIEW;
         }
         if (!confirmPassword.equals(person.getHash())) {
-            String msg = getMessage(PASSWD_CONFIRM_FAILD_MSG_KEY);
+            String msg = getMessage(PASSWD_CONFIRM_FAILED_MSG_KEY);
             bindingResult.rejectValue("hash", "hash.confirmNotEquals", msg);
             return USER_CREATE_VIEW;
         }
@@ -120,9 +120,21 @@ public class UserController {
         if (!person.getId().equals(currentUser.getId())) {
             return "redirect:/";
         }
-        String email = currentUser.getEmail();
-        if (!email.equals(person.getEmail())) {
-            person.setEmail(email);
+        String email = person.getEmail();
+        if (!email.equals(currentUser.getEmail())) {
+            if (personService.findByEmail(email).isPresent()) {
+                String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
+                bindingResult.rejectValue("email", "email.alreadyExists", msg);
+                return USER_UPDATE_VIEW;
+            }
+        }
+        String nickname = person.getNickname();
+        if (!nickname.equals(currentUser.getNickname())) {
+            if (personService.findByNickname(nickname).isPresent()) {
+                String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
+                bindingResult.rejectValue("nickname", "nickname.alreadyExists", msg);
+                return USER_UPDATE_VIEW;
+            }
         }
         String password = person.getHash();
         if (!passwordEncoder.matches(password, currentUser.getHash())) {

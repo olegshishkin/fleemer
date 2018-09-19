@@ -22,7 +22,7 @@
                     After <span id="delay" class="text-danger">10</span> seconds you will be automatically
                     redirected to the <a id="home" th:href="@{/}">main page</a>
                 </div>
-                <footer th:replace="footer::footer"></footer>
+                <footer th:replace="footer::footer(enableMessageNotification=false)"></footer>
             </div>
         </div>
     </div>

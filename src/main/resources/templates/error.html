@@ -13,7 +13,7 @@
                     <p class="mb-0" th:text="#{error.message.conclusion}">I hope these little troubles will not affect your love for
                         our application :)</p>
                 </div>
-                <footer th:replace="footer::footer"></footer>
+                <footer th:replace="footer::footer(enableMessageNotification=false)"></footer>
             </div>
         </div>
     </div>

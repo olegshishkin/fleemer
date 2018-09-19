@@ -2,8 +2,21 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head></head>
 <body>
-<footer th:fragment="footer" class="my-5 text-muted text-center text-small">
+<footer th:fragment="footer(enableMessageNotification)" class="my-5 text-muted text-center text-small">
     <p th:utext="#{common.copyright}" class="mb-3">&copy; 2018 Fleemer Corp.</p>
+    <div th:if="${enableMessageNotification}">
+        <script>
+            $(document).ready(function(){
+                connect(onNotificationConnected, onNotificationConnectionError);
+            });
+        </script>
+    </div>
+    <div th:if="${session.person}" hidden="">
+        <p id="current-user-nickname" th:text="${session.person.nickname}"></p>
+        <p id="current-user-id" th:text="${session.person.id}"></p>
+        <p id="chat-notification-icon" th:text="@{/static/images/comment-regular.svg}"></p>
+        <p id="chat-notification-info" th:text="#{chat.notification.info}"></p>
+    </div>
 </footer>
 </body>
 </html>

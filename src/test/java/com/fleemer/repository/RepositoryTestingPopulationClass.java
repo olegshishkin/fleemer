@@ -44,11 +44,11 @@ class RepositoryTestingPopulationClass {
     }
 
     private List<Person> getTestPeople() {
-        Person p1 = EntityCreator.create(1L, "FirstName1", "LastName1", "mail100@mail.ma", "hash1", 0);
-        Person p2 = EntityCreator.create(2L, "FirstName2", "LastName2", "mail95@mail.ma", "hash2", 0);
-        Person p3 = EntityCreator.create(3L, "FirstName3", "LastName3", "mail3@mail.ma", "hash3", 0);
-        Person p4 = EntityCreator.create(4L, "FirstName4", "LastName4", "mail5@mail.ma", "hash4", 0);
-        Person p5 = EntityCreator.create(5L, "FirstName5", "LastName5", "mail@mail.ma", "hash5", 0);
+        Person p1 = EntityCreator.create(1L, "FirstName1", "LastName1", "Fred", "mail100@mail.ma", "hash1", 0);
+        Person p2 = EntityCreator.create(2L, "FirstName2", "LastName2", "Richard", "mail95@mail.ma", "hash2", 0);
+        Person p3 = EntityCreator.create(3L, "FirstName3", "LastName3", "Patric", "mail3@mail.ma", "hash3", 0);
+        Person p4 = EntityCreator.create(4L, "FirstName4", "LastName4", "Samuel", "mail5@mail.ma", "hash4", 0);
+        Person p5 = EntityCreator.create(5L, "FirstName5", "LastName5", "Peter", "mail@mail.ma", "hash5", 0);
         return List.of(p1, p2, p3, p4, p5);
     }
 

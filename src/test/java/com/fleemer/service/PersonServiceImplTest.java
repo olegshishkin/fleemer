@@ -8,6 +8,8 @@ import com.fleemer.model.Person;
 import com.fleemer.repository.PersonRepository;
 import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.PersonServiceImpl;
+
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -168,5 +170,20 @@ public class PersonServiceImplTest {
         when(repository.findByEmail("email")).thenReturn(expected);
         assertEquals(expected, service.findByEmail("email"));
         verify(repository, times(1)).findByEmail("email");
+    }
+
+    @Test
+    public void findByNickname() {
+        Optional<Person> expected = Optional.of(person);
+        when(repository.findByNickname("nickname")).thenReturn(expected);
+        assertEquals(expected, service.findByNickname("nickname"));
+        verify(repository, times(1)).findByNickname("nickname");
+    }
+
+    @Test
+    public void findAllByNicknamePart() {
+        when(repository.findAllByNicknameContainsIgnoreCase("nickname", pageable)).thenReturn(page);
+        assertEquals(page, service.findAllByNicknamePart("nickname", pageable));
+        verify(repository, times(1)).findAllByNicknameContainsIgnoreCase("nickname", pageable);
     }
 }

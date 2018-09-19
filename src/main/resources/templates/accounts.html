@@ -131,11 +131,11 @@
             </div>
 
             <div hidden>
-                <span id="deleteConfirm" th:text="#{accounts.delete-confirm}">Do you really want to delete this account?</span>
+                <span id="delete-confirm" th:text="#{accounts.delete-confirm}">Do you really want to delete this account?</span>
             </div>
         </div>
     </main>
-    <footer th:replace="footer::footer"></footer>
+    <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>
     <script>
         $(document).ready(function(){
             preloadImages();
