@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class ChatController {
     private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
+    private static final String PERSON_SESSION_ATTR = "person";
 
     private final UserAvailabilityService availabilityService;
     private final JmsTemplate jmsQueueTemplate;
@@ -40,7 +41,7 @@ public class ChatController {
 
     @RequestMapping("/chat")
     public String chat(Model model, HttpSession session) {
-        Person person = (Person) session.getAttribute("person");
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         model.addAttribute("currentUserNickname", person.getNickname());
         model.addAttribute("currentUserId", person.getId());
         model.addAttribute("locale", LocaleContextHolder.getLocale().toLanguageTag());
@@ -53,7 +54,7 @@ public class ChatController {
         Pageable pageable = PageRequest.of(0, 10, Direction.ASC, "nickname");
         List<Person> people = personService.findAllByNicknamePart(nickname, pageable).getContent();
         Map<String, Long> result = getNicknamesMap(people);
-        Person currentUser = (Person) session.getAttribute("person");
+        Person currentUser = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         result.remove(currentUser.getNickname());
         return result;
     }

@@ -85,6 +85,8 @@ function setSearchUsersAutocompleteWidget() {
         select: function (event, ui) {
             var item = ui.item;
             addChat(item.label, item.value);
+            this.blur();
+            this.val('');
         }
     });
 }
@@ -214,8 +216,9 @@ function addChatTabToList(chatElem, nickname, id, chatsList) {
         $(this).removeClass('noreaded');
         setTimeout(
             function () {
-                var chatBody = $('#chat-body-' + id).find('.chat-body');
-                $(chatBody).scrollTo('max', 50);
+                var chatBody = $('#chat-body-' + id);
+                $(chatBody).find('.chat-body').scrollTo('max', 50);
+                $(chatBody).find('.chat-footer textarea').focus();
             }, 1
         )
     });

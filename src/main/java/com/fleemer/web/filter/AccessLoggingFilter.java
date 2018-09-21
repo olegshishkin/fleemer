@@ -1,4 +1,4 @@
-package com.fleemer.web.other;
+package com.fleemer.web.filter;
 
 import ch.qos.logback.access.spi.IAccessEvent;
 import ch.qos.logback.core.filter.Filter;

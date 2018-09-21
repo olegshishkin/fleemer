@@ -7,20 +7,22 @@
             <div class="col-md-10">
                 <div th:switch="${confirm}">
                     <div th:case="'notification'" class="alert alert-warning text-center" role="alert">
-                        <span th:text="#{verification.confirm.message}">
+                        <span th:text="#{user_create_status.confirm.message}">
                             A message with profile activation details has been sent to your e-mail address. Please check your inbox.
                         </span>
                     </div>
                     <div th:case="'success'" class="alert alert-success text-center" role="alert">
-                        <span th:text="#{verification.activation.success}">Profile activation completed successfully</span>
+                        <span th:text="#{user_create_status.activation.success}">Profile activation completed successfully</span>
                     </div>
                     <div th:case="'failed'" class="alert alert-danger text-center" role="alert">
-                        <span th:text="#{verification.activation.failed}">Profile activation failed</span>
+                        <span th:text="#{user_create_status.activation.failed}">Profile activation failed</span>
                     </div>
                 </div>
                 <div class="text-muted text-center small">
-                    After <span id="delay" class="text-danger">10</span> seconds you will be automatically
-                    redirected to the <a id="home" th:href="@{/}">main page</a>
+                    <span th:utext="#{user_create_status.redirect.message}">
+                        After <span id="delay" class="text-danger">10</span> seconds you will be automatically redirected to the
+                    </span>
+                    <a id="home" th:href="@{/}" th:text="#{user_create_status.redirect.message.main-page}">main page</a>
                 </div>
                 <footer th:replace="footer::footer(enableMessageNotification=false)"></footer>
             </div>
