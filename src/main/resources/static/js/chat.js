@@ -184,7 +184,7 @@ function onTopicChatMessageReceived(payload) {
     var avatarClass = $('#chat-' + senderId).find('.medium-image').hasClass('active') ? 'active' : null;
     addChatMessage(elem, senderId, senderId, time, message.content, avatarClass);
     $('#chat-' + senderId).find('h3.name').text(senderNickname);
-    $('#chat-body-' + senderId).find('.chat-body h4').text(senderNickname);
+    $('#chat-body-' + senderId).find('.chat-body .foreign h4').text(senderNickname);
     notificationSound.play();
 }
 
