@@ -9,6 +9,7 @@ import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.UUID;
 import javax.mail.MessagingException;
 import javax.persistence.OptimisticLockException;
@@ -18,6 +19,7 @@ import javax.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -27,28 +29,39 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
+    private static final String EMAIL_TEMPLATE = "mail";
     private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
+    private static final String PASSWD_CONFIRM_FAILED_MSG_KEY = "user.error.password-not-equals";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String SUBJECT_TEXT_MSG_KEY = "mail.subject";
-    private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
     private static final String USER_CREATE_VIEW = "user_create";
+    private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
+    private static final String USER_JOINING_MSG = "New user has joined to Fleemer: ";
     private static final String USER_UPDATE_VIEW = "user_update";
-    private static final String PASSWD_CONFIRM_FAILED_MSG_KEY = "user.error.password-not-equals";
 
     private final ConfirmationService confirmationService;
     private final MailService mailService;
     private final MessageSource messageSource;
     private final BCryptPasswordEncoder passwordEncoder;
     private final PersonService personService;
+    private final TemplateEngine templateEngine;
+
+    @Value("${com.fleemer.owner.email}")
+    private String ownerEmail;
+    @Value("${spring.mail.username}")
+    private String senderEmail;
 
     @Autowired
-    public UserController(PersonService personService, BCryptPasswordEncoder passwordEncoder,
-                          ConfirmationService confirmationService, MailService mailService,
-                          MessageSource messageSource) {
+    public UserController(TemplateEngine templateEngine, PersonService personService,
+                          BCryptPasswordEncoder passwordEncoder, ConfirmationService confirmationService,
+                          MailService mailService, MessageSource messageSource) {
+        this.templateEngine = templateEngine;
         this.personService = personService;
         this.passwordEncoder = passwordEncoder;
         this.confirmationService = confirmationService;
@@ -80,6 +93,12 @@ public class UserController {
             bindingResult.rejectValue("email", "email.alreadyExists", msg);
             return USER_CREATE_VIEW;
         }
+        String nickname = person.getNickname();
+        if (personService.findByNickname(nickname).isPresent()) {
+            String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
+            bindingResult.rejectValue("nickname", "nickname.alreadyExists", msg);
+            return USER_CREATE_VIEW;
+        }
         String hash = passwordEncoder.encode(person.getHash());
         person.setHash(hash);
         Confirmation confirmation = new Confirmation();
@@ -88,8 +107,9 @@ public class UserController {
         confirmation.setToken(token);
         personService.save(person);
         confirmationService.save(confirmation);
-        mailService.send(email, getMessage(SUBJECT_TEXT_MSG_KEY), getBaseUrl(request), token);
-        return "redirect:/user/create/status?confirm=notification";//todo send mail
+        sendConfirmationMail(request, email, token);
+        LOGGER.info("New user has created: {}", email);
+        return "redirect:/user/create/status?confirm=notification";
     }
 
     @GetMapping("/create/status")
@@ -99,8 +119,14 @@ public class UserController {
     }
 
     @GetMapping("/create/confirm")
-    public String confirm(@RequestParam String email, @RequestParam String token) throws ServiceException {
-        return "redirect:/user/create/status?confirm=" + (mailService.verify(email, token) ? "success" : "failed");
+    public String confirm(@RequestParam String email, @RequestParam String token) throws ServiceException,
+            MessagingException {
+        boolean success = verify(email, token);
+        if (success) {
+            mailService.send(senderEmail, ownerEmail, USER_JOINING_MSG + email, "");
+            LOGGER.info("User has confirmed: {}", email);
+        }
+        return "redirect:/user/create/status?confirm=" + (success ? "success" : "failed");
     }
 
     @GetMapping("/update")
@@ -157,9 +183,32 @@ public class UserController {
         return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 
+    private void sendConfirmationMail(HttpServletRequest request, String email, String token)
+            throws MalformedURLException, MessagingException {
+        Context context = new Context(LocaleContextHolder.getLocale());
+        context.setVariable("url", getBaseUrl(request) + "/user/create/confirm?email=" + email + "&token=" + token);
+        String subject = getMessage(SUBJECT_TEXT_MSG_KEY);
+        String text = templateEngine.process(EMAIL_TEMPLATE, context);
+        mailService.send(senderEmail, email, subject, text);
+    }
+
     private String getBaseUrl(HttpServletRequest request) throws MalformedURLException {
         URL url = new URL(request.getRequestURL().toString());
         String port = url.getPort() == -1 ? "" : ":" + url.getPort();
         return url.getProtocol() + "://" + url.getHost() + port;
+    }
+
+    private boolean verify(String email, String token) throws ServiceException {
+        Optional<Confirmation> optional = confirmationService.findByPersonEmail(email);
+        if (!optional.isPresent()) {
+            return false;
+        }
+        Confirmation confirmation = optional.get();
+        if (confirmation.isEnabled() || !confirmation.getToken().equals(token)) {
+            return false;
+        }
+        confirmation.setEnabled(true);
+        LOGGER.info("User's email has confirmed: {}", email);
+        return confirmationService.save(confirmation) != null;
     }
 }
