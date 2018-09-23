@@ -107,7 +107,12 @@ public class UserController {
         confirmation.setToken(token);
         personService.save(person);
         confirmationService.save(confirmation);
-        sendConfirmationMail(request, email, token);
+        try {
+            sendConfirmationMail(request, email, token);
+        } catch (MalformedURLException e) {
+            personService.delete(person);
+            throw e;
+        }
         LOGGER.info("New user has created: {}", email);
         return "redirect:/user/create/status?confirm=notification";
     }
