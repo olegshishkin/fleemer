@@ -3,7 +3,11 @@
 <head></head>
 <body>
 <footer th:fragment="footer(enableMessageNotification)" class="my-5 text-muted text-center text-small">
-    <p th:utext="#{common.copyright}" class="mb-3">&copy; 2018 Fleemer Corp.</p>
+    <p th:utext="#{common.copyright}" class="mb-1">Copyright &copy; 2018 Fleemer Corp. </p>
+    <span class="fa fa-envelope">
+        <a class="text-muted" th:href="'mailto:'+${@environment.getProperty('spring.mail.username')}"
+           th:text="${@environment.getProperty('spring.mail.username')}">Email address</a>
+    </span>
     <div th:if="${enableMessageNotification}">
         <script>
             $(document).ready(function(){
