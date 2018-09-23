@@ -6,10 +6,8 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
+import lombok.*;
 
 @Entity
 @Table(name = "person", uniqueConstraints = @UniqueConstraint(columnNames = {"id", "email"}))
@@ -17,6 +15,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @EqualsAndHashCode(of = {"id", "email"})
+@ToString
 public class Person implements Serializable {
     @Id
     @Column(unique = true, nullable = false, updatable = false)

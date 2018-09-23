@@ -109,11 +109,13 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         Account out = entity.getOutAccount();
         Category category = entity.getCategory();
         checkLogicalConstraints(in, out, category);
-        Operation storedOperation = null;
+        BigDecimal sum = entity.getSum();
         if (entity.getId() != null) {
-            storedOperation = repository.getOne(entity.getId());
+            Optional<Operation> optional = repository.findById(entity.getId());
+            if (optional.isPresent()) {
+                sum = sum.subtract(optional.get().getSum());
+            }
         }
-        BigDecimal sum = storedOperation == null ? entity.getSum() : entity.getSum().subtract(storedOperation.getSum());
         transfer(in, out, category, sum);
         saveParents(entity, in, out, category);
         return super.save(entity);
@@ -121,7 +123,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
 
     @Override
     @Transactional
-    public <S extends Operation> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends Operation> Iterable<S> saveAll(Iterable<S> entities) throws ServiceException {
         Map<String, Account> accounts = new HashMap<>();
         Map<String, Category> categories = new HashMap<>();
         entities.forEach(entity -> {
@@ -144,7 +146,10 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
         if (!categories.isEmpty()) {
             categoryService.saveAll(categories.values());
         }
-        return super.saveAll(entities);
+        for (Operation operation : entities) {
+            this.save(operation);
+        }
+        return entities;
     }
 
     @Override

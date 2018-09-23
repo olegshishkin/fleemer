@@ -89,7 +89,7 @@ public class UserController {
         personService.save(person);
         confirmationService.save(confirmation);
         mailService.send(email, getMessage(SUBJECT_TEXT_MSG_KEY), getBaseUrl(request), token);
-        return "redirect:/user/create/status?confirm=notification";
+        return "redirect:/user/create/status?confirm=notification";//todo send mail
     }
 
     @GetMapping("/create/status")

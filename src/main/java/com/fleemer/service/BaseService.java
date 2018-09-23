@@ -25,7 +25,7 @@ public interface BaseService<T, ID> {
 
     <S extends T> S save(S entity) throws ServiceException;
 
-    <S extends T> Iterable<S> saveAll(Iterable<S> entities);
+    <S extends T> Iterable<S> saveAll(Iterable<S> entities) throws ServiceException;
 
     void deleteById(ID id);
 

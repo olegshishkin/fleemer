@@ -115,7 +115,7 @@ public class ConfirmationServiceImplTest {
     }
 
     @Test
-    public void saveAll() {
+    public void saveAll() throws ServiceException {
         List<Confirmation> confirmations = Collections.emptyList();
         when(repository.saveAll(confirmations)).thenReturn(confirmations);
         assertEquals(confirmations, service.saveAll(confirmations));

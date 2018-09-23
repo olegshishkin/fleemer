@@ -66,7 +66,7 @@ public abstract class AbstractService <T, ID, R extends JpaRepository<T, ID>> im
 
     @Override
     @Transactional
-    public <S extends T> Iterable<S> saveAll(Iterable<S> entities) {
+    public <S extends T> Iterable<S> saveAll(Iterable<S> entities) throws ServiceException {
         return getRepository().saveAll(entities);
     }
 

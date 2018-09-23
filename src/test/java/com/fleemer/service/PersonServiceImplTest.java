@@ -113,7 +113,7 @@ public class PersonServiceImplTest {
     }
 
     @Test
-    public void saveAll() {
+    public void saveAll() throws ServiceException {
         List<Person> people = Collections.emptyList();
         when(repository.saveAll(people)).thenReturn(people);
         assertEquals(people, service.saveAll(people));

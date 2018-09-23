@@ -116,7 +116,7 @@ public class CategoryServiceImplTest {
     }
 
     @Test
-    public void saveAll() {
+    public void saveAll() throws ServiceException {
         List<Category> categories = Collections.emptyList();
         when(repository.saveAll(categories)).thenReturn(categories);
         assertEquals(categories, service.saveAll(categories));

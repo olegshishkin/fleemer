@@ -116,7 +116,7 @@ public class AccountServiceImplTest {
     }
 
     @Test
-    public void saveAll() {
+    public void saveAll() throws ServiceException {
         List<Account> accounts = Collections.emptyList();
         when(repository.saveAll(accounts)).thenReturn(accounts);
         assertEquals(accounts, service.saveAll(accounts));

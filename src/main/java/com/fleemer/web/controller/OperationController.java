@@ -47,6 +47,8 @@ import org.springframework.web.servlet.ModelAndView;
 @RequestMapping("/operations")
 public class OperationController {
     private static final String CHARSET_NAME = "UTF-8";
+    private static final String ILLEGAL_VALUES_EXCEPTION_MSG = "Same entities have different field(s) value(s): " +
+            "1) %s, 2) %s.";
     private static final String IO_ERROR_EXCEPTION_TEMPLATE = "IO Error: Exception: {}";
     private static final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
     private static final String OPERATION_UPDATE_VIEW = "operation_update";
@@ -83,7 +85,8 @@ public class OperationController {
         LocalDate fromDate = from == null || from.isEmpty() ? null : LocalDate.parse(from);
         LocalDate tillDate = till == null || till.isEmpty() ? null : LocalDate.parse(till);
         Page<Operation> operationPage = operationService.findAllByPerson(person, fromDate, tillDate, pageable);
-        return new OperationPageDto(operationPage.getNumber(), operationPage.getTotalPages(), operationPage.getContent());
+        int pageNumber = operationPage.getNumber();
+        return new OperationPageDto(pageNumber, operationPage.getTotalPages(), operationPage.getContent());
     }
 
     @ResponseBody
@@ -187,13 +190,14 @@ public class OperationController {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             mapper.writer().withRootName("Operations").writeValue(out, operations);
         } catch (IOException e) {
-            LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
+            LOGGER.warn(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
             throw e;
         }
     }
 
     @PostMapping("/import")
-    public String importXml(@RequestParam MultipartFile file, HttpSession session) throws IOException {
+    public String importXml(@RequestParam MultipartFile file, HttpSession session) throws IOException,
+            ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         try (InputStream in = file.getInputStream();
              BufferedReader reader = new BufferedReader(new InputStreamReader(in, CHARSET_NAME))) {
@@ -207,14 +211,14 @@ public class OperationController {
             List<Operation> operations = mapper.readValue(builder.toString(), collectionType);
             Map<String, Account> accounts = new HashMap<>();
             Map<String, Category> categories = new HashMap<>();
-            for (Operation x : operations) {
-                x.setInAccount(getFilledAccount(person, accounts, x.getInAccount()));
-                x.setOutAccount(getFilledAccount(person, accounts, x.getOutAccount()));
-                x.setCategory(getFilledCategory(person, categories, x.getCategory()));
+            for (Operation o : operations) {
+                o.setInAccount(getFilledAccount(person, accounts, o.getInAccount()));
+                o.setOutAccount(getFilledAccount(person, accounts, o.getOutAccount()));
+                o.setCategory(getFilledCategory(person, categories, o.getCategory()));
             }
             operationService.saveAll(operations);
         } catch (IOException e) {
-            LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
+            LOGGER.warn(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
             throw e;
         }
         return REDIRECT + "/options/serialize?success";
@@ -242,7 +246,7 @@ public class OperationController {
         return dto;
     }
 
-    private Account getFilledAccount(Person person, Map<String, Account> cache, Account a) throws IOException {
+    private Account getFilledAccount(Person person, Map<String, Account> cache, Account a) {
         if (a == null) {
             return null;
         }
@@ -250,10 +254,8 @@ public class OperationController {
         Account cached = cache.get(name);
         if (cached != null) {
             if (!cached.getName().equals(a.getName()) || !cached.getType().equals(a.getType()) ||
-            !cached.getCurrency().equals(a.getCurrency()) || !cached.getBalance().equals(a.getBalance())) {
-                String msg = "Same accounts have different fields' values: 1) " + cached + ", 2) " + a + '.';
-                LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, msg);
-                throw new IOException(msg);
+            !cached.getCurrency().equals(a.getCurrency())) {
+                throw new IllegalArgumentException(String.format(ILLEGAL_VALUES_EXCEPTION_MSG, cached, a));
             }
             return cached;
         }
@@ -261,17 +263,19 @@ public class OperationController {
         if (optional.isPresent()) {
             Account touched = optional.get();
             touched.setType(a.getType());
-            touched.setCurrency(a.getCurrency());
-            touched.setBalance(a.getBalance());
+            if (!touched.getCurrency().equals(a.getCurrency())) {
+                throw new IllegalArgumentException(String.format(ILLEGAL_VALUES_EXCEPTION_MSG, touched, a));
+            }
             cache.put(touched.getName(), touched);
             return touched;
         }
         a.setPerson(person);
+        a.setBalance(BigDecimal.ZERO);
         cache.put(a.getName(), a);
         return a;
     }
 
-    private Category getFilledCategory(Person person, Map<String, Category> cache, Category c) throws IOException {
+    private Category getFilledCategory(Person person, Map<String, Category> cache, Category c) {
         if (c == null) {
             return null;
         }
@@ -279,16 +283,16 @@ public class OperationController {
         Category cached = cache.get(name);
         if (cached != null) {
             if (!cached.getName().equals(c.getName()) || !cached.getType().equals(c.getType())) {
-                String msg = "Same categories have different fields' values: 1) " + cached + ", 2) " + c + '.';
-                LOGGER.error(IO_ERROR_EXCEPTION_TEMPLATE, msg);
-                throw new IOException(msg);
+                throw new IllegalArgumentException(String.format(ILLEGAL_VALUES_EXCEPTION_MSG, cached, c));
             }
             return cached;
         }
         Optional<Category> optional = categoryService.findByNameAndPerson(name, person);
         if (optional.isPresent()) {
             Category touched = optional.get();
-            touched.setType(c.getType());
+            if (!touched.getType().equals(c.getType())) {
+                throw new IllegalArgumentException(String.format(ILLEGAL_VALUES_EXCEPTION_MSG, touched, c));
+            }
             cache.put(touched.getName(), touched);
             return touched;
         }

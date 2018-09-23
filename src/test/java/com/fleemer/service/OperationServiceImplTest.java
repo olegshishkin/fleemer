@@ -123,14 +123,6 @@ public class OperationServiceImplTest {
     }
 
     @Test
-    public void saveAll() {
-        List<Operation> operations = Collections.emptyList();
-        when(repository.saveAll(operations)).thenReturn(operations);
-        assertEquals(operations, service.saveAll(operations));
-        verify(repository, times(1)).saveAll(operations);
-    }
-
-    @Test
     public void deleteById() {
         doNothing().when(repository).deleteById(id);
         service.deleteById(id);
