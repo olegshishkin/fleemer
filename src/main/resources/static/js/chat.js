@@ -125,7 +125,7 @@ function onTopicNotificationReceived(payload) {
         closeOnClick: true,
         displayMode: 2,
         drag: false,
-        timeout: 60000,
+        timeout: 10000,
         icon: 'material-icons'
     });
     iziToast.success({
