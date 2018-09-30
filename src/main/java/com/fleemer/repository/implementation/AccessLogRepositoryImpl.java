@@ -82,7 +82,7 @@ public class AccessLogRepositoryImpl implements AccessLogRepository {
     @Override
     public List<AccessStats> findAll(Person person, LocalDate from, LocalDate till) {
         Criteria userCriteria = Criteria.where("remote.user").is(person.getEmail());
-        Criteria timeCriteria = Criteria.where("timeStamp").gte(from).lte(till);
+        Criteria timeCriteria = Criteria.where("timeStamp").gte(from).lt(till.plusDays(1));
         MatchOperation matchOperation = Aggregation.match(userCriteria.andOperator(timeCriteria));
         ProjectionOperation initProjectionOperation = Aggregation.project(Fields.from(
                 Fields.field(IP, "remoteClient.ip"),
