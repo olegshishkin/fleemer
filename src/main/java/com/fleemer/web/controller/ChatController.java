@@ -22,8 +22,8 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class ChatController {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ChatController.class);
     private static final String PERSON_SESSION_ATTR = "person";
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
     private final UserAvailabilityService availabilityService;
     private final JmsTemplate jmsQueueTemplate;
@@ -107,7 +107,7 @@ public class ChatController {
         Optional<Person> optional = personService.findById(id);
         if (!optional.isPresent()) {
             String msg = "No person with id: " + id;
-            LOGGER.warn(msg);
+            logger.warn(msg);
             throw new RuntimeException(msg);
         }
         return optional.get();

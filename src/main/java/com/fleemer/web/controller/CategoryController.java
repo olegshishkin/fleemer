@@ -7,6 +7,7 @@ import com.fleemer.model.enums.CategoryType;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import javax.persistence.OptimisticLockException;
@@ -29,10 +30,11 @@ import org.springframework.web.bind.annotation.*;
 public class CategoryController {
     private static final String CATEGORY_UPDATE_VIEW = "category_update";
     private static final String CATEGORY_EXISTS_ERROR_KEY = "categories.error.user-exists";
-    private static final Logger LOGGER = LoggerFactory.getLogger(CategoryController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String REDIRECT_CATEGORIES_URL = "redirect:/categories";
     private static final String ROOT_VIEW = "categories";
+    private static final Comparator<Category> comparator = Comparator.comparing(Category::getName);
+    private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     private final CategoryService categoryService;
     private final MessageSource messageSource;
@@ -58,7 +60,9 @@ public class CategoryController {
     @GetMapping(value = "/json", params = {"type"})
     public List<Category> categories(@RequestParam("type") CategoryType type, HttpSession session) {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        return categoryService.findAllByTypeAndPerson(type, person);
+        List<Category> categories = categoryService.findAllByTypeAndPerson(type, person);
+        categories.sort(comparator);
+        return categories;
     }
 
     @LogAfterReturning
@@ -116,7 +120,7 @@ public class CategoryController {
         try {
             categoryService.save(formCategory);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic lock: {}", e.getMessage());
+            logger.warn("Optimistic lock: {}", e.getMessage());
             return REDIRECT_CATEGORIES_URL + "?error=lock";
         }
         return REDIRECT_CATEGORIES_URL + "?success";

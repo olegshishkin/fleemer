@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class SubscriptionInterceptor implements ChannelInterceptor {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SubscriptionInterceptor.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubscriptionInterceptor.class);
 
     private final UserAvailabilityService availabilityService;
     private final PersonService personService;
@@ -38,7 +38,7 @@ public class SubscriptionInterceptor implements ChannelInterceptor {
             if (!validate(principal, destination)) {
                 String msg = "Subscribing failed. No permissions for the specified destination. Destination: " +
                         destination + ", user: " + (principal != null ? principal.getName() : null);
-                LOGGER.warn(msg);
+                logger.warn(msg);
                 throw new RuntimeException(msg);
             }
         }

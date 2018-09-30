@@ -50,11 +50,11 @@ public class OperationController {
     private static final String ILLEGAL_VALUES_EXCEPTION_MSG = "Same entities have different field(s) value(s): " +
             "1) %s, 2) %s.";
     private static final String IO_ERROR_EXCEPTION_TEMPLATE = "IO Error: Exception: {}";
-    private static final Logger LOGGER = LoggerFactory.getLogger(OperationController.class);
     private static final String OPERATION_UPDATE_VIEW = "operation_update";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String REDIRECT = "redirect:";
     private static final String ROOT_VIEW = "operations";
+    private static final Logger logger = LoggerFactory.getLogger(OperationController.class);
 
     private final AccountService accountService;
     private final CategoryService categoryService;
@@ -153,7 +153,7 @@ public class OperationController {
         try {
             operationService.save(formOperation);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic lock: {}", e.getMessage());
+            logger.warn("Optimistic lock: {}", e.getMessage());
             param = "?error=lock";
         }
         return REDIRECT + url + param;
@@ -190,7 +190,7 @@ public class OperationController {
             mapper.enable(SerializationFeature.INDENT_OUTPUT);
             mapper.writer().withRootName("Operations").writeValue(out, operations);
         } catch (IOException e) {
-            LOGGER.warn(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
+            logger.warn(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
             throw e;
         }
     }
@@ -218,7 +218,7 @@ public class OperationController {
             }
             operationService.saveAll(operations);
         } catch (IOException e) {
-            LOGGER.warn(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
+            logger.warn(IO_ERROR_EXCEPTION_TEMPLATE, e.getMessage());
             throw e;
         }
         return REDIRECT + "/options/serialize?success";

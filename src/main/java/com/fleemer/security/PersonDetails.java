@@ -9,8 +9,8 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 public class PersonDetails implements UserDetails {
-    private Person person;
     private final ConfirmationService confirmationService;
+    private final Person person;
 
     public PersonDetails(Person person, ConfirmationService confirmationService) {
         this.person = person;

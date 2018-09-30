@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableScheduling
 public class SimpleUserAvailabilityService implements UserAvailabilityService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(SimpleUserAvailabilityService.class);
-    private static final ConcurrentHashMap<Long, Boolean> ONLINE_USERS_ID = new ConcurrentHashMap<>();
+    private static final Logger logger = LoggerFactory.getLogger(SimpleUserAvailabilityService.class);
+    private static final ConcurrentHashMap<Long, Boolean> online_users_id = new ConcurrentHashMap<>();
 
     private final PersonService personService;
 
@@ -28,13 +28,13 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
 
     @Override
     public boolean isOnline(long id) {
-        return ONLINE_USERS_ID.containsKey(id);
+        return online_users_id.containsKey(id);
     }
 
     @Override
     public void setOnline(long id) {
-        if (ONLINE_USERS_ID.containsKey(id) || personService.findById(id).isPresent()) {
-            ONLINE_USERS_ID.put(id, true);
+        if (online_users_id.containsKey(id) || personService.findById(id).isPresent()) {
+            online_users_id.put(id, true);
         }
     }
 
@@ -42,7 +42,7 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
     public void setOnline(String username) {
         Optional<Person> optional = personService.findByEmail(username);
         if (!optional.isPresent()) {
-            LOGGER.warn("No person has such email: {}", username);
+            logger.warn("No person has such email: {}", username);
             return;
         }
         this.setOnline(optional.get().getId());
@@ -50,8 +50,8 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
 
     @Scheduled(fixedDelay = 12000L)
     private void filterOnlineUsersList() {
-        LOGGER.debug("Refreshing of online users list...");
-        Iterator<Entry<Long, Boolean>> iterator = ONLINE_USERS_ID.entrySet().iterator();
+        logger.debug("Refreshing of online users list...");
+        Iterator<Entry<Long, Boolean>> iterator = online_users_id.entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<Long, Boolean> entry = iterator.next();
             if (!entry.getValue()) {

@@ -26,13 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
 public class OperationServiceImpl extends AbstractService<Operation, Long, OperationRepository>
         implements OperationService {
     private static final String DATES_SEQUENCE_ERROR = "Starting date is more than the ending date";
-    private static final Logger LOGGER = LoggerFactory.getLogger(OperationServiceImpl.class);
     private static final String NO_ACCOUNTS_AND_CATEGORY_ERROR = "The category and at least one account are missing.";
     private static final String NO_ACCOUNTS_ERROR = "Both the income account and outcome account are missing.";
     private static final String NO_OPERATION_TYPE_ERROR = "Category and both the accounts are not null. There is " +
             "no way to determine an operation type.";
     private static final String SERVICE_EXCEPTION_TEMPLATE = "ServiceException: {}";
     private static final String WRONG_CATEGORY_TYPE_ERROR = "Wrong category type for that operation: ";
+    private static final Logger logger = LoggerFactory.getLogger(OperationServiceImpl.class);
 
     private final AccountService accountService;
     private final CategoryService categoryService;
@@ -63,7 +63,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till);
         }
         String msg = "Missing one of the dates. From: " + from + ". Till: " + till + '.';
-        LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, msg);
+        logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
         throw new ServiceException(msg);
     }
 
@@ -168,31 +168,31 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     private static void checkDatesSequence(LocalDate from, LocalDate till) throws ServiceException {
         if (from.isAfter(till)) {
             String msg = DATES_SEQUENCE_ERROR + ": from: " + from + ", till: " + till;
-            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, msg);
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
         }
     }
 
     private static void checkLogicalConstraints(Account in, Account out, Category cat) throws ServiceException {
         if (in == null & out == null) {
-            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_ERROR);
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_ERROR);
             throw new ServiceException(NO_ACCOUNTS_ERROR);
         }
         if (cat == null & (in == null || out == null)) {
-            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_AND_CATEGORY_ERROR);
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_AND_CATEGORY_ERROR);
             throw new ServiceException(NO_ACCOUNTS_AND_CATEGORY_ERROR);
         }
         if (cat == null) {
             return;
         }
         if (in != null && out != null) {
-            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, NO_OPERATION_TYPE_ERROR);
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, NO_OPERATION_TYPE_ERROR);
             throw new ServiceException(NO_OPERATION_TYPE_ERROR);
         }
         CategoryType type = cat.getType();
         if ((in != null && type != CategoryType.INCOME) || (out != null && type != CategoryType.OUTCOME)) {
             String msg = WRONG_CATEGORY_TYPE_ERROR + type + '.';
-            LOGGER.error(SERVICE_EXCEPTION_TEMPLATE, msg);
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
         }
     }

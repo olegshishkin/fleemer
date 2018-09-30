@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class PersonUserDetailsServiceImpl implements PersonUserDetailsService {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PersonUserDetailsServiceImpl.class);
     private static final String NO_PERSON_ERROR = "No person with such email.";
+    private static final Logger logger = LoggerFactory.getLogger(PersonUserDetailsServiceImpl.class);
 
     private final ConfirmationService confirmationService;
     private final PersonService personService;
@@ -33,7 +33,7 @@ public class PersonUserDetailsServiceImpl implements PersonUserDetailsService {
         if (person.isPresent()) {
             return new PersonDetails(person.get(), confirmationService);
         }
-        LOGGER.error("UsernameNotFoundException: {}", NO_PERSON_ERROR);
+        logger.error("UsernameNotFoundException: {}", NO_PERSON_ERROR);
         throw new UsernameNotFoundException(NO_PERSON_ERROR);
     }
 }

@@ -36,7 +36,6 @@ import org.thymeleaf.context.Context;
 @RequestMapping("/user")
 public class UserController {
     private static final String EMAIL_TEMPLATE = "mail";
-    private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class);
     private static final String PASSWD_CONFIRM_FAILED_MSG_KEY = "user.error.password-not-equals";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String SUBJECT_TEXT_MSG_KEY = "mail.subject";
@@ -44,6 +43,7 @@ public class UserController {
     private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
     private static final String USER_JOINING_MSG = "New user has joined to Fleemer: ";
     private static final String USER_UPDATE_VIEW = "user_update";
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final ConfirmationService confirmationService;
     private final MailService mailService;
@@ -113,7 +113,7 @@ public class UserController {
             personService.delete(person);
             throw e;
         }
-        LOGGER.info("New user has created: {}", email);
+        logger.info("New user has created: {}", email);
         return "redirect:/user/create/status?confirm=notification";
     }
 
@@ -129,7 +129,7 @@ public class UserController {
         boolean success = verify(email, token);
         if (success) {
             mailService.send(senderEmail, ownerEmail, USER_JOINING_MSG + email, "");
-            LOGGER.info("User has confirmed: {}", email);
+            logger.info("User has confirmed: {}", email);
         }
         return "redirect:/user/create/status?confirm=" + (success ? "success" : "failed");
     }
@@ -176,7 +176,7 @@ public class UserController {
         try {
             personService.save(person);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic lock: {}", e.getMessage());
+            logger.warn("Optimistic lock: {}", e.getMessage());
             session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElse(null));
             return "redirect:/user/update?error=lock";
         }
@@ -213,7 +213,7 @@ public class UserController {
             return false;
         }
         confirmation.setEnabled(true);
-        LOGGER.info("User's email has confirmed: {}", email);
+        logger.info("User's email has confirmed: {}", email);
         return confirmationService.save(confirmation) != null;
     }
 }

@@ -29,10 +29,10 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
     private static final String ACCOUNT_UPDATE_VIEW = "account_update";
     private static final String ACCOUNT_EXISTS_ERROR_KEY = "accounts.error.name-exists";
-    private static final Logger LOGGER = LoggerFactory.getLogger(AccountController.class);
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String REDIRECT_ACCOUNTS_URL = "redirect:/accounts";
     private static final String ROOT_VIEW = "accounts";
+    private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     private final AccountService accountService;
     private final MessageSource messageSource;
@@ -110,7 +110,7 @@ public class AccountController {
         try {
             accountService.save(formAccount);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
-            LOGGER.warn("Optimistic lock: {}", e.getMessage());
+            logger.warn("Optimistic lock: {}", e.getMessage());
             return REDIRECT_ACCOUNTS_URL + "?error=lock";
         }
         return REDIRECT_ACCOUNTS_URL + "?success";
