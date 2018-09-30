@@ -16,6 +16,10 @@ import org.springframework.stereotype.Service;
 @Service
 @EnableScheduling
 public class SimpleUserAvailabilityService implements UserAvailabilityService {
+    private static final String END_REFRESHING_LOG_MSG = "Refreshing of online users list is completed. Removed " +
+            "users: {}, marked users: {}";
+    private static final String START_REFRESHING_LOG_MSG = "Refreshing of online users list is started. Total " +
+            "tracked users: {}, online users: {}";
     private static final Logger logger = LoggerFactory.getLogger(SimpleUserAvailabilityService.class);
     private static final ConcurrentHashMap<Long, Boolean> online_users_id = new ConcurrentHashMap<>();
 
@@ -50,15 +54,21 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
 
     @Scheduled(fixedDelay = 12000L)
     private void filterOnlineUsersList() {
-        logger.debug("Refreshing of online users list...");
-        Iterator<Entry<Long, Boolean>> iterator = online_users_id.entrySet().iterator();
+        Set<Entry<Long, Boolean>> entries = online_users_id.entrySet();
+        logger.info(START_REFRESHING_LOG_MSG, entries.size(), entries.stream().filter(Entry::getValue).count());
+        Iterator<Entry<Long, Boolean>> iterator = entries.iterator();
+        int removed = 0;
+        int marked = 0;
         while (iterator.hasNext()) {
             Entry<Long, Boolean> entry = iterator.next();
             if (!entry.getValue()) {
                 iterator.remove();
+                removed++;
             } else {
                 entry.setValue(false);
+                marked++;
             }
         }
+        logger.info(END_REFRESHING_LOG_MSG, removed, marked);
     }
 }
