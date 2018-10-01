@@ -15,17 +15,27 @@
 
                 <form action="#" class="needs-validation" novalidate>
                     <div class="row">
-                        <div class="col-md-5 mb-3">
+                        <div class="col-md-5 mb-2">
                             <input id="from-date" class="form-control" type="text" value="" placeholder="yyyy-mm-dd" required/>
                             <small class="form-text text-muted" th:text="#{operations.form.period-begin}">Start date</small>
                         </div>
-                        <div class="col-md-5 mb-3">
+                        <div class="col-md-5 mb-2">
                             <input id="till-date" class="form-control" type="text" value="" placeholder="yyyy-mm-dd" required/>
                             <small class="form-text text-muted" th:text="#{operations.form.period-end}">Final date</small>
                         </div>
-                        <div class="col-md-2 mb-3">
-                            <button type="button" class="btn btn-primary btn-block" th:text="#{common.ok}"
-                            onclick="getOperationsPage(0, 10, $('#fromDate').val(), $('#tillDate').val());">OK</button>
+                        <div class="col-md-2 mb-2">
+                            <select id="page-volume" class="custom-select d-block w-100" title="">
+                                <option>5</option>
+                                <option selected>10</option>
+                                <option>15</option>
+                                <option>20</option>
+                                <option>25</option>
+                                <option>30</option>
+                                <option>50</option>
+                                <option>75</option>
+                                <option>100</option>
+                            </select>
+                            <small class="form-text text-muted" th:text="#{operations.form.table-size}">Lines</small>
                         </div>
                     </div>
                 </form>
@@ -75,9 +85,13 @@
         <script>
             $(window).ready(function(){
                 preloadImages();
-                setDatePicker($('#from-date'));
-                setDatePicker($('#till-date'));
-                getOperationsPage(0, 10, '', '');
+                var fromDate = $('#from-date');
+                var tillDate = $('#till-date');
+                var size = $('#page-volume');
+                setDatePicker(fromDate);
+                setDatePicker(tillDate);
+                setOnChangeListeners(fromDate, tillDate, size);
+                getOperationsPage();
             });
         </script>
     </div>

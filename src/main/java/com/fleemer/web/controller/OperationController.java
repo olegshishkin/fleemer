@@ -82,8 +82,8 @@ public class OperationController {
                                        HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Pageable pageable = PageRequest.of(page, size, new Sort(Sort.Direction.DESC, "date"));
-        LocalDate fromDate = from == null || from.isEmpty() ? null : LocalDate.parse(from);
-        LocalDate tillDate = till == null || till.isEmpty() ? null : LocalDate.parse(till);
+        LocalDate fromDate = from == null || from.isEmpty() ? LocalDate.of(0, 1, 1) : LocalDate.parse(from);
+        LocalDate tillDate = till == null || till.isEmpty() ? LocalDate.of(9999, 12, 31) : LocalDate.parse(till);
         Page<Operation> operationPage = operationService.findAllByPerson(person, fromDate, tillDate, pageable);
         int pageNumber = operationPage.getNumber();
         return new OperationPageDto(pageNumber, operationPage.getTotalPages(), operationPage.getContent());

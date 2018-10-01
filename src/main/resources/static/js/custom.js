@@ -1,10 +1,12 @@
 // Starter JavaScript for disabling form submissions if there are invalid fields
+'use strict';
+
 function preloadImages() {
     var images = [];
     function preload() {
-        for (var i = 0; i < preload.arguments.length; i++) {
+        for (var i = 0; i < arguments.length; i++) {
             images[i] = new Image();
-            images[i].src = preload.arguments[i];
+            images[i].src = arguments[i];
         }
     }
     preload(
@@ -16,11 +18,10 @@ function preloadImages() {
 }
 
 function setValidationListener() {
-    'use strict';
     // Fetch all the forms we want to apply custom Bootstrap validation styles to
     var forms = document.getElementsByClassName('needs-validation');
     // Loop over them and prevent submission
-    var validation = Array.prototype.filter.call(forms, function(form) {
+    Array.prototype.filter.call(forms, function(form) {
         form.addEventListener('submit', function(event) {
             if (form.checkValidity() === false) {
                 event.preventDefault();
@@ -71,7 +72,7 @@ function setOperationTypeListener(async){
 function fillCategories(catType, async) {
     $('#category-name-blank-value').siblings().remove();
     var selectTag = $('#category');
-    if (catType == 'TRANSFER') {
+    if (catType === 'TRANSFER') {
         return;
     }
     $.ajax({
@@ -93,32 +94,47 @@ function prepareOperationEditForm() {
     var catVal = $('#category').val();
     var catText = $('#category option:selected').text();
     var tempVal;
-    if (inElem.val() != '' && catVal != '') {
+    if (inElem.val() !== '' && catVal !== '') {
         tempVal = inElem.val();
         $('#income').click();
         inElem.val(tempVal);
     }
-    if (outElem.val() != '' && catVal != '') {
+    if (outElem.val() !== '' && catVal !== '') {
         tempVal = outElem.val();
         $('#outcome').click();
         outElem.val(tempVal);
     }
-    if (catVal == '') {
+    if (catVal === '') {
         $('#transfer').click();
     }
     $("#category option").filter(function() {
-        return this.text == catText;
+        return this.text === catText;
     }).attr('selected', true);
 }
 
+// Set listener on 'from'-date, 'till'-date and page volume at 'operations' list page.
+function setOnChangeListeners() {
+    $.each(arguments, function (i, obj) {
+        $(obj).change(function () {
+            getOperationsPage();
+        })
+    });
+}
+
 // Creates operation table and pagination links
-function getOperationsPage(page, size, from, till) {
-    var data;
-    if (from == null || from == '' || till == null || till == '') {
-        data = {page: page, size: size};
-    } else {
-        data = {page: page, size: size, from: from, till: till};
+function getOperationsPage(pageNum) {
+    var size = $('#page-volume').val();
+    if (size === null || size === '') {
+        return;
     }
+    var from = $('#from-date').val();
+    var till = $('#till-date').val();
+    var data = {
+        page: pageNum === undefined || pageNum === null ? 0 : pageNum,
+        size: size,
+        from: from === null || from === '' ? null : from,
+        till: till === null || till === '' ? null : till
+    };
     $.ajax({
         url: '/operations/json',
         data: data,
@@ -150,24 +166,24 @@ function fillTable(operations) {
             var tr = $('<tr>');
             tr.append($('<td>').attr('align', 'right').text(value.date));
             var outAccountCell = $('<td>').attr('align', 'right');
-            if (isNotNull(outAccount)) {
+            if (isNotNullAndNotUndefined(outAccount)) {
                 outAccountCell.text(outAccount.name);
             }
             tr.append(outAccountCell);
             var inAccountCell = $('<td>').attr('align', 'right');
-            if (isNotNull(inAccount)) {
+            if (isNotNullAndNotUndefined(inAccount)) {
                 inAccountCell.text(inAccount.name);
             }
             tr.append(inAccountCell);
             var categoryCell = $('<td>').attr('align', 'right');
-            if (isNotNull(category)) {
+            if (isNotNullAndNotUndefined(category)) {
                 categoryCell.text(category.name);
             }
             tr.append(categoryCell);
             var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-            if (isNotNull(outAccount) & isNotNull(category)) {
+            if (isNotNullAndNotUndefined(outAccount) && isNotNullAndNotUndefined(category)) {
                 tr.append($("<td>").attr('align', 'right').addClass('text-danger').text('-' + formattedSum));
-            } else if (isNotNull(inAccount) & isNotNull(category)) {
+            } else if (isNotNullAndNotUndefined(inAccount) && isNotNullAndNotUndefined(category)) {
                 tr.append($('<td>').attr('align', 'right').addClass('text-success').text('+' + formattedSum));
             } else {
                 tr.append($('<td>').attr('align', 'right').text(formattedSum));
@@ -189,8 +205,8 @@ function fillTable(operations) {
     showTable();
 }
 
-function isNotNull(value) {
-    return value != undefined & value != 'null';
+function isNotNullAndNotUndefined(value) {
+    return value !== undefined && value !== null;
 }
 
 // Fills pagination links
@@ -198,7 +214,7 @@ function fillPaginator(cur, total, size, from, till) {
     var visiblePages = 10;
     var methodEnding = size + ',\'' + from + '\',\'' + till +'\'';
     var prevLi = $('#current-page').clone(true).removeAttr('id');
-    if (cur == 0){
+    if (cur === 0){
         prevLi.addClass('disabled');
     } else {
         prevLi.removeClass('disabled');
@@ -212,7 +228,7 @@ function fillPaginator(cur, total, size, from, till) {
 
     for (var i = firstVisiblePage; i < lastVisiblePage; i++){
         var curLi = $('#current-page').clone(true).removeAttr('id');
-        if (i == cur) {
+        if (i === cur) {
             curLi.addClass('active');
         }
         curLi.find('a').attr('onclick', 'getOperationsPage(' + i + ', ' + methodEnding + ')').attr('href', '#');
@@ -221,7 +237,7 @@ function fillPaginator(cur, total, size, from, till) {
     }
 
     var nextLi = $('#current-page').clone(true).removeAttr('id');
-    if (cur == total - 1){
+    if (cur === total - 1){
         nextLi.addClass('disabled');
     } else {
         nextLi.removeClass('disabled');
