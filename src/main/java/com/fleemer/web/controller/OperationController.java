@@ -23,6 +23,7 @@ import java.io.*;
 import java.math.BigDecimal;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -225,8 +226,10 @@ public class OperationController {
     }
 
     private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
+        LocalDate firstExistedDate = ((Date) volumes.get(0)[0]).toLocalDate();
+        LocalDate lastExistedDate = ((Date) volumes.get(volumes.size() - 1)[0]).toLocalDate();
         List<DailyVolumesDto> dto = new ArrayList<>();
-        LocalDate curDate = from;
+        LocalDate curDate = getLimitedDate(from, firstExistedDate, 30, firstExistedDate, 1);
         for (Object[] volume : volumes) {
             LocalDate date = ((Date) volume[0]).toLocalDate();
             while (curDate.isBefore(date)) {
@@ -238,7 +241,8 @@ public class OperationController {
             dto.add(new DailyVolumesDto(date, income, outcome));
             curDate = curDate.plusDays(1);
         }
-        LocalDate outOfBoundDate = till.plusDays(1);
+        int lastMonthDay = lastExistedDate.lengthOfMonth();
+        LocalDate outOfBoundDate = getLimitedDate(till, lastExistedDate, 30, lastExistedDate, lastMonthDay).plusDays(1);
         while (curDate.isBefore(outOfBoundDate)) {
             dto.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
             curDate = curDate.plusDays(1);
@@ -301,27 +305,46 @@ public class OperationController {
         return c;
     }
 
-    private LocalDate[] getDateRangeBounds(String from, String till) {
+    private static LocalDate[] getDateRangeBounds(String start, String end) {
         LocalDate today = LocalDate.now();
-        LocalDate fromDate = from == null || from.isEmpty() ? null : LocalDate.parse(from);
-        LocalDate tillDate = till == null || till.isEmpty() ? null : LocalDate.parse(till);
-        if (fromDate != null && tillDate == null) {
-            tillDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), today.lengthOfMonth());
-            if (fromDate.isAfter(tillDate)) {
-                tillDate = LocalDate.of(fromDate.getYear(), fromDate.getMonth().getValue(), fromDate.lengthOfMonth());
+        LocalDate from = start == null || start.isEmpty() ? null : LocalDate.parse(start);
+        LocalDate till = end == null || end.isEmpty() ? null : LocalDate.parse(end);
+        if (from != null && till == null) {
+            till = LocalDate.of(today.getYear(), today.getMonth().getValue(), today.lengthOfMonth());
+            if (from.isAfter(till)) {
+                till = LocalDate.of(from.getYear(), from.getMonth().getValue(), from.lengthOfMonth());
             }
         }
-        if (fromDate == null && tillDate != null) {
-            fromDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), 1);
-            if (fromDate.isAfter(tillDate)) {
-                fromDate = LocalDate.of(tillDate.getYear(), tillDate.getMonth().getValue(), 1);
+        if (from == null && till != null) {
+            from = LocalDate.of(today.getYear(), today.getMonth().getValue(), 1);
+            if (from.isAfter(till)) {
+                from = LocalDate.of(till.getYear(), till.getMonth().getValue(), 1);
             }
         }
-        if ((fromDate == null && tillDate == null) || (fromDate.isAfter(tillDate))) {
-            fromDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), 1);
-            tillDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), today.lengthOfMonth());
+        if ((from == null && till == null) || (from.isAfter(till))) {
+            from = LocalDate.of(today.getYear(), today.getMonth().getValue(), 1);
+            till = LocalDate.of(today.getYear(), today.getMonth().getValue(), today.lengthOfMonth());
         }
-        return new LocalDate[]{fromDate, tillDate};
+        return new LocalDate[]{from, till};
+    }
+
+    /**
+     * Limits the dates range in case when dates difference is too far.
+     * @param d1 first date for comparison
+     * @param d2 second date for comparison
+     * @param maxDaysDifference maximal allowable difference (in days) between dates
+     * @param basedDate based date for the 'limited date' calculation
+     * @param limitedDayOfMonth day of month for the limited date
+     * @return if dates difference not exceeds limit, d1 will be returned. Otherwise limited date will be returned.
+     */
+    private static LocalDate getLimitedDate(LocalDate d1, LocalDate d2, long maxDaysDifference, LocalDate basedDate,
+                                            int limitedDayOfMonth) {
+        long difference = Math.abs(ChronoUnit.DAYS.between(d1, d2));
+        if (difference > maxDaysDifference) {
+            return LocalDate.of(basedDate.getYear(), basedDate.getMonth().getValue(), limitedDayOfMonth);
+        } else {
+            return d1;
+        }
     }
 
     @Getter
