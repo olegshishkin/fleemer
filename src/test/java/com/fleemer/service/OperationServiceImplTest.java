@@ -384,7 +384,7 @@ public class OperationServiceImplTest {
     }
 
     @Test
-    public void findAllDailyVolumes() {
+    public void findAllDailyVolumes() throws ServiceException {
         LocalDate from = LocalDate.of(2018, 1, 1);
         LocalDate till = LocalDate.of(2018, 12, 31);
         List<Object[]> expected = new ArrayList<>();

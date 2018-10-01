@@ -98,7 +98,9 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
 
     @Override
     @Transactional(readOnly = true)
-    public List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person) {
+    public List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person)
+            throws ServiceException {
+        checkDatesSequence(fromDate, tillDate);
         return repository.findAllDailyVolumes(fromDate, tillDate, person);
     }
 

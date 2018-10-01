@@ -25,5 +25,5 @@ public interface OperationService extends BaseService<Operation, Long> {
 
     long countOperationsByAccount(Account account);
 
-    List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person);
+    List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person) throws ServiceException;
 }

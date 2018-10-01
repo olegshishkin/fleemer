@@ -1,6 +1,22 @@
 // Starter JavaScript for disabling form submissions if there are invalid fields
 'use strict';
 
+var chartConfig = {
+    element: 'chart',
+    xkey: 'date',
+    ykeys: ['income', 'outcome'],
+    fillOpacity: 0.5,
+    labels: [$('#income-chart-text').text(), $('#outcome-chart-text').text()],
+    hideHover: 'auto',
+    behaveLikeLine: true,
+    resize: true,
+    pointFillColors: ['#ffffff'],
+    pointStrokeColors: ['black'],
+    lineColors: ['green', 'red'],
+    pointSize: 3
+};
+var chart = Morris.Area(chartConfig);
+
 function preloadImages() {
     var images = [];
     function preload() {
@@ -33,7 +49,7 @@ function setValidationListener() {
 }
 
 // Set bootstrap datepicker
-function setDatePicker(elem) {
+function setDatePicker() {
     var options={
         format: 'yyyy-mm-dd',
         todayHighlight: true,
@@ -41,7 +57,9 @@ function setDatePicker(elem) {
         orientation: 'bottom left',
         language: $('#date-picker-lang').text()
     };
-    elem.datepicker(options);
+    $(arguments).each(function (i, obj) {
+        $(obj).datepicker(options);
+    });
 }
 
 // operation type radiobuttons
@@ -247,27 +265,38 @@ function fillPaginator(cur, total, size, from, till) {
     $('#pagination').append(nextLi);
 }
 
-// Chart building
-function buildChart() {
+// Set listener on dates changing event
+function setChartDateRangeListener() {
+    $.each(arguments, function (i, obj) {
+        $(obj).change(function () {
+            refreshChart();
+        })
+    });
+}
+
+// Refresh chart
+function refreshChart() {
+    var chartDateRangeElem = $('#chart-date-range');
+    var chartElem = $('#chart');
+    var loaderElem = $('#loader-container');
+    chartElem.prop('hidden', true);
+    chartDateRangeElem.prop('hidden', true);
+    loaderElem.prop('hidden', false);
+
+    var from = $('#from-date').val();
+    var till = $('#till-date').val();
+    var data = {
+        from: from === null || from === '' ? null : from,
+        till: till === null || till === '' ? null : till
+    };
     $.ajax({
         url: '/operations/dailyvolumes/json',
+        data: data,
         success: function (result) {
-            var config = {
-                data: result,
-                xkey: 'date',
-                ykeys: ['income', 'outcome'],
-                labels: [$('#income-chart-text').text(), $('#outcome-chart-text').text()],
-                fillOpacity: 0.5,
-                hideHover: 'auto',
-                behaveLikeLine: true,
-                resize: true,
-                pointFillColors: ['#ffffff'],
-                pointStrokeColors: ['black'],
-                lineColors: ['green', 'red']
-            };
-            config.element = 'chart';
-            Morris.Area(config);
-            $('#loader-container').remove();
+            chartElem.prop('hidden', false);
+            chartDateRangeElem.prop('hidden', false);
+            loaderElem.prop('hidden', true);
+            chart.setData(result);
         }
     });
 }

@@ -91,15 +91,15 @@ public class OperationController {
 
     @ResponseBody
     @GetMapping("/dailyvolumes/json")
-    public List<DailyVolumesDto> dailyVolumes(HttpSession session) {
+    public List<DailyVolumesDto> dailyVolumes(@RequestParam(value = "from", required = false) String from,
+                                              @RequestParam(value = "till", required = false) String till,
+                                              HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        LocalDate today = LocalDate.now();
-        int year = today.getYear();
-        int month = today.getMonth().getValue();
-        LocalDate from = LocalDate.of(year, month, 1);
-        LocalDate till = LocalDate.of(year, month, today.lengthOfMonth());
-        List<Object[]> volumes = operationService.findAllDailyVolumes(from, till, person);
-        return convertDailyVolumes(from, till, volumes);
+        LocalDate[] dateRangeBounds = getDateRangeBounds(from, till);
+        LocalDate fromDate = dateRangeBounds[0];
+        LocalDate tillDate = dateRangeBounds[1];
+        List<Object[]> volumes = operationService.findAllDailyVolumes(fromDate, tillDate, person);
+        return convertDailyVolumes(fromDate, tillDate, volumes);
     }
 
     @LogAfterReturning
@@ -299,6 +299,29 @@ public class OperationController {
         c.setPerson(person);
         cache.put(c.getName(), c);
         return c;
+    }
+
+    private LocalDate[] getDateRangeBounds(String from, String till) {
+        LocalDate today = LocalDate.now();
+        LocalDate fromDate = from == null || from.isEmpty() ? null : LocalDate.parse(from);
+        LocalDate tillDate = till == null || till.isEmpty() ? null : LocalDate.parse(till);
+        if (fromDate != null && tillDate == null) {
+            tillDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), today.lengthOfMonth());
+            if (fromDate.isAfter(tillDate)) {
+                tillDate = LocalDate.of(fromDate.getYear(), fromDate.getMonth().getValue(), fromDate.lengthOfMonth());
+            }
+        }
+        if (fromDate == null && tillDate != null) {
+            fromDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), 1);
+            if (fromDate.isAfter(tillDate)) {
+                fromDate = LocalDate.of(tillDate.getYear(), tillDate.getMonth().getValue(), 1);
+            }
+        }
+        if ((fromDate == null && tillDate == null) || (fromDate.isAfter(tillDate))) {
+            fromDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), 1);
+            tillDate = LocalDate.of(today.getYear(), today.getMonth().getValue(), today.lengthOfMonth());
+        }
+        return new LocalDate[]{fromDate, tillDate};
     }
 
     @Getter

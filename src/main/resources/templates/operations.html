@@ -16,12 +16,12 @@
                 <form action="#" class="needs-validation" novalidate>
                     <div class="row">
                         <div class="col-md-5 mb-2">
-                            <input id="from-date" class="form-control" type="text" value="" placeholder="yyyy-mm-dd" required/>
-                            <small class="form-text text-muted" th:text="#{operations.form.period-begin}">Start date</small>
+                            <input id="from-date" class="form-control" type="text" value=""
+                                   th:placeholder="#{operations.form.period-begin}" required/>
                         </div>
                         <div class="col-md-5 mb-2">
-                            <input id="till-date" class="form-control" type="text" value="" placeholder="yyyy-mm-dd" required/>
-                            <small class="form-text text-muted" th:text="#{operations.form.period-end}">Final date</small>
+                            <input id="till-date" class="form-control" type="text" value=""
+                                   th:placeholder="#{operations.form.period-end}" required/>
                         </div>
                         <div class="col-md-2 mb-2">
                             <select id="page-volume" class="custom-select d-block w-100" title="">
@@ -35,7 +35,6 @@
                                 <option>75</option>
                                 <option>100</option>
                             </select>
-                            <small class="form-text text-muted" th:text="#{operations.form.table-size}">Lines</small>
                         </div>
                     </div>
                 </form>
@@ -88,8 +87,7 @@
                 var fromDate = $('#from-date');
                 var tillDate = $('#till-date');
                 var size = $('#page-volume');
-                setDatePicker(fromDate);
-                setDatePicker(tillDate);
+                setDatePicker(fromDate, tillDate);
                 setOnChangeListeners(fromDate, tillDate, size);
                 getOperationsPage();
             });

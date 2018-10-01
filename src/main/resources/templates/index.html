@@ -33,6 +33,7 @@
                         </div>
                     </div>
 
+                    <!--New operation form-->
                     <div class="d-block my-3 text-center">
                         <div class="custom-control custom-radio custom-control-inline">
                             <input id="outcome" name="operationType" type="radio" class="custom-control-input" required>
@@ -124,8 +125,27 @@
                 <div class="loader"></div>
             </div>
 
+            <!--Chart-->
             <div id="chart" class="row"></div>
 
+            <div id="chart-date-range" class="row justify-content-center" hidden>
+                <div class="col-md-8">
+                    <form action="#" class="needs-validation" novalidate>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <input id="from-date" class="form-control" type="text" value=""
+                                       th:placeholder="#{operations.form.period-begin}" required/>
+                            </div>
+                            <div class="col-md-6 mb-2">
+                                <input id="till-date" class="form-control" type="text" value=""
+                                       th:placeholder="#{operations.form.period-end}" required/>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!--Operations table-->
             <div class="row"><div class="col-md-12 mb-3"></div></div>
             <h5 class="text-center text-muted"
                 th:text="${!operations.isEmpty()} ? #{index.today-operations} : #{index.today-operations-empty}">
@@ -179,12 +199,15 @@
             <script>
                 $(document).ready(function(){
                     setValidationListener();
-                    var elem = $('#date');
-                    setDatePicker(elem);
-                    elem.val(new Date().toISOString().substring(0, 10));
+                    var newOperationDateElem = $('#date');
+                    var fromElem = $('#from-date');
+                    var tillElem = $('#till-date');
+                    setDatePicker(newOperationDateElem, fromElem, tillElem);
+                    newOperationDateElem.val(new Date().toISOString().substring(0, 10));
                     setOperationTypeListener(true);
+                    setChartDateRangeListener(fromElem, tillElem);
                     $('#outcome').click();
-                    buildChart();
+                    refreshChart();
                 });
             </script>
         </div>

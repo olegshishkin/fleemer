@@ -28,12 +28,12 @@
                 <form id="export-form" th:action="@{/operations/export}" class="needs-validation" novalidate>
                     <div class="row">
                         <div class="col-md-5 mb-3">
-                            <input id="from-date" name="from" class="form-control" type="text" placeholder="yyyy-mm-dd" required/>
-                            <small class="form-text text-muted" th:text="#{operations.form.period-begin}">Start date</small>
+                            <input id="from-date" name="from" class="form-control" type="text"
+                                   th:placeholder="#{operations.form.period-begin}" required/>
                         </div>
                         <div class="col-md-5 mb-3">
-                            <input id="till-date" name="till" class="form-control" type="text" placeholder="yyyy-mm-dd" required/>
-                            <small class="form-text text-muted" th:text="#{operations.form.period-end}">Final date</small>
+                            <input id="till-date" name="till" class="form-control" type="text"
+                                   th:placeholder="#{operations.form.period-end}" required/>
                         </div>
                         <div class="col-md-2 mb-3">
                             <button type="submit" class="btn btn-primary btn-block" th:text="#{serialize.export.button}">Export</button>
@@ -60,8 +60,7 @@
         <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>
         <script>
             $(window).ready(function(){
-                setDatePicker($('#from-date'));
-                setDatePicker($('#till-date'));
+                setDatePicker($('#from-date'), $('#till-date'));
                 $('#file-input').fileselect({
                     language: $('#date-picker-lang').text()
                 });
