@@ -226,8 +226,10 @@ public class OperationController {
     }
 
     private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
-        LocalDate firstExistedDate = ((Date) volumes.get(0)[0]).toLocalDate();
-        LocalDate lastExistedDate = ((Date) volumes.get(volumes.size() - 1)[0]).toLocalDate();
+        boolean isListEmpty = volumes.isEmpty();
+        LocalDate now = LocalDate.now();
+        LocalDate firstExistedDate = isListEmpty ? now : ((Date) volumes.get(0)[0]).toLocalDate();
+        LocalDate lastExistedDate = isListEmpty ? now : ((Date) volumes.get(volumes.size() - 1)[0]).toLocalDate();
         List<DailyVolumesDto> dto = new ArrayList<>();
         LocalDate curDate = getLimitedDate(from, firstExistedDate, 30, firstExistedDate, 1);
         for (Object[] volume : volumes) {

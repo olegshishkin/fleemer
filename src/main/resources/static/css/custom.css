@@ -26,7 +26,30 @@
     height: 342px;
 }
 
+body {
+    padding-top: 5rem;
+    font-size: 90%;
+}
+
 html.center,
 body.center {
     height: 100%;
+}
+
+body.create-user {
+    padding-top: 1rem;
+}
+
+#main-navbar {
+    font-size: 110%;
+}
+
+#pagination>li>a,
+#pagination>li>span {
+    border: 1px solid gray;
+}
+
+#pagination>li.active>a {
+    background: lightgrey;
+    color: #ffffff;
 }

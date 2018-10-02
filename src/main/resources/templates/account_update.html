@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-4">
-                <h5 class="text-center" th:text="#{accounts.edit-account}">Edit account</h5>
+                <h6 class="text-center text-muted" th:text="#{accounts.edit-account}">Edit account</h6>
 
                 <form method="post" th:action="@{/accounts/update}" action="#" th:object="${account}"
                       class="needs-validation" novalidate>
@@ -18,7 +18,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{name}" th:text="#{accounts.form.name}">Name</label>
-                            <input th:field="*{name}" type="text" class="form-control" required/>
+                            <input th:field="*{name}" type="text" class="form-control form-control-sm" required/>
                             <div th:if="${#fields.hasErrors('name')}">
                                 <span th:errors="*{name}" class="text-danger small"></span><br>
                             </div>
@@ -29,7 +29,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{type}" th:text="#{accounts.form.type}">Type</label>
-                            <select th:field="*{type}" class="custom-select d-block w-100" required>
+                            <select th:field="*{type}" class=" form-control form-control-sm" required>
                                 <option value="" th:text="#{accounts.form.select-type}">Select type</option>
                                 <option th:each="type : ${accountTypes}" th:value="${type}"
                                         th:text="${#messages.msg('common.account.type.' + type.toString().toLowerCase())}"></option>
@@ -44,7 +44,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{currency}" th:text="#{accounts.form.currency}">Currency</label>
-                            <select th:field="*{currency}" class="custom-select d-block w-100" required>
+                            <select th:field="*{currency}" class=" form-control form-control-sm" required>
                                 <option value="" th:text="#{accounts.form.select-currency}">Select currency</option>
                                 <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
                             </select>
@@ -58,7 +58,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="balance" th:text="#{accounts.balance}">Balance</label>
-                            <input th:field="*{balance}" type="text" class="form-control" placeholder="0.0"
+                            <input th:field="*{balance}" type="text" class="form-control form-control-sm" placeholder="0.0"
                                    th:pattern="#{common.number.pattern}" required/>
                             <div th:if="${#fields.hasErrors('balance')}">
                                 <span th:errors="*{balance}" class="text-danger small"></span><br>
@@ -70,13 +70,15 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <button class="btn btn-primary btn-block" type="submit" th:text="#{accounts.form.submit}">Submit</button>
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                    th:text="#{accounts.form.save}">Save
+                            </button>
                         </div>
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 mb-3 text-center">
+                        <div class="col-md-12 text-center">
                             <a th:href="@{/accounts}" href="#" class="btn btn-link text-dark btn-sm" role="button"
                                th:text="#{accounts.back}">Back
                             </a>

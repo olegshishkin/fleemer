@@ -208,7 +208,7 @@ function addChat(nickname, id) {
 function addChatTabToList(chatElem, nickname, id, chatsList) {
     chatElem = $('#chat').clone(true).attr('id', 'chat-' + id).attr('data-target', '#chat-body-' + id);
     $(chatElem).find('h3.name').text(nickname);
-    $(chatElem).find('.fa-trash-o').click(function () {
+    $(chatElem).find('.fa-trash-alt').click(function () {
         $('#chat-body-' + id).remove();
         $('#chat-' + id).remove();
     });
@@ -264,7 +264,7 @@ function sendMessage(receiverId) {
 
 function addChatMessage(elem, id, subject, time, content, avatarClass) {
     $(elem).find('h4').text(subject);
-    $(elem).find('h5').text(time.toLocaleString(locale, timeOptions));
+    $(elem).find('h5').append(time.toLocaleString(locale, timeOptions));
     $(elem).find('.message-text').html(content.replace(/\n/g, '<br>'));
     if (avatarClass !== 'undefined' && avatarClass !== null) {
         $(elem).find('.fa-user').addClass(avatarClass);

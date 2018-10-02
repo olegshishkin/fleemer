@@ -15,7 +15,10 @@ var chartConfig = {
     lineColors: ['green', 'red'],
     pointSize: 3
 };
-var chart = Morris.Area(chartConfig);
+
+if ($('#chart').length > 0) {
+    var chart = Morris.Area(chartConfig);
+}
 
 function preloadImages() {
     var images = [];
@@ -26,8 +29,6 @@ function preloadImages() {
         }
     }
     preload(
-        "/static/images/edit.png",
-        "/static/images/delete.png",
         "/static/images/logo_full.png",
         "/static/images/favicon.ico"
     );
@@ -174,6 +175,12 @@ function getOperationsPage(pageNum) {
 function fillTable(operations) {
     $('#operation-table').empty();
     var table = $('#operation-table-snippet').clone(true).removeAttr('id');
+    var dollarElem = $('#dollar').html();
+    var euroElem = $('#euro').html();
+    var rubleElem = $('#ruble').html();
+    var editIconElem = $('#edit-icon').html();
+    var trachIconElem = $('#trash-icon').html();
+    var tdElem;
     $.each(operations,
         function addOperationRow(key, value) {
             var redirectUrl = '&redirect=/operations';
@@ -200,27 +207,44 @@ function fillTable(operations) {
             tr.append(categoryCell);
             var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             if (isNotNullAndNotUndefined(outAccount) && isNotNullAndNotUndefined(category)) {
-                tr.append($("<td>").attr('align', 'right').addClass('text-danger').text('-' + formattedSum));
+                tdElem = $("<td>");
+                tdElem.attr('align', 'right').addClass('text-danger').text('-' + formattedSum + ' ');
+                tdElem.append(getCurrencyElem(outAccount.currency, dollarElem, euroElem, rubleElem));
+                tr.append(tdElem);
             } else if (isNotNullAndNotUndefined(inAccount) && isNotNullAndNotUndefined(category)) {
-                tr.append($('<td>').attr('align', 'right').addClass('text-success').text('+' + formattedSum));
+                tdElem = $("<td>");
+                tdElem.attr('align', 'right').addClass('text-success').text('+' + formattedSum + ' ');
+                tdElem.append(getCurrencyElem(inAccount.currency, dollarElem, euroElem, rubleElem));
+                tr.append(tdElem);
             } else {
-                tr.append($('<td>').attr('align', 'right').text(formattedSum));
+                tdElem = $("<td>");
+                tdElem.attr('align', 'right').text(formattedSum + ' ');
+                tdElem.append(getCurrencyElem(inAccount.currency, dollarElem, euroElem, rubleElem));
+                tr.append(tdElem);
             }
-            var editLink = $('<a>')
-                .attr('href', '/operations/update?id=' + value.id + redirectUrl);
-            var editImg = '<img src="/static/images/edit.png" height="24" width="24">';
-            editLink.html(editImg);
+            var editLink = $('<a>').attr('href', '/operations/update?id=' + value.id + redirectUrl);
+            editLink.html(editIconElem);
             var deleteLink = $('<a>')
                 .attr('href', '/operations/delete?id=' + value.id + redirectUrl)
                 .attr('onclick', 'return confirm("' + $('#delete-confirm').html() +  '");');
-            var deleteImg = '<img src="/static/images/delete.png" height="20" width="20">';
-            deleteLink.html(deleteImg);
+            deleteLink.html(trachIconElem);
             var editCell = $('<td>').attr('align', 'left').append(editLink).append(' ').append(deleteLink);
             tr.append(editCell);
             table.find('tbody').append(tr);
         });
     $('#operation-table').append(table);
     showTable();
+}
+
+function getCurrencyElem(currency, dollarElem, euroElem, rubleElem) {
+    switch (currency) {
+        case 'USD':
+            return dollarElem;
+        case 'EUR':
+            return euroElem;
+        case 'RUB':
+            return rubleElem;
+    }
 }
 
 function isNotNullAndNotUndefined(value) {
@@ -234,8 +258,10 @@ function fillPaginator(cur, total, size, from, till) {
     var prevLi = $('#current-page').clone(true).removeAttr('id');
     if (cur === 0){
         prevLi.addClass('disabled');
+        prevLi.find('a').removeClass('text-dark');
     } else {
         prevLi.removeClass('disabled');
+        prevLi.find('a').addClass('text-dark');
     }
     prevLi.find('a').attr('onclick', 'getOperationsPage(' + (cur - 1) + ',' + methodEnding + ')').attr('href', '#');
     prevLi.find('a').html('<<');
@@ -250,6 +276,7 @@ function fillPaginator(cur, total, size, from, till) {
             curLi.addClass('active');
         }
         curLi.find('a').attr('onclick', 'getOperationsPage(' + i + ', ' + methodEnding + ')').attr('href', '#');
+        curLi.find('a').addClass('text-dark');
         curLi.find('a').html(i + 1);
         $('#pagination').append(curLi);
     }
@@ -257,8 +284,10 @@ function fillPaginator(cur, total, size, from, till) {
     var nextLi = $('#current-page').clone(true).removeAttr('id');
     if (cur === total - 1){
         nextLi.addClass('disabled');
+        nextLi.find('a').removeClass('text-dark');
     } else {
         nextLi.removeClass('disabled');
+        nextLi.find('a').addClass('text-dark');
     }
     nextLi.find('a').attr('onclick', 'getOperationsPage(' + (cur + 1) + ', ' + methodEnding + ')').attr('href', '#');
     nextLi.find('a').html('>>');
@@ -320,6 +349,8 @@ function exportButtonClick() {
 }
 
 function importButtonClick() {
+    $('#from-date').val('');
+    $('#till-date').val('');
     $('#message').empty();
     $('#export-btn').removeClass('active');
     $('#import-btn').addClass('active');

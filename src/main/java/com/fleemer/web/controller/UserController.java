@@ -151,7 +151,7 @@ public class UserController {
         if (!person.getId().equals(currentUser.getId())) {
             return "redirect:/";
         }
-        String email = person.getEmail();
+        String email = person.getEmail();//todo make email update confirmation
         if (!email.equals(currentUser.getEmail())) {
             if (personService.findByEmail(email).isPresent()) {
                 String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);

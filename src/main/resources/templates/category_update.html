@@ -7,7 +7,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-4">
-                <h5 class="text-center" th:text="#{categories.edit-category}">Edit category</h5>
+                <h6 class="text-center text-muted" th:text="#{categories.edit-category}">Edit category</h6>
 
                 <form method="post" th:action="@{/categories/update}" action="#" th:object="${category}"
                       class="needs-validation" novalidate>
@@ -19,7 +19,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{name}" th:text="#{categories.form.name}">Name</label>
-                            <input th:field="*{name}" type="text" class="form-control" required/>
+                            <input th:field="*{name}" type="text" class="form-control form-control-sm" required/>
                             <div th:if="${#fields.hasErrors('name')}">
                                 <span th:errors="*{name}" class="text-danger small"></span><br>
                             </div>
@@ -31,13 +31,15 @@
                         <div class="col-md-12 mb-3">
                             <label th:text="#{categories.form.type}">Type</label>
                             <input th:value="${#messages.msg('common.category.type.' + category.type.toString().toLowerCase())}"
-                                   type="text" class="form-control" required disabled>
+                                   type="text" class="form-control form-control-sm" required disabled>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <button th:text="#{categories.form.submit}" class="btn btn-primary btn-block" type="submit">Submit</button>
+                            <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                    th:text="#{categories.form.save}">Save
+                            </button>
                         </div>
                     </div>
 

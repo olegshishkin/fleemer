@@ -16,18 +16,18 @@
                 <form action="#" class="needs-validation" novalidate>
                     <div class="row">
                         <div class="col-md-5 mb-2">
-                            <input id="from-date" class="form-control" type="text" value=""
-                                   th:placeholder="#{operations.form.period-begin}" required/>
+                            <input id="from-date" class="form-control form-control-sm" type="text" value=""
+                                   th:placeholder="#{operations.form.period-begin}" required title=""/>
                         </div>
                         <div class="col-md-5 mb-2">
-                            <input id="till-date" class="form-control" type="text" value=""
+                            <input id="till-date" class="form-control form-control-sm" type="text" value=""
                                    th:placeholder="#{operations.form.period-end}" required/>
                         </div>
                         <div class="col-md-2 mb-2">
-                            <select id="page-volume" class="custom-select d-block w-100" title="">
+                            <select id="page-volume" class="form-control form-control-sm" title="">
                                 <option>5</option>
-                                <option selected>10</option>
-                                <option>15</option>
+                                <option>10</option>
+                                <option selected>15</option>
                                 <option>20</option>
                                 <option>25</option>
                                 <option>30</option>
@@ -50,17 +50,17 @@
         </div>
 
         <div class="row">
-            <div class="col-md-12 mb-3">
+            <div class="col-md-12">
                 <nav>
-                    <ul id="pagination" class="pagination justify-content-center"></ul>
+                    <ul id="pagination" class="pagination pagination-sm justify-content-center"></ul>
                 </nav>
             </div>
         </div>
 
         <div hidden>
-            <table id="operation-table-snippet" class="table table-hover">
+            <table id="operation-table-snippet" class="table table-sm table-hover">
                 <thead align="right">
-                <tr>
+                <tr class="text-dark">
                     <th scope="col" th:text="#{operations.table.date}">Date</th>
                     <th scope="col" th:text="#{operations.table.from-account}">From account</th>
                     <th scope="col" th:text="#{operations.table.to-account}">To account</th>
@@ -78,6 +78,11 @@
             <li id="current-page" class="page-item"><a href="#pagination" class="page-link"></a></li>
             <span id="delete-confirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
             <span id="date-picker-lang" th:text="#{common.lang}">en</span>
+            <span id="dollar"><i class="fas fa-dollar-sign"></i></span>
+            <span id="euro"><i class="fas fa-euro-sign"></i></span>
+            <span id="ruble"><i class="fas fa-ruble-sign"></i></span>
+            <span id="edit-icon"><i class="far fa-edit text-dark"></i></span>
+            <span id="trash-icon"><i class="far fa-trash-alt text-dark"></i></span>
         </div>
 
         <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>

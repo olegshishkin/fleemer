@@ -7,7 +7,7 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-4">
-                    <h5 class="text-center" th:text="#{categories.add-category}">Add category</h5>
+                    <h6 class="text-center text-muted" th:text="#{categories.add-category}">Add category</h6>
 
                     <div th:if="${#request.getParameter('deleteForbidden')}">
                         <div class="alert alert-danger text-center" role="alert">
@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{name}" th:text="#{categories.form.name}">Name</label>
-                                <input th:field="*{name}" type="text" class="form-control" required/>
+                                <input th:field="*{name}" type="text" class="form-control form-control-sm" required/>
                                 <div th:if="${#fields.hasErrors('name')}">
                                     <span th:errors="*{name}" class="text-danger small"></span><br>
                                 </div>
@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{type}" th:text="#{categories.form.type}">Type</label>
-                                <select th:field="*{type}" class="custom-select d-block w-100" required>
+                                <select th:field="*{type}" class="form-control form-control-sm" required>
                                     <option value="" th:text="#{accounts.form.select-type}">Select type</option>
                                     <option th:each="type : ${categoryTypes}" th:value="${type}"
                                             th:text="${#messages.msg('common.category.type.' + type.toString().toLowerCase())}"></option>
@@ -58,7 +58,9 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <button th:text="#{categories.form.submit}" class="btn btn-primary btn-block" type="submit">Submit</button>
+                                <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                        th:text="#{categories.form.save}">Save
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -72,9 +74,9 @@
                         <div class="loader"></div>
                     </div>
 
-                    <table class="table table-hover" hidden>
+                    <table class="table table-sm table-hover" hidden>
                         <thead align="right">
-                        <tr>
+                        <tr class="text-dark">
                             <th scope="col" th:text="#{categories.table.columns.name}">Name</th>
                             <th scope="col" th:text="#{categories.table.columns.type}">Type</th>
                             <th scope="col"></th>
@@ -84,12 +86,12 @@
                             <tr th:each="a : ${categories}">
                                 <td align="right" th:text="${a.name}">...</td>
                                 <td align="right" th:text="${#messages.msg('common.category.type.' + a.type.toString().toLowerCase())}">...</td>
-                                <td align="right">
+                                <td align="left">
                                     <a href="#" th:href="@{/categories/update(id=${a.id})}">
-                                        <img th:src="@{/static/images/edit.png}" width="24" height="24">
+                                        <span class="far fa-edit text-dark"></span>
                                     </a>
                                     <a href="#" th:href="@{/categories/delete(id=${a.id})}" onclick="return confirmWindow();">
-                                        <img th:src="@{/static/images/delete.png}" width="20" height="20">
+                                        <span class="far fa-trash-alt text-dark"></span>
                                     </a>
                                 </td>
                             </tr>

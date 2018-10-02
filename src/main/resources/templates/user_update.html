@@ -7,9 +7,7 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-4">
-
-                <h5 class="text-center" th:text="#{user-update.edit-profile}">Edit profile</h5>
-
+                <h6 class="text-center text-muted" th:text="#{user-update.edit-profile}">Edit profile</h6>
                 <div th:if="${#request.getParameter('success')}">
                     <div class="alert alert-success text-center" role="alert">
                         <span th:text="#{user-update.success-update}"></span><br>
@@ -30,7 +28,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{email}">Email</label>
-                            <input th:field="*{email}" type="email" class="form-control disabled"
+                            <input th:field="*{email}" type="email" class="form-control form-control-sm"
                                    pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" required/>
                             <div th:if="${#fields.hasErrors('email')}">
                                 <span th:errors="*{email}" class="text-danger small"></span><br>
@@ -42,7 +40,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{firstName}" th:text="#{user.form.firstname}">Firstname</label>
-                            <input th:field="*{firstName}" type="text" class="form-control" required/>
+                            <input th:field="*{firstName}" type="text" class="form-control form-control-sm" required/>
                             <div th:if="${#fields.hasErrors('firstName')}">
                                 <span th:errors="*{firstName}" class="text-danger small"></span><br>
                             </div>
@@ -53,7 +51,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{lastName}" th:text="#{user.form.lastname}">Lastname</label>
-                            <input th:field="*{lastName}" type="text" class="form-control"/>
+                            <input th:field="*{lastName}" type="text" class="form-control form-control-sm"/>
                             <div th:if="${#fields.hasErrors('lastName')}">
                                 <span th:errors="*{lastName}" class="text-danger small"></span><br>
                             </div>
@@ -63,7 +61,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{nickname}" th:text="#{user.form.nickname}">Nickname</label>
-                            <input th:field="*{nickname}" type="text" class="form-control" required/>
+                            <input th:field="*{nickname}" type="text" class="form-control form-control-sm" required/>
                             <div th:if="${#fields.hasErrors('nickname')}">
                                 <span th:errors="*{nickname}" class="text-danger small"></span><br>
                             </div>
@@ -74,7 +72,7 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label th:for="*{hash}" th:text="#{user.form.password}">Password</label>
-                            <input th:field="*{hash}" type="password" class="form-control" required/>
+                            <input th:field="*{hash}" type="password" class="form-control form-control-sm" required/>
                             <div th:if="${#fields.hasErrors('hash')}">
                                 <span th:errors="*{hash}" class="text-danger small"></span><br>
                             </div>
@@ -83,15 +81,16 @@
                     </div>
 
                     <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <button class="btn btn-primary btn-block" type="submit" th:text="#{user.form.submit}">Submit</button>
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                    th:text="#{user.form.save}">Save</button>
                         </div>
                     </div>
                 </form>
 
                 <div class="text-center">
-                    <a th:href="@{/}" href="#" class="btn btn-link text-dark btn-sm" role="button" th:text="#{user-update.cancel}">
-                        Cancel
+                    <a th:href="@{/}" href="#" class="btn btn-link text-dark btn-sm" role="button"
+                       th:text="#{user-update.cancel}">Cancel
                     </a>
                 </div>
 

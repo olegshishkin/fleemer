@@ -1,20 +1,20 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head th:replace="header::header"></head>
-<body>
+<body class="create-user">
     <main role="main" class="container">
         <div class="container">
-            <div class="row justify-content-center mb-3">
+            <div class="row justify-content-center">
                 <img th:src="@{/static/images/favicon.ico}" src="../static/images/favicon.ico">
             </div>
             <div class="row justify-content-center">
                 <div class="col col-lg-4">
-                    <h5 class="text-center" th:text="#{user-create.create-user}">Create user</h5>
+                    <h6 class="text-center text-muted" th:text="#{user-create.create-user}">Create user</h6>
                     <form method="post" action="#" th:action="@{/user/create}" th:object="${person}" class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{email}">Email</label>
-                                <input th:field="*{email}" type="email" class="form-control"
+                                <input th:field="*{email}" type="email" class="form-control form-control-sm"
                                        pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" required autofocus/>
                                 <div th:if="${#fields.hasErrors('email')}">
                                     <span th:errors="*{email}" class="text-danger small"></span><br>
@@ -26,7 +26,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{firstName}" th:text="#{user.form.firstname}">Firstname</label>
-                                <input th:field="*{firstName}" type="text" class="form-control" required/>
+                                <input th:field="*{firstName}" type="text" class="form-control form-control-sm" required/>
                                 <div th:if="${#fields.hasErrors('firstName')}">
                                     <span th:errors="*{firstName}" class="text-danger small"></span><br>
                                 </div>
@@ -37,7 +37,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{lastName}" th:text="#{user.form.lastname}">Lastname</label>
-                                <input th:field="*{lastName}" type="text" class="form-control"/>
+                                <input th:field="*{lastName}" type="text" class="form-control form-control-sm"/>
                                 <div th:if="${#fields.hasErrors('lastName')}">
                                     <span th:errors="*{lastName}" class="text-danger small"></span><br>
                                 </div>
@@ -58,7 +58,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{hash}" th:text="#{user.form.password}">Password</label>
-                                <input th:field="*{hash}" type="password" class="form-control" required/>
+                                <input th:field="*{hash}" type="password" class="form-control form-control-sm" required/>
                                 <div th:if="${#fields.hasErrors('hash')}">
                                     <span th:errors="*{hash}" class="text-danger small"></span><br>
                                 </div>
@@ -69,21 +69,23 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="confirm" th:text="#{user.form.confirm-password}">Confirm password</label>
-                                <input name="confirm" type="password" class="form-control" required/>
+                                <input name="confirm" type="password" class="form-control form-control-sm" required/>
                                 <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                             </div>
                         </div>
 
                         <div class="row">
-                            <div class="col-md-12 mb-3">
-                                <button class="btn btn-primary btn-block" type="submit" th:text="#{user.form.submit}">Submit</button>
+                            <div class="col-md-12">
+                                <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                        th:text="#{user.form.save}">Save
+                                </button>
                             </div>
                         </div>
                     </form>
 
                     <div class="text-center">
-                        <a th:href="@{/login}" href="#" class="btn btn-link text-dark btn-sm" role="button" th:text="#{user-create.back}">
-                            Back
+                        <a th:href="@{/login}" href="#" class="btn btn-link text-dark btn-sm" role="button"
+                           th:text="#{user-create.back}">Back
                         </a>
                     </div>
                 </div>

@@ -7,7 +7,7 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-4">
-                    <h5 class="text-center" th:text="#{accounts.add-account}">Add account</h5>
+                    <h6 class="text-center text-muted" th:text="#{accounts.add-account}">Add account</h6>
 
                     <div th:if="${#request.getParameter('deleteForbidden')}">
                         <div class="alert alert-danger text-center" role="alert">
@@ -33,7 +33,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{name}" th:text="#{accounts.form.name}">Name</label>
-                                <input th:field="*{name}" type="text" class="form-control" required/>
+                                <input th:field="*{name}" type="text" class="form-control form-control-sm" required/>
                                 <div th:if="${#fields.hasErrors('name')}">
                                     <span th:errors="*{name}" class="text-danger small"></span><br>
                                 </div>
@@ -44,7 +44,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{type}" th:text="#{accounts.form.type}">Type</label>
-                                <select th:field="*{type}" class="custom-select d-block w-100" required>
+                                <select th:field="*{type}" class="form-control form-control-sm" required>
                                     <option value="" th:text="#{accounts.form.select-type}">Select type</option>
                                     <option th:each="type : ${accountTypes}" th:value="${type}"
                                             th:text="${#messages.msg('common.account.type.' + type.toString().toLowerCase())}"></option>
@@ -59,7 +59,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="*{currency}" th:text="#{accounts.form.currency}">Currency</label>
-                                <select th:field="*{currency}" class="custom-select d-block w-100" required>
+                                <select th:field="*{currency}" class="form-control form-control-sm" required>
                                     <option value="" th:text="#{accounts.form.select-currency}">Select currency</option>
                                     <option th:each="currency : ${currencies}" th:value="${currency}" th:text="${currency}"></option>
                                 </select>
@@ -73,7 +73,7 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label th:for="balance" th:text="#{accounts.balance}">Initial balance</label>
-                                <input th:field="*{balance}" type="text" class="form-control" placeholder="0.0"
+                                <input th:field="*{balance}" type="text" class="form-control form-control-sm" placeholder="0.0"
                                        th:pattern="#{common.number.pattern}" required/>
                                 <div th:if="${#fields.hasErrors('balance')}">
                                     <span th:errors="*{balance}" class="text-danger small"></span><br>
@@ -86,7 +86,9 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <button class="btn btn-primary btn-block" type="submit" th:text="#{accounts.form.submit}">Submit</button>
+                                <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                        th:text="#{accounts.form.save}">Save
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -100,12 +102,11 @@
                         <div class="loader"></div>
                     </div>
 
-                    <table class="table table-hover" hidden>
+                    <table class="table table-sm table-hover" hidden>
                         <thead align="right">
-                        <tr>
+                        <tr class="text-dark">
                             <th scope="col" th:text="#{accounts.table.columns.name}">Name</th>
                             <th scope="col" th:text="#{accounts.table.columns.type}">Type</th>
-                            <th scope="col" th:text="#{accounts.table.columns.currency}">Currency</th>
                             <th scope="col" th:text="#{accounts.table.columns.balance}">Balance</th>
                             <th scope="col"></th>
                         </tr>
@@ -114,14 +115,20 @@
                             <tr th:each="a : ${accounts}">
                                 <td align="right" th:text="${a.name}">...</td>
                                 <td align="right" th:text="${#messages.msg('common.account.type.' + a.type.toString().toLowerCase())}">...</td>
-                                <td align="right" th:text="${a.currency}">...</td>
-                                <td align="right" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">...</td>
                                 <td align="right">
+                                    <span th:text="${#numbers.formatDecimal(a.balance,1,2)}"></span>
+                                    <span th:switch="${a.currency.name()}">
+                                        <span th:case="'USD'"><span class="text-dark fas fa-dollar-sign"></span></span>
+                                        <span th:case="'EUR'"><span class="text-dark fas fa-euro-sign"></span></span>
+                                        <span th:case="'RUB'"><span class="text-dark fas fa-ruble-sign"></span></span>
+                                    </span>
+                                </td>
+                                <td align="left">
                                     <a href="#" th:href="@{/accounts/update(id=${a.id})}">
-                                        <img th:src="@{/static/images/edit.png}" width="24" height="24">
+                                        <span class="far fa-edit text-dark"></span>
                                     </a>
                                     <a href="#" th:href="@{/accounts/delete(id=${a.id})}" onclick="return confirmWindow();">
-                                        <img th:src="@{/static/images/delete.png}" width="20" height="20">
+                                        <span class="far fa-trash-alt text-dark"></span>
                                     </a>
                                 </td>
                             </tr>

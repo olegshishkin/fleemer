@@ -9,16 +9,15 @@
             <div class="col-sm-12 mb-3">
                 <div class="row">
                     <div class="col-sm-12 text-center">
-                        <h5 class="text-center" th:text="#{access.stats.table.name}">Last 3 month access statictics:</h5>
+                        <h6 class="text-center text-muted" th:text="#{access.stats.table.name}">Last 3 month access statistics:</h6>
                     </div>
                 </div>
                 <div class="col-sm-12 mb-3">
-                    <table class="table table-hover">
+                    <table class="table table-sm table-hover">
                         <thead align="right">
-                        <tr>
+                        <tr class="text-dark">
                             <th scope="col" class="text-left" th:text="#{access.stats.table.month}">Month</th>
                             <th scope="col" class="text-left" th:text="#{access.stats.table.ip}">IP address</th>
-                            <th scope="col" class="text-left" th:text="#{access.stats.table.host}">Host</th>
                             <th scope="col" class="text-left" th:text="#{access.stats.table.uri}">URI</th>
                             <th scope="col" class="text-left" th:text="#{access.stats.table.user-agent}">User agent</th>
                             <th scope="col" class="text-left" th:text="#{access.stats.table.request-counter}">Request counter</th>
@@ -26,12 +25,11 @@
                         </thead>
                         <tbody>
                         <tr th:each="s : ${stats}">
-                            <td class="small" align="left" th:text="${s.date}">...</td>
-                            <td class="small" align="left" th:text="${s.ip}">...</td>
-                            <td class="small" align="left" th:text="${s.host}">...</td>
-                            <td class="small" align="left" th:text="${s.uri}">...</td>
-                            <td class="small" align="left" th:text="${s.agent}">...</td>
-                            <td class="small" align="left" th:text="${s.count}">...</td>
+                            <td align="left" th:text="${s.date}">...</td>
+                            <td align="left" th:text="${s.ip}">...</td>
+                            <td align="left" th:text="${s.uri}">...</td>
+                            <td align="left" th:text="${s.agent}">...</td>
+                            <td align="left" th:text="${s.count}">...</td>
                         </tr>
                         </tbody>
                     </table>

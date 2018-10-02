@@ -7,12 +7,10 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-4">
-                    <h4 class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="d-flex justify-content-between align-items-center mb-3">
                         <span class="text-muted" th:text="#{index.total-balance}">Total balance</span>
-                        <span class="badge badge-warning badge-pill" th:text="${#numbers.formatDecimal(totalBalance, 1, 2)}">
-                            0.00
-                        </span>
-                    </h4>
+                        <span class="badge badge-warning badge-pill" th:text="${#numbers.formatDecimal(totalBalance,1,2)}">0.00</span>
+                    </h5>
                     <ul class="list-group mb-3">
                         <li th:each="a : ${accounts}" class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
@@ -35,17 +33,19 @@
 
                     <!--New operation form-->
                     <div class="d-block my-3 text-center">
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input id="outcome" name="operationType" type="radio" class="custom-control-input" required>
-                            <label class="custom-control-label" for="outcome" th:text="#{index.form.outcome}">Outcome</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input id="income" name="operationType" type="radio" class="custom-control-input" checked required>
-                            <label class="custom-control-label" for="income" th:text="#{index.form.income}">Income</label>
-                        </div>
-                        <div class="custom-control custom-radio custom-control-inline">
-                            <input id="transfer" name="operationType" type="radio" class="custom-control-input" required>
-                            <label class="custom-control-label" for="transfer" th:text="#{index.form.transfer}">Transfer</label>
+                        <div class="btn-group btn-group-sm btn-group-toggle d-flex" data-toggle="buttons">
+                            <label class="btn btn-outline-secondary w-100 active">
+                                <input type="radio" name="operationType" id="outcome" autocomplete="off">
+                                <span th:text="#{index.form.outcome}">Outcome</span>
+                            </label>
+                            <label class="btn btn-outline-secondary w-100 ">
+                                <input type="radio" name="operationType" id="income" autocomplete="off">
+                                <span th:text="#{index.form.income}">Income</span>
+                            </label>
+                            <label class="btn btn-outline-secondary w-100">
+                                <input type="radio" name="operationType" id="transfer" autocomplete="off">
+                                <span th:text="#{index.form.transfer}">Transfer</span>
+                            </label>
                         </div>
                     </div>
 
@@ -53,7 +53,7 @@
                           class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <select id="out-account" th:field="*{outAccount}" class="custom-select d-block w-100">
+                                <select id="out-account" th:field="*{outAccount}" class="form-control form-control-sm">
                                     <option value="" th:text="#{index.form.select-account}"></option>
                                     <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
                                 </select>
@@ -63,7 +63,7 @@
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <select id="in-account" th:field="*{inAccount}" class="custom-select d-block w-100" disabled>
+                                <select id="in-account" th:field="*{inAccount}" class="form-control form-control-sm" disabled>
                                     <option value="" th:text="#{index.form.select-account}"></option>
                                     <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
                                 </select>
@@ -76,7 +76,7 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <select id="category" th:field="*{category}" class="custom-select d-block w-100" title="">
+                                <select id="category" th:field="*{category}" class="form-control form-control-sm" title="">
                                     <option id="category-name-blank-value" value="" th:text="#{index.form.select-category}"></option>
                                 </select>
                                 <div class="invalid-feedback" th:text="#{index.error.select-value}">Select a value</div>
@@ -85,7 +85,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <input th:field="*{date}" class="form-control" type="text"
+                                <input th:field="*{date}" class="form-control form-control-sm" type="text"
                                        placeholder="yyyy-mm-dd" required/>
                                 <div th:if="${#fields.hasErrors('date')}">
                                     <span th:errors="*{date}" class="text-danger small"></span><br>
@@ -93,7 +93,7 @@
                                 <div class="invalid-feedback" th:text="#{index.error.select-date}">Select a date of operation</div>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <input th:field="*{sum}" type="text" class="form-control"
+                                <input id="sum" th:field="*{sum}" type="text" class="form-control form-control-sm"
                                        th:placeholder="#{index.form.sum.placeholder}"
                                        th:pattern="#{common.number.pattern}" required autofocus/>
                                 <div th:if="${#fields.hasErrors('sum')}">
@@ -107,14 +107,17 @@
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <textarea th:field="*{comment}" class="form-control" rows="1"
-                                          th:placeholder="#{index.form.comment.placeholder}"></textarea>
+                                <textarea th:field="*{comment}" class="form-control form-control-sm" rows="1"
+                                          th:placeholder="#{index.form.comment.placeholder}">
+                                </textarea>
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-12 mb-3">
-                                <button class="btn btn-primary btn-block" type="submit" th:text="#{index.form.submit}">Submit</button>
+                                <button class="btn btn-sm btn-outline-secondary btn-block" type="submit"
+                                        th:text="#{index.form.ok}">OK
+                                </button>
                             </div>
                         </div>
                     </form>
@@ -133,11 +136,11 @@
                     <form action="#" class="needs-validation" novalidate>
                         <div class="row">
                             <div class="col-md-6 mb-2">
-                                <input id="from-date" class="form-control" type="text" value=""
+                                <input id="from-date" class="form-control form-control-sm" type="text" value=""
                                        th:placeholder="#{operations.form.period-begin}" required/>
                             </div>
                             <div class="col-md-6 mb-2">
-                                <input id="till-date" class="form-control" type="text" value=""
+                                <input id="till-date" class="form-control form-control-sm" type="text" value=""
                                        th:placeholder="#{operations.form.period-end}" required/>
                             </div>
                         </div>
@@ -147,16 +150,16 @@
 
             <!--Operations table-->
             <div class="row"><div class="col-md-12 mb-3"></div></div>
-            <h5 class="text-center text-muted"
+            <h6 class="text-center text-muted"
                 th:text="${!operations.isEmpty()} ? #{index.today-operations} : #{index.today-operations-empty}">
-                Today's operations</h5>
-            <div class="row"><div class="col-md-12 mb-3"></div></div>
+                Today's operations:
+            </h6>
 
             <div class="row" th:if="${!operations.isEmpty()}">
                 <div class="col-md-12 mb-3">
-                    <table class="table table-hover">
+                    <table class="table table-sm table-hover">
                         <thead align="right">
-                        <tr>
+                        <tr class="text-dark">
                             <th scope="col" th:text="#{operations.table.from-account}">From account</th>
                             <th scope="col" th:text="#{operations.table.to-account}">To account</th>
                             <th scope="col" th:text="#{operations.table.category}">Category</th>
@@ -165,21 +168,40 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="o : ${operations}" th:with="sum=${#numbers.formatDecimal(o.sum, 1, 2)}">
+                        <tr class="text-dark" th:each="o : ${operations}" th:with="sum=${#numbers.formatDecimal(o.sum,1,2)}">
                             <td align="right" th:text="${o.outAccount != null ? o.outAccount.name : ''}">...</td>
                             <td align="right" th:text="${o.inAccount != null ? o.inAccount.name : ''}">...</td>
                             <td align="right" th:text="${o.category != null ? o.category.name : ''}">...</td>
-                            <td align="right" class="text-danger" th:if="${o.outAccount != null && o.category != null}"
-                                th:text="'-' + ${sum}">...</td>
-                            <td align="right" class="text-success" th:if="${o.inAccount != null && o.category != null}"
-                                th:text="'+' + ${sum}">...</td>
-                            <td align="right" th:if="${o.outAccount != null && o.inAccount != null}" th:text="${sum}">...</td>
+                            <td align="right" class="text-danger" th:if="${o.outAccount != null && o.category != null}">
+                                <th:block th:text="'-' + ${sum}">...</th:block>
+                                <th:block th:switch="${o.outAccount.currency.name()}">
+                                    <i th:case="'USD'"><i class="fas fa-dollar-sign"></i></i>
+                                    <i th:case="'EUR'"><i class="fas fa-euro-sign"></i></i>
+                                    <i th:case="'RUB'"><i class="fas fa-ruble-sign"></i></i>
+                                </th:block>
+                            </td>
+                            <td align="right" class="text-success" th:if="${o.inAccount != null && o.category != null}">
+                                <th:block th:text="'+' + ${sum}">...</th:block>
+                                <th:block th:switch="${o.inAccount.currency.name()}">
+                                    <i th:case="'USD'"><i class="fas fa-dollar-sign"></i></i>
+                                    <i th:case="'EUR'"><i class="fas fa-euro-sign"></i></i>
+                                    <i th:case="'RUB'"><i class="fas fa-ruble-sign"></i></i>
+                                </th:block>
+                            </td>
+                            <td align="right" th:if="${o.outAccount != null && o.inAccount != null}">
+                                <th:block th:text="${sum}">...</th:block>
+                                <th:block th:switch="${o.outAccount.currency.name()}">
+                                    <i th:case="'USD'"><i class="fas fa-dollar-sign"></i></i>
+                                    <i th:case="'EUR'"><i class="fas fa-euro-sign"></i></i>
+                                    <i th:case="'RUB'"><i class="fas fa-ruble-sign"></i></i>
+                                </th:block>
+                            </td>
                             <td align="left">
                                 <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}">
-                                    <img th:src="@{/static/images/edit.png}" width="24" height="24">
+                                    <span class="far fa-edit text-dark"></span>
                                 </a>
                                 <a href="#" th:href="@{/operations/delete(id=${o.id},redirect='/')}" onclick="return confirmWindow();">
-                                    <img th:src="@{/static/images/delete.png}" width="20" height="20">
+                                    <span class="far fa-trash-alt text-dark"></span>
                                 </a>
                             </td>
                         </tr>
@@ -208,6 +230,7 @@
                     setChartDateRangeListener(fromElem, tillElem);
                     $('#outcome').click();
                     refreshChart();
+                    $('#sum').focus();
                 });
             </script>
         </div>

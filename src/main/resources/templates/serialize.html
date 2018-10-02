@@ -16,34 +16,41 @@
             </div>
 
             <div class="col-lg-8 mb-3">
-                <nav class="nav nav-pills nav-justified">
-                    <a id="export-btn" class="nav-item nav-link active" href="#" th:text="#{serialize.export.button}"
-                       onclick="exportButtonClick()">Export</a>
-                    <a id="import-btn" class="nav-item nav-link" href="#" th:text="#{serialize.import.button}"
-                       onclick="importButtonClick()">Link</a>
-                </nav>
+                <div class="btn-group btn-group-sm btn-group-toggle d-flex" data-toggle="buttons">
+                    <label id="export-btn" class="btn btn-outline-secondary w-100 active" onclick="exportButtonClick()">
+                        <input type="radio" name="operationType" autocomplete="off">
+                        <span th:text="#{serialize.export.button}">Export</span>
+                    </label>
+                    <label id="import-btn" class="btn btn-outline-secondary w-100" onclick="importButtonClick()">
+                        <input type="radio" name="operationType" autocomplete="off">
+                        <span th:text="#{serialize.import.button}">Import</span>
+                    </label>
+                </div>
             </div>
 
             <div class="col-lg-8 mb-3">
                 <form id="export-form" th:action="@{/operations/export}" class="needs-validation" novalidate>
                     <div class="row">
                         <div class="col-md-5 mb-3">
-                            <input id="from-date" name="from" class="form-control" type="text"
+                            <input id="from-date" name="from" class="form-control form-control-sm" type="text"
                                    th:placeholder="#{operations.form.period-begin}" required/>
                         </div>
                         <div class="col-md-5 mb-3">
-                            <input id="till-date" name="till" class="form-control" type="text"
+                            <input id="till-date" name="till" class="form-control form-control-sm" type="text"
                                    th:placeholder="#{operations.form.period-end}" required/>
                         </div>
                         <div class="col-md-2 mb-3">
-                            <button type="submit" class="btn btn-primary btn-block" th:text="#{serialize.export.button}">Export</button>
+                            <button type="submit" class="btn btn-sm btn-secondary btn-block"
+                                    th:text="#{serialize.export.button}">Export
+                            </button>
                         </div>
                     </div>
                 </form>
-                <form id="import-form" th:action="@{/operations/import}" method="post" enctype="multipart/form-data" onchange="submit()" hidden>
+                <form id="import-form" th:action="@{/operations/import}" method="post"
+                      enctype="multipart/form-data" onchange="submit()" hidden>
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <input id="file-input" class="form-control" type="file" name="file"/>
+                            <input id="file-input" class="form-control form-control-sm" type="file" name="file"/>
                             <small class="form-text text-danger" th:text="#{serialize.import.tooltip}">
                                 Attention! Import will be done immediately after the file selection!
                             </small>

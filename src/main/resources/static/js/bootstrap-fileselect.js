@@ -6,7 +6,7 @@
         this.userLanguage = 'en';
         this.$fileselect = $(this);
         this.metadata = this.$fileInput.data();
-        this.$inputGroup = $('<div>').addClass('input-group');
+        this.$inputGroup = $('<div>').addClass('input-group input-group-sm');
         this.$inputGroupBtn = $('<label>').addClass('input-group-btn');
         this.$browseBtn = $('<span>');
         this.$labelInput = $('<input>').attr('type', 'text').attr('readonly', true).addClass('form-control');
@@ -32,7 +32,7 @@
     };
     Fileselect.prototype = {
         defaults: {
-            browseBtnClass: 'btn btn-primary',
+            browseBtnClass: 'btn btn-sm btn-secondary',
             browserBtnPosition: 'right',
             limit: false,
             extensions: false,

@@ -1,5 +1,5 @@
 body{
-    margin-top:20px;
+    padding-top: 20px;
     background:#eee;
 }
 
@@ -56,7 +56,7 @@ body{
 
 .contacts-outter-wrapper .panel-search .fa-search {
     position: absolute;
-    top: 15px;
+    top: 12px;
     right: 15px;
     font-size: 15px;
 }
@@ -159,7 +159,7 @@ body{
     z-index: 23299;
 }
 
-.contacts li .contacts-add .fa-trash-o {
+.contacts li .contacts-add .fa-trash-alt {
     position: absolute;
     font-size: 14px;
     right: 12px;
@@ -168,7 +168,7 @@ body{
     cursor: pointer;
 }
 
-.contacts li .contacts-add .fa-trash-o:hover {
+.contacts li .contacts-add .fa-trash-alt:hover {
     color: #f95858;
 }
 
@@ -398,7 +398,7 @@ body{
 
 .chat-footer .send-message-button > i {
     font-size: 20px;
-    margin: 0 0 0 -4px;
+    margin: 6px 2px 0 0;
     color: #2da9e9;
 }
 
