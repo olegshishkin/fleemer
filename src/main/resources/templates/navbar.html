@@ -14,36 +14,58 @@
         <div id="main-navbar" class="collapse navbar-collapse">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item" th:classappend="${pageName == 'home'}? 'active'">
-                    <a th:href="@{/}" href="#" class="nav-link" th:text="#{navbar.menu.home}">Home</a>
+                    <a th:href="@{/}" href="#" class="nav-link font-weight-light" th:text="#{navbar.menu.home}">Home</a>
                 </li>
                 <li class="nav-item" th:classappend="${pageName == 'operations'}? 'active'">
-                    <a th:href="@{/operations}" href="#" class="nav-link" th:text="#{navbar.menu.operations}">Operations</a>
+                    <a th:href="@{/operations}" href="#" class="nav-link font-weight-light" th:text="#{navbar.menu.operations}">
+                        Operations
+                    </a>
                 </li>
                 <li class="nav-item" th:classappend="${pageName == 'accounts'}? 'active'">
-                    <a th:href="@{/accounts}" href="#" class="nav-link" th:text="#{navbar.menu.accounts}">Accounts</a>
+                    <a th:href="@{/accounts}" href="#" class="nav-link font-weight-light" th:text="#{navbar.menu.accounts}">
+                        Accounts
+                    </a>
                 </li>
                 <li class="nav-item" th:classappend="${pageName == 'categories'}? 'active'">
-                    <a th:href="@{/categories}" href="#" class="nav-link" th:text="#{navbar.menu.categories}">Categories</a>
+                    <a th:href="@{/categories}" href="#" class="nav-link font-weight-light" th:text="#{navbar.menu.categories}">
+                        Categories
+                    </a>
                 </li>
-                <li class="nav-item">
-                    <a th:href="@{/chat}" href="#" target="_blank" rel="noopener noreferrer" class="nav-link"
-                       th:text="#{navbar.menu.chat}">Chat</a>
+                <li class="nav-item dropdown" th:classappend="${pageName == 'options'}? 'active'">
+                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
+                       aria-haspopup="true" aria-expanded="false" th:text="#{navbar.menu.options}">
+                        Options
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item font-weight-light" th:href="@{/options/locale(locale=${session.locale})}" href="#"
+                           th:text="#{navbar.menu.switchLocale(${session.locale.toUpperCase()})}">Switch locale: RU</a>
+                        <a class="dropdown-item font-weight-light" th:href="@{/chat}" href="#" target="_blank" rel="noopener noreferrer"
+                           th:text="#{navbar.menu.chat}">Chat</a>
+                        <a class="dropdown-item font-weight-light" th:href="@{/options/requests/stats}" href="#"
+                           th:text="#{access.stats.name}">Access statistics</a>
+                        <a class="dropdown-item font-weight-light" th:href="@{/options/serialize}" href="#"
+                           th:text="#{navbar.menu.serialize}">Export/Import</a>
+                        <a class="dropdown-item font-weight-light" th:href="@{/user/update}" href="#"
+                           th:text="#{navbar.menu.profile}">My profile</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item font-weight-light" th:href="@{/logout}" href="#"
+                           th:text="#{navbar.menu.logout(${session.person.firstName})}">
+                            Logout(username)
+                        </a>
+                    </div>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown" th:classappend="${pageName == 'options'}? 'active'">
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button"
-                       aria-haspopup="true" aria-expanded="false" th:text="#{navbar.menu.options}">Options</a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" th:href="@{/options/locale(locale=${session.locale})}" href="#"
-                           th:text="#{navbar.menu.switchLocale(${session.locale.toUpperCase()})}">Switch locale: RU</a>
-                        <a class="dropdown-item" th:href="@{/options/requests/stats}" href="#" th:text="#{access.stats.name}">Access statistics</a>
-                        <a class="dropdown-item" th:href="@{/options/serialize}" href="#" th:text="#{navbar.menu.serialize}">Export/Import</a>
-                        <a class="dropdown-item" th:href="@{/user/update}" href="#" th:text="#{navbar.menu.profile}">My profile</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" th:href="@{/logout}" href="#"
-                           th:text="#{navbar.menu.logout(${session.person.firstName})}">Logout(username)</a>
-                    </div>
+                <li class="nav-item">
+                    <th:block th:if="${session.totalBalances != null}" th:each="totalBalance : ${session.totalBalances}">
+                    <span th:class="${totalBalance.value > 0} ? 'text-success' : 'text-danger'"
+                          th:text="${#numbers.formatDecimal(totalBalance.value,1,'WHITESPACE',2,'DEFAULT')}">0.00</span>
+                        <th:block th:switch="${totalBalance.key.name()}">
+                            <i th:case="'USD'"><i class="text-muted fas fa-dollar-sign"></i></i>
+                            <i th:case="'EUR'"><i class="text-muted fas fa-euro-sign"></i></i>
+                            <i th:case="'RUB'"><i class="text-muted fas fa-ruble-sign"></i></i>
+                        </th:block>
+                    </th:block>
                 </li>
             </ul>
         </div>

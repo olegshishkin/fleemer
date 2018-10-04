@@ -175,9 +175,6 @@ function getOperationsPage(pageNum) {
 function fillTable(operations) {
     $('#operation-table').empty();
     var table = $('#operation-table-snippet').clone(true).removeAttr('id');
-    var dollarElem = $('#dollar').html();
-    var euroElem = $('#euro').html();
-    var rubleElem = $('#ruble').html();
     var editIconElem = $('#edit-icon').html();
     var trachIconElem = $('#trash-icon').html();
     var tdElem;
@@ -188,6 +185,7 @@ function fillTable(operations) {
             var outAccount = value.outAccount;
             var category = value.category;
             var sum = value.sum;
+            var existentAccount;
             var tr = $('<tr>');
             tr.append($('<td>').attr('align', 'right').text(value.date));
             var outAccountCell = $('<td>').attr('align', 'right');
@@ -206,22 +204,21 @@ function fillTable(operations) {
             }
             tr.append(categoryCell);
             var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            tdElem = $("<td>").attr('align', 'right');
             if (isNotNullAndNotUndefined(outAccount) && isNotNullAndNotUndefined(category)) {
-                tdElem = $("<td>");
-                tdElem.attr('align', 'right').addClass('text-danger').text('-' + formattedSum + ' ');
-                tdElem.append(getCurrencyElem(outAccount.currency, dollarElem, euroElem, rubleElem));
-                tr.append(tdElem);
+                tdElem.append($('<span>').addClass('text-danger').text('-' + formattedSum));
+                tdElem.append('&nbsp;');
+                existentAccount = outAccount;
             } else if (isNotNullAndNotUndefined(inAccount) && isNotNullAndNotUndefined(category)) {
-                tdElem = $("<td>");
-                tdElem.attr('align', 'right').addClass('text-success').text('+' + formattedSum + ' ');
-                tdElem.append(getCurrencyElem(inAccount.currency, dollarElem, euroElem, rubleElem));
-                tr.append(tdElem);
+                tdElem.append($('<span>').addClass('text-success').text('+' + formattedSum));
+                tdElem.append('&nbsp;');
+                existentAccount = inAccount;
             } else {
-                tdElem = $("<td>");
-                tdElem.attr('align', 'right').text(formattedSum + ' ');
-                tdElem.append(getCurrencyElem(inAccount.currency, dollarElem, euroElem, rubleElem));
-                tr.append(tdElem);
+                tdElem.append($('<span>').text(formattedSum));
+                tdElem.append('&nbsp;');
+                existentAccount = outAccount;
             }
+            tr.append(tdElem.append(getCurrencyElem(existentAccount.currency)));
             var editLink = $('<a>').attr('href', '/operations/update?id=' + value.id + redirectUrl);
             editLink.html(editIconElem);
             var deleteLink = $('<a>')
@@ -236,14 +233,14 @@ function fillTable(operations) {
     showTable();
 }
 
-function getCurrencyElem(currency, dollarElem, euroElem, rubleElem) {
+function getCurrencyElem(currency) {
     switch (currency) {
         case 'USD':
-            return dollarElem;
+            return $('#dollar i').clone(true).removeAttr('id');
         case 'EUR':
-            return euroElem;
+            return $('#euro i').clone(true).removeAttr('id');
         case 'RUB':
-            return rubleElem;
+            return $('#ruble i').clone(true).removeAttr('id');
     }
 }
 

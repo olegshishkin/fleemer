@@ -17,3 +17,5 @@ log/
 .mvn/
 
 Procfile
+application-aruba.properties
+application-production.properties

@@ -183,11 +183,6 @@ public class AccountRepositoryTest {
     }
 
     @Test
-    public void getTotalBalance() {
-        Assert.assertEquals(new BigDecimal("1001.0200000000"), repository.getTotalBalance(people.get(0)));
-    }
-
-    @Test
     public void findByIdAndPerson() {
         Account actual = repository.findByIdAndPerson(2L, people.get(3)).orElseThrow();
         RepositoryAssertions.assertEquals(accounts.get(1), actual);

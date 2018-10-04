@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import com.fleemer.model.Account;
 import com.fleemer.model.Person;
+import com.fleemer.model.enums.Currency;
 import com.fleemer.repository.AccountRepository;
 import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.AccountServiceImpl;
@@ -182,13 +183,6 @@ public class AccountServiceImplTest {
         when(repository.findByNameAndPerson("Bank", person)).thenReturn(expected);
         assertEquals(expected, service.findByNameAndPerson("Bank", person));
         verify(repository, times(1)).findByNameAndPerson("Bank", person);
-    }
-
-    @Test
-    public void getTotalBalance() {
-        BigDecimal decimal = new BigDecimal("211.5600000000");
-        when(repository.getTotalBalance(person)).thenReturn(decimal);
-        assertEquals(decimal, repository.getTotalBalance(person));
     }
 
     @Test

@@ -5,21 +5,27 @@
 <div th:replace="navbar::navbar('home')"></div>
     <main role="main" class="container">
         <div class="container">
-            <div class="row">
+            <div class="row justify-content-center">
+                <!--Accounts balance-->
                 <div class="col-md-4">
-                    <h5 class="d-flex justify-content-between align-items-center mb-3">
-                        <span class="text-muted" th:text="#{index.total-balance}">Total balance</span>
-                        <span class="badge badge-warning badge-pill" th:text="${#numbers.formatDecimal(totalBalance,1,2)}">0.00</span>
-                    </h5>
-                    <ul class="list-group mb-3">
+                    <ul class="list-group list-group-flush mb-3">
                         <li th:each="a : ${accounts}" class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
                                 <h6 class="my-0" th:text="${a.name}">Name</h6>
-                                <small class="text-muted" th:text="${#messages.msg('common.account.type.' + a.type.toString().toLowerCase())}">
+                                <small class="text-muted"
+                                       th:text="${#messages.msg('common.account.type.' + a.type.toString().toLowerCase())}">
                                     Type
                                 </small>
                             </div>
-                            <span class="text-muted" th:text="${#numbers.formatDecimal(a.balance, 1, 2)}">0.00</span>
+                            <span>
+                                <span th:class="${a.balance >= 0} ? 'text-success' : 'text-danger'"
+                                      th:text="${#numbers.formatDecimal(a.balance,1,'WHITESPACE',2,'DEFAULT')}">0.00</span>
+                                <th:block th:switch="${a.currency.name()}">
+                                    <i th:case="'USD'"><i class="text-muted fas fa-dollar-sign"></i></i>
+                                    <i th:case="'EUR'"><i class="text-muted fas fa-euro-sign"></i></i>
+                                    <i th:case="'RUB'"><i class="text-muted fas fa-ruble-sign"></i></i>
+                                </th:block>
+                            </span>
                         </li>
                     </ul>
                 </div>
@@ -32,7 +38,7 @@
                     </div>
 
                     <!--New operation form-->
-                    <div class="d-block my-3 text-center">
+                    <div class="d-block mb-3 text-center">
                         <div class="btn-group btn-group-sm btn-group-toggle d-flex" data-toggle="buttons">
                             <label class="btn btn-outline-secondary w-100 active">
                                 <input type="radio" name="operationType" id="outcome" autocomplete="off">
@@ -168,33 +174,24 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr class="text-dark" th:each="o : ${operations}" th:with="sum=${#numbers.formatDecimal(o.sum,1,2)}">
+                        <tr class="text-dark" th:each="o : ${operations}"
+                            th:with="sum=${#numbers.formatDecimal(o.sum,1,'WHITESPACE',2,'DEFAULT')}">
                             <td align="right" th:text="${o.outAccount != null ? o.outAccount.name : ''}">...</td>
                             <td align="right" th:text="${o.inAccount != null ? o.inAccount.name : ''}">...</td>
                             <td align="right" th:text="${o.category != null ? o.category.name : ''}">...</td>
-                            <td align="right" class="text-danger" th:if="${o.outAccount != null && o.category != null}">
-                                <th:block th:text="'-' + ${sum}">...</th:block>
-                                <th:block th:switch="${o.outAccount.currency.name()}">
-                                    <i th:case="'USD'"><i class="fas fa-dollar-sign"></i></i>
-                                    <i th:case="'EUR'"><i class="fas fa-euro-sign"></i></i>
-                                    <i th:case="'RUB'"><i class="fas fa-ruble-sign"></i></i>
-                                </th:block>
-                            </td>
-                            <td align="right" class="text-success" th:if="${o.inAccount != null && o.category != null}">
-                                <th:block th:text="'+' + ${sum}">...</th:block>
-                                <th:block th:switch="${o.inAccount.currency.name()}">
-                                    <i th:case="'USD'"><i class="fas fa-dollar-sign"></i></i>
-                                    <i th:case="'EUR'"><i class="fas fa-euro-sign"></i></i>
-                                    <i th:case="'RUB'"><i class="fas fa-ruble-sign"></i></i>
-                                </th:block>
-                            </td>
-                            <td align="right" th:if="${o.outAccount != null && o.inAccount != null}">
-                                <th:block th:text="${sum}">...</th:block>
-                                <th:block th:switch="${o.outAccount.currency.name()}">
-                                    <i th:case="'USD'"><i class="fas fa-dollar-sign"></i></i>
-                                    <i th:case="'EUR'"><i class="fas fa-euro-sign"></i></i>
-                                    <i th:case="'RUB'"><i class="fas fa-ruble-sign"></i></i>
-                                </th:block>
+                            <td align="right">
+                                <span>
+                                    <span th:if="${o.outAccount != null && o.category != null}" th:text="'-' + ${sum}"
+                                          class="text-danger">...</span>
+                                    <span th:if="${o.outAccount != null && o.inAccount != null}" th:text="${sum}">...</span>
+                                    <span th:if="${o.inAccount != null && o.category != null}" th:text="'+' + ${sum}"
+                                          class="text-success">...</span>
+                                    <th:block th:switch="${o.outAccount != null ? o.outAccount.currency.name() : o.inAccount.currency.name()}">
+                                        <i th:case="'USD'"><i class="text-muted fas fa-dollar-sign"></i></i>
+                                        <i th:case="'EUR'"><i class="text-muted fas fa-euro-sign"></i></i>
+                                        <i th:case="'RUB'"><i class="text-muted fas fa-ruble-sign"></i></i>
+                                    </th:block>
+                                </span>
                             </td>
                             <td align="left">
                                 <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}">
