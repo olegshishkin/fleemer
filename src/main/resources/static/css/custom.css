@@ -46,6 +46,10 @@ body.create-user {
     width: 1%;
 }
 
+td.border-bottom {
+    border-bottom:1pt solid black;
+}
+
 #main-navbar {
     font-size: 110%;
 }

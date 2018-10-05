@@ -177,6 +177,7 @@ function fillTable(operations) {
     var table = $('#operation-table-snippet').clone(true).removeAttr('id');
     var editIconElem = $('#edit-icon').html();
     var trashIconElem = $('#trash-icon').html();
+    var curDate;
     $.each(operations,
         function addOperationRow(key, value) {
             var redirectUrl = '&redirect=/operations';
@@ -194,6 +195,18 @@ function fillTable(operations) {
             var isCategoryExist = isNotNullAndNotUndefined(category);
             var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             var sumCell = $('<span>');
+            if (curDate !== value.date) {
+                curDate = value.date;
+                var dateTr = $('<tr>').addClass('text-dark text-center');
+                var dateTd = $('<td>').addClass('text-muted border-bottom');
+                dateTd.attr('colspan', 4);
+                dateTd.text(curDate);
+                dateTr
+                    .append($('<td>'))
+                    .append(dateTd)
+                    .append($('<td>'));
+                table.find('tbody').append(dateTr);
+            }
             if (isOutAccountExist && isCategoryExist) {
                 leftSideCell.text(outAccount.name.slice(0,30));
                 arrowCell = $('<td>')
@@ -220,7 +233,6 @@ function fillTable(operations) {
                 existentAccount = outAccount;
             }
             tr.append($('<td>'))
-                .append($('<td>').addClass('text-right fit').text(value.date))
                 .append(leftSideCell)
                 .append(arrowCell)
                 .append(rightSideCell);
