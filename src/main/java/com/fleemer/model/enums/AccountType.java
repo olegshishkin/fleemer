@@ -4,5 +4,6 @@ public enum AccountType {
     CASH,
     BANK_ACCOUNT,
     DEPOSIT,
-    DEBT
+    DEBT,
+    OTHER
 }

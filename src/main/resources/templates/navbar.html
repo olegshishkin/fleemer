@@ -58,7 +58,7 @@
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item">
                     <th:block th:if="${session.totalBalances != null}" th:each="totalBalance : ${session.totalBalances}">
-                    <span th:class="${totalBalance.value > 0} ? 'text-success' : 'text-danger'"
+                    <span th:class="${totalBalance.value < 0} ? 'text-danger' : 'text-success'"
                           th:text="${#numbers.formatDecimal(totalBalance.value,1,'WHITESPACE',2,'DEFAULT')}">0.00</span>
                         <th:block th:switch="${totalBalance.key.name()}">
                             <i th:case="'USD'"><i class="text-muted fas fa-dollar-sign"></i></i>
