@@ -58,14 +58,15 @@
         </div>
 
         <div hidden>
-            <table id="operation-table-snippet" class="table table-sm table-hover">
+            <table id="operation-table-snippet" class="table table-sm table-hover table-borderless">
                 <thead align="right">
                 <tr class="text-dark">
-                    <th scope="col" th:text="#{operations.table.date}">Date</th>
-                    <th scope="col" th:text="#{operations.table.from-account}">From account</th>
-                    <th scope="col" th:text="#{operations.table.to-account}">To account</th>
-                    <th scope="col" th:text="#{operations.table.category}">Category</th>
-                    <th scope="col" th:text="#{operations.table.sum}">Sum</th>
+                    <th scope="col"></th>
+                    <th class="fit" scope="col"></th>
+                    <th class="fit" scope="col"></th>
+                    <th class="fit" scope="col"></th>
+                    <th class="fit" scope="col"></th>
+                    <th class="fit" scope="col"></th>
                     <th scope="col"></th>
                 </tr>
                 </thead>
@@ -78,11 +79,13 @@
             <li id="current-page" class="page-item"><a href="#pagination" class="page-link"></a></li>
             <span id="delete-confirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
             <span id="date-picker-lang" th:text="#{common.lang}">en</span>
+            <span id="edit-icon"><i class="far fa-edit text-dark"></i></span>
+            <span id="trash-icon"><i class="far fa-trash-alt text-dark"></i></span>
             <div id="dollar"><i class="text-muted fas fa-dollar-sign"></i></div>
             <div id="euro"><i class="text-muted fas fa-euro-sign"></i></div>
             <div id="ruble"><i class="text-muted fas fa-ruble-sign"></i></div>
-            <span id="edit-icon"><i class="far fa-edit text-dark"></i></span>
-            <span id="trash-icon"><i class="far fa-trash-alt text-dark"></i></span>
+            <div id="arrow-left"><i class="fas fa-long-arrow-alt-left"></i></div>
+            <div id="arrow-right"><i class="fas fa-long-arrow-alt-right"></i></div>
         </div>
 
         <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>

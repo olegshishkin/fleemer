@@ -69,31 +69,39 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-md-6 mb-3">
+                <div class="col-md-6">
                     <div id="loader-container" class="row col-md-12 mb-10">
                         <div class="loader"></div>
                     </div>
 
-                    <table class="table table-sm table-hover" hidden>
-                        <thead align="right">
+                    <table class="table table-sm table-hover table-borderless" hidden>
+                        <thead class="text-right">
                         <tr class="text-dark">
-                            <th scope="col" th:text="#{categories.table.columns.name}">Name</th>
-                            <th scope="col" th:text="#{categories.table.columns.type}">Type</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                             <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr th:each="a : ${categories}">
-                                <td align="right" th:text="${a.name}">...</td>
-                                <td align="right" th:text="${#messages.msg('common.category.type.' + a.type.toString().toLowerCase())}">...</td>
-                                <td align="left">
-                                    <a href="#" th:href="@{/categories/update(id=${a.id})}">
+                                <td></td>
+                                <td class="text-right fit" th:text="${#strings.abbreviate(a.name,30)}">...</td>
+                                <td class="text-right fit">
+                                    <th:block th:switch="${a.type.name()}">
+                                        <i th:case="'INCOME'" class="text-success fas fa-long-arrow-alt-up"></i>
+                                        <i th:case="'OUTCOME'" class="text-danger fas fa-long-arrow-alt-down"></i>
+                                    </th:block>
+                                    &nbsp;
+                                    <span>
+                                        <a href="#" th:href="@{/categories/update(id=${a.id})}">
                                         <span class="far fa-edit text-dark"></span>
                                     </a>
                                     <a href="#" th:href="@{/categories/delete(id=${a.id})}" onclick="return confirmWindow();">
                                         <span class="far fa-trash-alt text-dark"></span>
                                     </a>
+                                    </span>
                                 </td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>

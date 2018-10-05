@@ -176,8 +176,7 @@ function fillTable(operations) {
     $('#operation-table').empty();
     var table = $('#operation-table-snippet').clone(true).removeAttr('id');
     var editIconElem = $('#edit-icon').html();
-    var trachIconElem = $('#trash-icon').html();
-    var tdElem;
+    var trashIconElem = $('#trash-icon').html();
     $.each(operations,
         function addOperationRow(key, value) {
             var redirectUrl = '&redirect=/operations';
@@ -186,47 +185,61 @@ function fillTable(operations) {
             var category = value.category;
             var sum = value.sum;
             var existentAccount;
-            var tr = $('<tr>');
-            tr.append($('<td>').attr('align', 'right').text(value.date));
-            var outAccountCell = $('<td>').attr('align', 'right');
-            if (isNotNullAndNotUndefined(outAccount)) {
-                outAccountCell.text(outAccount.name);
-            }
-            tr.append(outAccountCell);
-            var inAccountCell = $('<td>').attr('align', 'right');
-            if (isNotNullAndNotUndefined(inAccount)) {
-                inAccountCell.text(inAccount.name);
-            }
-            tr.append(inAccountCell);
-            var categoryCell = $('<td>').attr('align', 'right');
-            if (isNotNullAndNotUndefined(category)) {
-                categoryCell.text(category.name);
-            }
-            tr.append(categoryCell);
+            var tr = $('<tr>').addClass('text-dark');
+            var leftSideCell = $('<td>').addClass('text-right fit');
+            var arrowCell;
+            var rightSideCell = $('<td>').addClass('text-left fit');
+            var isOutAccountExist = isNotNullAndNotUndefined(outAccount);
+            var isInAccountExist = isNotNullAndNotUndefined(inAccount);
+            var isCategoryExist = isNotNullAndNotUndefined(category);
             var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
-            tdElem = $("<td>").attr('align', 'right');
-            if (isNotNullAndNotUndefined(outAccount) && isNotNullAndNotUndefined(category)) {
-                tdElem.append($('<span>').addClass('text-danger').text('-' + formattedSum));
-                tdElem.append('&nbsp;');
+            var sumCell = $('<span>');
+            if (isOutAccountExist && isCategoryExist) {
+                leftSideCell.text(outAccount.name.slice(0,30));
+                arrowCell = $('<td>')
+                    .addClass('text-center fit')
+                    .append($('#arrow-right i').clone(true).addClass('text-danger'));
+                rightSideCell.text(category.name.slice(0,30));
+                sumCell.addClass('text-danger').text('-' + formattedSum);
                 existentAccount = outAccount;
-            } else if (isNotNullAndNotUndefined(inAccount) && isNotNullAndNotUndefined(category)) {
-                tdElem.append($('<span>').addClass('text-success').text('+' + formattedSum));
-                tdElem.append('&nbsp;');
+            } else if (isInAccountExist && isCategoryExist) {
+                leftSideCell.text(inAccount.name.slice(0,30));
+                arrowCell = $('<td>')
+                    .addClass('text-center fit')
+                    .append($('#arrow-left i').clone(true).addClass('text-success'));
+                rightSideCell.text(category.name.slice(0,30));
+                sumCell.addClass('text-success').text('+' + formattedSum);
                 existentAccount = inAccount;
             } else {
-                tdElem.append($('<span>').text(formattedSum));
-                tdElem.append('&nbsp;');
+                leftSideCell.text(outAccount.name.slice(0,30));
+                arrowCell = $('<td>')
+                    .addClass('text-center fit')
+                    .append($('#arrow-right i').clone(true).addClass('text-muted'));
+                rightSideCell.text(inAccount.name.slice(0,30));
+                sumCell.text(formattedSum);
                 existentAccount = outAccount;
             }
-            tr.append(tdElem.append(getCurrencyElem(existentAccount.currency)));
+            tr.append($('<td>'))
+                .append($('<td>').addClass('text-right fit').text(value.date))
+                .append(leftSideCell)
+                .append(arrowCell)
+                .append(rightSideCell);
+            sumCell.append('&nbsp;').append(getCurrencyElem(existentAccount.currency)).append('&nbsp;');
             var editLink = $('<a>').attr('href', '/operations/update?id=' + value.id + redirectUrl);
             editLink.html(editIconElem);
+            var spanEditElem = $('<span>').append(editLink);
             var deleteLink = $('<a>')
                 .attr('href', '/operations/delete?id=' + value.id + redirectUrl)
                 .attr('onclick', 'return confirm("' + $('#delete-confirm').html() +  '");');
-            deleteLink.html(trachIconElem);
-            var editCell = $('<td>').attr('align', 'left').append(editLink).append(' ').append(deleteLink);
-            tr.append(editCell);
+            deleteLink.html(trashIconElem);
+            var spanDeleteElem = $('<span>').append(deleteLink);
+            var editCell = $('<td>')
+                .addClass('text-right fit')
+                .append(sumCell)
+                .append('&nbsp;')
+                .append('&nbsp;')
+                .append($('<span>').append(spanEditElem).append('&nbsp;').append(spanDeleteElem));
+            tr.append(editCell).append($('<td>'));
             table.find('tbody').append(tr);
         });
     $('#operation-table').append(table);

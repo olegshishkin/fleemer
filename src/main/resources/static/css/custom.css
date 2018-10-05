@@ -40,6 +40,12 @@ body.create-user {
     padding-top: 1rem;
 }
 
+.table td.fit,
+.table th.fit {
+    white-space: nowrap;
+    width: 1%;
+}
+
 #main-navbar {
     font-size: 110%;
 }

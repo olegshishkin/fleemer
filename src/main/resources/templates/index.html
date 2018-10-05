@@ -5,13 +5,19 @@
 <div th:replace="navbar::navbar('home')"></div>
     <main role="main" class="container">
         <div class="container">
-            <div class="row justify-content-center">
+            <div class="row justify-content-center mb-3">
                 <!--Accounts balance-->
-                <div class="col-md-4">
-                    <ul class="list-group list-group-flush mb-3">
+                <div class="col-md-5">
+                    <ul class="list-group list-group-flush mb-3 shadow p-3 bg-white rounded">
                         <li th:each="a : ${accounts}" class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
-                                <h6 class="my-0" th:text="${a.name}">Name</h6>
+                                <h6 class="my-0" th:text="${#strings.abbreviate(a.name,28)}">Name</h6>
+                                <th:block th:switch="${a.type.name()}">
+                                    <i th:case="'CASH'" class="text-muted fas fa-wallet"></i>
+                                    <i th:case="'BANK_ACCOUNT'" class="text-muted far fa-credit-card"></i>
+                                    <i th:case="'DEPOSIT'" class="text-muted fas fa-university"></i>
+                                    <i th:case="'DEBT'" class="text-muted fas fa-link"></i>
+                                </th:block>
                                 <small class="text-muted"
                                        th:text="${#messages.msg('common.account.type.' + a.type.toString().toLowerCase())}">
                                     Type
@@ -30,7 +36,7 @@
                     </ul>
                 </div>
 
-                <div class="col-md-8">
+                <div class="col-md-7">
                     <div th:if="${#request.getParameter('error') == 'lock'}">
                         <div class="alert alert-danger text-center" role="alert">
                             <span th:text="#{common.error.already-modified}"></span><br>
@@ -137,7 +143,7 @@
             <!--Chart-->
             <div id="chart" class="row"></div>
 
-            <div id="chart-date-range" class="row justify-content-center" hidden>
+            <div id="chart-date-range" class="row justify-content-center mb-3" hidden>
                 <div class="col-md-8">
                     <form action="#" class="needs-validation" novalidate>
                         <div class="row">
@@ -155,55 +161,89 @@
             </div>
 
             <!--Operations table-->
-            <div class="row"><div class="col-md-12 mb-3"></div></div>
-            <h6 class="text-center text-muted"
-                th:text="${!operations.isEmpty()} ? #{index.today-operations} : #{index.today-operations-empty}">
-                Today's operations:
-            </h6>
+            <div class="row">
+                <div class="col-12">
+                    <h6 class="text-center text-muted"
+                        th:text="${!operations.isEmpty()} ? #{index.today-operations} : #{index.today-operations-empty}">
+                        Today's operations:
+                    </h6>
+                </div>
+                <div class="col-12" th:if="${!operations.isEmpty()}">
+                    <div class=" mb-3  ">
+                        <table class="table table-sm table-hover table-borderless">
+                            <tbody>
+                            <tr class="text-dark" th:each="o : ${operations}"
+                                th:with="sum=${#numbers.formatDecimal(o.sum,1,'WHITESPACE',2,'DEFAULT')}">
+                                <td></td>
+                                <th:block th:if="${o.outAccount != null && o.category != null}">
+                                    <td class="text-right fit">
+                                        <span th:text="${#strings.abbreviate(o.outAccount.name,30)}"></span>
+                                    </td>
+                                    <td class="text-center fit">
+                                        <i class="text-danger fas fa-long-arrow-alt-right"></i>
+                                    </td>
+                                    <td class="text-left fit">
+                                        <span th:text="${o.category.name}"></span>
+                                    </td>
+                                </th:block>
 
-            <div class="row" th:if="${!operations.isEmpty()}">
-                <div class="col-md-12 mb-3">
-                    <table class="table table-sm table-hover">
-                        <thead align="right">
-                        <tr class="text-dark">
-                            <th scope="col" th:text="#{operations.table.from-account}">From account</th>
-                            <th scope="col" th:text="#{operations.table.to-account}">To account</th>
-                            <th scope="col" th:text="#{operations.table.category}">Category</th>
-                            <th scope="col" th:text="#{operations.table.sum}">Sum</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr class="text-dark" th:each="o : ${operations}"
-                            th:with="sum=${#numbers.formatDecimal(o.sum,1,'WHITESPACE',2,'DEFAULT')}">
-                            <td align="right" th:text="${o.outAccount != null ? o.outAccount.name : ''}">...</td>
-                            <td align="right" th:text="${o.inAccount != null ? o.inAccount.name : ''}">...</td>
-                            <td align="right" th:text="${o.category != null ? o.category.name : ''}">...</td>
-                            <td align="right">
-                                <span>
-                                    <span th:if="${o.outAccount != null && o.category != null}" th:text="'-' + ${sum}"
-                                          class="text-danger">...</span>
-                                    <span th:if="${o.outAccount != null && o.inAccount != null}" th:text="${sum}">...</span>
-                                    <span th:if="${o.inAccount != null && o.category != null}" th:text="'+' + ${sum}"
-                                          class="text-success">...</span>
-                                    <th:block th:switch="${o.outAccount != null ? o.outAccount.currency.name() : o.inAccount.currency.name()}">
-                                        <i th:case="'USD'"><i class="text-muted fas fa-dollar-sign"></i></i>
-                                        <i th:case="'EUR'"><i class="text-muted fas fa-euro-sign"></i></i>
-                                        <i th:case="'RUB'"><i class="text-muted fas fa-ruble-sign"></i></i>
-                                    </th:block>
-                                </span>
-                            </td>
-                            <td align="left">
-                                <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}">
-                                    <span class="far fa-edit text-dark"></span>
-                                </a>
-                                <a href="#" th:href="@{/operations/delete(id=${o.id},redirect='/')}" onclick="return confirmWindow();">
-                                    <span class="far fa-trash-alt text-dark"></span>
-                                </a>
-                            </td>
-                        </tr>
-                        </tbody>
-                    </table>
+                                <th:block th:if="${o.inAccount != null && o.category != null}">
+                                    <td class="text-right fit">
+                                        <span th:text="${o.inAccount.name}"></span>
+                                    </td>
+                                    <td class="text-center fit">
+                                        <i class="text-success fas fa-long-arrow-alt-left"></i>
+                                    </td>
+                                    <td class="text-left fit">
+                                        <span th:text="${o.category.name}"></span>
+                                    </td>
+                                </th:block>
+
+                                <th:block th:if="${o.category == null}">
+                                    <td class="text-right fit">
+                                        <span th:text="${o.outAccount.name}"></span>
+                                    </td>
+                                    <td class="text-center fit">
+                                        <i class="text-muted fas fa-long-arrow-alt-right"></i>
+                                    </td>
+                                    <td class="text-left fit">
+                                        <span th:text="${o.inAccount.name}"></span>
+                                    </td>
+                                </th:block>
+
+                                <td class="text-right fit">
+                                    <span>
+                                        <span th:if="${o.outAccount != null && o.category != null}" th:text="'-' + ${sum}"
+                                              class="text-danger">...</span>
+                                        <span th:if="${o.outAccount != null && o.inAccount != null}" th:text="${sum}">...</span>
+                                        <span th:if="${o.inAccount != null && o.category != null}" th:text="'+' + ${sum}"
+                                              class="text-success">...</span>
+                                        <th:block th:switch="${o.outAccount != null ? o.outAccount.currency.name() : o.inAccount.currency.name()}">
+                                            <i th:case="'USD'"><i class="text-muted fas fa-dollar-sign"></i></i>
+                                            <i th:case="'EUR'"><i class="text-muted fas fa-euro-sign"></i></i>
+                                            <i th:case="'RUB'"><i class="text-muted fas fa-ruble-sign"></i></i>
+                                        </th:block>
+                                    </span>
+                                    &nbsp;
+                                    <span>
+                                        <span>
+                                            <a href="#" th:href="@{/operations/update(id=${o.id},redirect='/')}">
+                                                <span class="far fa-edit text-dark"></span>
+                                            </a>
+                                        </span>
+                                        <span>
+                                            <a href="#" th:href="@{/operations/delete(id=${o.id},redirect='/')}"
+                                               onclick="return confirmWindow();">
+                                                <span class="far fa-trash-alt text-dark"></span>
+                                            </a>
+                                        </span>
+                                    </span>
+                                </td>
+                                <td></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 

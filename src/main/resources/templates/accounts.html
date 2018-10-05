@@ -97,27 +97,36 @@
             </div>
 
             <div class="row justify-content-center">
-                <div class="col-md-8 mb-3">
+                <div class="col-md-8">
                     <div id="loader-container" class="row col-md-12 mb-10">
                         <div class="loader"></div>
                     </div>
 
-                    <table class="table table-sm table-hover" hidden>
-                        <thead align="right">
+                    <table class="table table-sm table-hover table-borderless" hidden>
+                        <thead class="text-right">
                         <tr class="text-dark">
-                            <th scope="col" th:text="#{accounts.table.columns.name}">Name</th>
-                            <th scope="col" th:text="#{accounts.table.columns.type}">Type</th>
-                            <th scope="col" th:text="#{accounts.table.columns.balance}">Balance</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
                             <th scope="col"></th>
                         </tr>
                         </thead>
                         <tbody>
                             <tr th:each="a : ${accounts}">
-                                <td align="right" th:text="${a.name}">...</td>
-                                <td align="right" th:text="${#messages.msg('common.account.type.' + a.type.toString().toLowerCase())}">
-                                    ...
+                                <td></td>
+                                <td class="text-right fit">
+                                    <span th:text="${#strings.abbreviate(a.name,30)}"></span>
+                                    &nbsp;
+                                    <th:block th:switch="${a.type.name()}">
+                                        <i th:case="'CASH'" class="text-muted fas fa-wallet"></i>
+                                        <i th:case="'BANK_ACCOUNT'" class="text-muted far fa-credit-card"></i>
+                                        <i th:case="'DEPOSIT'" class="text-muted fas fa-university"></i>
+                                        <i th:case="'DEBT'" class="text-muted fas fa-link"></i>
+                                    </th:block>
                                 </td>
-                                <td align="right">
+                                <td class="fit">&nbsp;</td>
+                                <td class="text-right fit">
                                     <span>
                                         <span th:text="${#numbers.formatDecimal(a.balance,1,'WHITESPACE',2,'DEFAULT')}"></span>
                                         <span th:switch="${a.currency.name()}">
@@ -125,16 +134,16 @@
                                             <span th:case="'EUR'"><span class="text-muted  fas fa-euro-sign"></span></span>
                                             <span th:case="'RUB'"><span class="text-muted  fas fa-ruble-sign"></span></span>
                                         </span>
+                                        &nbsp;
+                                        <a href="#" th:href="@{/accounts/update(id=${a.id})}">
+                                            <span class="far fa-edit text-dark"></span>
+                                        </a>
+                                        <a href="#" th:href="@{/accounts/delete(id=${a.id})}" onclick="return confirmWindow();">
+                                            <span class="far fa-trash-alt text-dark"></span>
+                                        </a>
                                     </span>
                                 </td>
-                                <td align="left">
-                                    <a href="#" th:href="@{/accounts/update(id=${a.id})}">
-                                        <span class="far fa-edit text-dark"></span>
-                                    </a>
-                                    <a href="#" th:href="@{/accounts/delete(id=${a.id})}" onclick="return confirmWindow();">
-                                        <span class="far fa-trash-alt text-dark"></span>
-                                    </a>
-                                </td>
+                                <td></td>
                             </tr>
                         </tbody>
                     </table>
