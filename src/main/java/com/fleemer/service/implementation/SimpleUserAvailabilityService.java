@@ -21,7 +21,7 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
     private static final String START_REFRESHING_LOG_MSG = "Refreshing of online users list is started. Total " +
             "tracked users: {}, online users: {}";
     private static final Logger logger = LoggerFactory.getLogger(SimpleUserAvailabilityService.class);
-    private static final ConcurrentHashMap<Long, Boolean> online_users_id = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<Long, Boolean> onlineUsersId = new ConcurrentHashMap<>();
 
     private final PersonService personService;
 
@@ -32,13 +32,13 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
 
     @Override
     public boolean isOnline(long id) {
-        return online_users_id.containsKey(id);
+        return onlineUsersId.containsKey(id);
     }
 
     @Override
     public void setOnline(long id) {
-        if (online_users_id.containsKey(id) || personService.findById(id).isPresent()) {
-            online_users_id.put(id, true);
+        if (onlineUsersId.containsKey(id) || personService.findById(id).isPresent()) {
+            onlineUsersId.put(id, true);
         }
     }
 
@@ -54,7 +54,7 @@ public class SimpleUserAvailabilityService implements UserAvailabilityService {
 
     @Scheduled(fixedDelay = 12000L)
     private void filterOnlineUsersList() {
-        Set<Entry<Long, Boolean>> entries = online_users_id.entrySet();
+        Set<Entry<Long, Boolean>> entries = onlineUsersId.entrySet();
         logger.info(START_REFRESHING_LOG_MSG, entries.size(), entries.stream().filter(Entry::getValue).count());
         Iterator<Entry<Long, Boolean>> iterator = entries.iterator();
         int removed = 0;
