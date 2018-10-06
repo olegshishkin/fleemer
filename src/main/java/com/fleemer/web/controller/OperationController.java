@@ -10,6 +10,7 @@ import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.service.AccountService;
+import com.fleemer.service.BaseService;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
@@ -42,12 +43,12 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
 
 @Controller
 @RequestMapping("/operations")
 public class OperationController {
     private static final String CHARSET_NAME = "UTF-8";
+    private static final String EMPTY_STRING = "";
     private static final String ILLEGAL_VALUES_EXCEPTION_MSG = "Same entities have different field(s) value(s): " +
             "1) %s, 2) %s.";
     private static final String IO_ERROR_EXCEPTION_TEMPLATE = "IO Error: Exception: {}";
@@ -70,36 +71,54 @@ public class OperationController {
     }
 
     @GetMapping
-    public ModelAndView operations() {
-        return new ModelAndView(ROOT_VIEW);
+    public String operations(@RequestParam(value = "account", required = false) Long accountId, Model model,
+                             HttpSession session) {
+        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        model.addAttribute("accounts", accountService.findAll(person));
+        model.addAttribute("categories", categoryService.findAll(person));
+        model.addAttribute("accountId", accountId);
+        return ROOT_VIEW;
     }
 
     @ResponseBody
-    @GetMapping("/json")
-    public OperationPageDto operations(@RequestParam("page") int page,
+    @PostMapping("/json")
+    public OperationPageDTO operations(@RequestParam("page") int page,
                                        @RequestParam("size") int size,
+                                       @RequestParam(value = "orMode", required = false) boolean orMode,
+                                       @RequestParam(value = "inAccounts[]", required = false) List<Long> inAccountsId,
+                                       @RequestParam(value = "outAccounts[]", required = false) List<Long> outAccountsId,
+                                       @RequestParam(value = "categories[]", required = false) List<Long> categoriesId,
+                                       @RequestParam(value = "minSum", required = false) BigDecimal min,
+                                       @RequestParam(value = "maxSum", required = false) BigDecimal max,
+                                       @RequestParam(value = "comment", required = false) String comment,
                                        @RequestParam(value = "from", required = false) String from,
                                        @RequestParam(value = "till", required = false) String till,
                                        HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         Pageable pageable = PageRequest.of(page, size, new Sort(Sort.Direction.DESC, "date"));
-        LocalDate fromDate = from == null || from.isEmpty() ? LocalDate.of(0, 1, 1) : LocalDate.parse(from);
-        LocalDate tillDate = till == null || till.isEmpty() ? LocalDate.of(9999, 12, 31) : LocalDate.parse(till);
-        Page<Operation> operationPage = operationService.findAllByPerson(person, fromDate, tillDate, pageable);
+        LocalDate fromDate = EMPTY_STRING.equals(from) ? null : LocalDate.parse(from);
+        LocalDate tillDate = EMPTY_STRING.equals(till) ? null : LocalDate.parse(till);
+        String readyComment = EMPTY_STRING.equals(comment) ? null : comment;
+        List<Account> inAccounts = inAccountsId.isEmpty() ? null : findAllByIds(accountService, inAccountsId);
+        List<Account> outAccounts = outAccountsId.isEmpty() ? null : findAllByIds(accountService, outAccountsId);
+        List<Category> categories = categoriesId.isEmpty() ? null : findAllByIds(categoryService, categoriesId);
+        Page<Operation> operationPage = operationService.findAll(person, pageable, orMode, fromDate, tillDate,
+                inAccounts, outAccounts, categories, min, max, readyComment);
         int pageNumber = operationPage.getNumber();
-        return new OperationPageDto(pageNumber, operationPage.getTotalPages(), operationPage.getContent());
+        return new OperationPageDTO(pageNumber, operationPage.getTotalPages(), operationPage.getContent());
     }
 
     @ResponseBody
-    @GetMapping("/dailyvolumes/json")
-    public List<DailyVolumesDto> dailyVolumes(@RequestParam(value = "from", required = false) String from,
+    @GetMapping("/dailyVolumes/json")
+    public List<DailyVolumesDTO> dailyVolumes(@RequestParam("currency") com.fleemer.model.enums.Currency currency,
+                                              @RequestParam(value = "from", required = false) String from,
                                               @RequestParam(value = "till", required = false) String till,
                                               HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         LocalDate[] dateRangeBounds = getDateRangeBounds(from, till);
         LocalDate fromDate = dateRangeBounds[0];
         LocalDate tillDate = dateRangeBounds[1];
-        List<Object[]> volumes = operationService.findAllDailyVolumes(fromDate, tillDate, person);
+        List<Object[]> volumes = operationService.findAllDailyVolumes(person, currency, fromDate, tillDate);
         return convertDailyVolumes(fromDate, tillDate, volumes);
     }
 
@@ -141,7 +160,7 @@ public class OperationController {
             model.addAttribute("accounts", accountService.findAll(person));
             return OPERATION_UPDATE_VIEW;
         }
-        List<Operation> operations = operationService.findAllByPerson(person, null, null);
+        List<Operation> operations = operationService.findAll(person);
         if (!operations.contains(formOperation)) {
             return REDIRECT + url;
         }
@@ -175,12 +194,11 @@ public class OperationController {
 
     @ResponseBody
     @GetMapping("/export")
-    public void exportXml(@RequestParam(value = "from") String from, @RequestParam("till") String till,
+    public void exportXml(@RequestParam(value = "from", required = false, defaultValue = "0000-01-01") String from,
+                          @RequestParam(value = "till", required = false, defaultValue = "9999-12-31") String till,
                           HttpSession session, HttpServletResponse response) throws ServiceException, IOException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        LocalDate fromDate = from == null || from.isEmpty() ? null : LocalDate.parse(from);
-        LocalDate tillDate = till == null || till.isEmpty() ? null : LocalDate.parse(till);
-        List<Operation> operations = operationService.findAllByPerson(person, fromDate, tillDate);
+        List<Operation> operations = operationService.findAll(person, LocalDate.parse(from), LocalDate.parse(till));
         response.setContentType("application/xml");
         response.setHeader("Content-Disposition", "attachment;filename=" + person.getEmail() + ".xml");
         try (ServletOutputStream out = response.getOutputStream()) {
@@ -225,28 +243,28 @@ public class OperationController {
         return REDIRECT + "/options/serialize?success";
     }
 
-    private List<DailyVolumesDto> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
+    private List<DailyVolumesDTO> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {
         boolean isListEmpty = volumes.isEmpty();
         LocalDate now = LocalDate.now();
         LocalDate firstExistedDate = isListEmpty ? now : ((Date) volumes.get(0)[0]).toLocalDate();
         LocalDate lastExistedDate = isListEmpty ? now : ((Date) volumes.get(volumes.size() - 1)[0]).toLocalDate();
-        List<DailyVolumesDto> dto = new ArrayList<>();
+        List<DailyVolumesDTO> dto = new ArrayList<>();
         LocalDate curDate = getLimitedDate(from, firstExistedDate, 30, firstExistedDate, 1);
         for (Object[] volume : volumes) {
             LocalDate date = ((Date) volume[0]).toLocalDate();
             while (curDate.isBefore(date)) {
-                dto.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
+                dto.add(new DailyVolumesDTO(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
                 curDate = curDate.plusDays(1);
             }
             BigDecimal income = volume[1] != null ? (BigDecimal) volume[1] : null;
             BigDecimal outcome = volume[2] != null ? (BigDecimal) volume[2] : null;
-            dto.add(new DailyVolumesDto(date, income, outcome));
+            dto.add(new DailyVolumesDTO(date, income, outcome));
             curDate = curDate.plusDays(1);
         }
         int lastMonthDay = lastExistedDate.lengthOfMonth();
         LocalDate outOfBoundDate = getLimitedDate(till, lastExistedDate, 30, lastExistedDate, lastMonthDay).plusDays(1);
         while (curDate.isBefore(outOfBoundDate)) {
-            dto.add(new DailyVolumesDto(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
+            dto.add(new DailyVolumesDTO(curDate, BigDecimal.ZERO, BigDecimal.ZERO));
             curDate = curDate.plusDays(1);
         }
         return dto;
@@ -349,11 +367,16 @@ public class OperationController {
         }
     }
 
+    private static <T extends Serializable, ID extends Comparable<? super ID>> List<T> findAllByIds(BaseService<T, ID> service,
+                                                                                                    Collection<ID> ids) {
+        return ids == null ? null : (List<T>) service.findAllById(ids);
+    }
+
     @Getter
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    private class OperationPageDto {
+    private static class OperationPageDTO {
         private int currentPage;
         private int totalPages;
         private List<Operation> operations;
@@ -363,7 +386,7 @@ public class OperationController {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    private class DailyVolumesDto {
+    private static class DailyVolumesDTO {
         private LocalDate date;
         private BigDecimal income;
         private BigDecimal outcome;

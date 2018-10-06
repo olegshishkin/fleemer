@@ -96,7 +96,7 @@ public class RepositoryAssertions {
                 assertEquals((Operation) expectedElement, (Operation) actualElement);
             } else if (expectedElement instanceof Confirmation) {
                 assertEquals((Confirmation) expectedElement, (Confirmation) actualElement);
-            }else {
+            } else {
                 String msg = "Unknown class for comparison: ";
                 throw new ClassCastException(msg + expectedElement.getClass().getCanonicalName());
             }

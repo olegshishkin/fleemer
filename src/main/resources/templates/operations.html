@@ -13,31 +13,102 @@
                     </div>
                 </div>
 
-                <form action="#" class="needs-validation" novalidate>
-                    <div class="row">
-                        <div class="col-md-5 mb-2">
+                    <div class="form-group row">
+                        <div class="col-md-4 mb-2">
                             <input id="from-date" class="form-control form-control-sm" type="text" value=""
                                    th:placeholder="#{operations.form.period-begin}" required title=""/>
                         </div>
-                        <div class="col-md-5 mb-2">
+                        <div class="col-md-4 mb-2">
                             <input id="till-date" class="form-control form-control-sm" type="text" value=""
                                    th:placeholder="#{operations.form.period-end}" required/>
                         </div>
-                        <div class="col-md-2 mb-2">
-                            <select id="page-volume" class="form-control form-control-sm" title="">
-                                <option>5</option>
-                                <option>10</option>
-                                <option selected>15</option>
-                                <option>20</option>
-                                <option>25</option>
-                                <option>30</option>
-                                <option>50</option>
-                                <option>75</option>
-                                <option>100</option>
-                            </select>
+                        <div class="col-md-4 mb-2">
+                            <div class="row">
+                                <div class="col-9 mb-2">
+                                    <select id="page-volume" class="form-control form-control-sm" title="">
+                                        <option>5</option>
+                                        <option selected>10</option>
+                                        <option>15</option>
+                                        <option>20</option>
+                                        <option>25</option>
+                                        <option>30</option>
+                                        <option>50</option>
+                                        <option>75</option>
+                                        <option>100</option>
+                                    </select>
+                                </div>
+                                <div class="col-2 mb-2">
+                                    <button id="advanced-options-toggle" class="btn btn-sm btn-secondary" data-toggle="collapse"
+                                            data-target="#advanced-options" onclick="toggleChevron()">
+                                        <i class="fas fa-chevron-down"></i>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </form>
+
+                    <div id="advanced-options" class="collapse shadow p-3 bg-white rounded my-3">
+                        <div class="form-group row">
+                            <div class="col-md-4 mb-2">
+                                <label for="out-account" th:text="#{operation.form.out-account}">From account</label>
+                                <select id="out-account" class="form-control form-control-sm" multiple size="5">
+                                    <option value="" selected></option>
+                                    <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label for="in-account" th:text="#{operation.form.in-account}">To account</label>
+                                <select id="in-account" class="form-control form-control-sm" multiple size="5">
+                                    <option value="" selected></option>
+                                    <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-2">
+                                <label for="category" th:text="#{operation.form.category}">Category</label>
+                                <select id="category" class="form-control form-control-sm" title="" multiple size="5">
+                                    <option value="" selected></option>
+                                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-4">
+                                <label for="min-sum" th:text="#{operation.form.min-sum}">Min sum</label>
+                                <input id="min-sum" type="text" class="form-control form-control-sm" placeholder="0.00"
+                                       th:pattern="#{common.number.pattern}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="max-sum" th:text="#{operation.form.max-sum}">Max sum</label>
+                                <input id="max-sum" type="text" class="form-control form-control-sm" placeholder="0.00"
+                                       th:pattern="#{common.number.pattern}">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="comment" th:text="#{operation.form.comment}">Comment</label>
+                                <input id="comment" type="text" class="form-control form-control-sm"
+                                       th:placeholder="#{operation.form.comment.placeholder}">
+                                <small class="text-muted" th:text="#{operation.form.comment-advice}">_ and % are possible</small>
+                            </div>
+                        </div>
+
+                        <div class="form-group form-check">
+                            <input id="mode-checkbox" type="checkbox" class="form-check-input" checked>
+                            <label class="form-check-label" for="mode-checkbox"
+                                   th:text="#{operation.form.mode} + ' (' + #{operation.form.out-account} +
+                                   ', ' + #{operation.form.in-account} + ', ' + #{operation.form.category} +
+                                   ', ' + #{operation.form.comment} + ')'">
+                                OR (From Account, To Account, Category, Comment)
+                            </label>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12 mb-2">
+                                <button class="btn btn-sm btn-secondary btn-block" type="submit" onclick="getOperationsPage()"
+                                        th:text="#{operation.form.ok}">OK
+                                </button>
+                            </div>
+                        </div>
+                </div>
             </div>
         </div>
 
@@ -85,6 +156,7 @@
             <div id="ruble"><i class="text-muted fas fa-ruble-sign"></i></div>
             <div id="arrow-left"><i class="fas fa-long-arrow-alt-left"></i></div>
             <div id="arrow-right"><i class="fas fa-long-arrow-alt-right"></i></div>
+            <div id="account-id" th:text="${accountId}"></div>
         </div>
 
         <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>
@@ -95,7 +167,7 @@
                 var tillDate = $('#till-date');
                 var size = $('#page-volume');
                 setDatePicker(fromDate, tillDate);
-                setOnChangeListeners(fromDate, tillDate, size);
+                setOnOperationFormChangeListeners(fromDate, tillDate, size);
                 getOperationsPage();
             });
         </script>

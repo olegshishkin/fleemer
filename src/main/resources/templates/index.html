@@ -11,7 +11,10 @@
                     <ul class="list-group list-group-flush mb-3 shadow p-3 bg-white rounded">
                         <li th:each="a : ${accounts}" class="list-group-item d-flex justify-content-between lh-condensed">
                             <div>
-                                <h6 class="my-0" th:text="${#strings.abbreviate(a.name,28)}">Name</h6>
+                                <h6 class="my-0">
+                                    <a class="text-muted" th:href="@{/operations(account=${a.id})}"
+                                       th:text="${#strings.abbreviate(a.name,28)}">Name</a>
+                                </h6>
                                 <th:block th:switch="${a.type.name()}">
                                     <i th:case="'CASH'" class="text-muted fas fa-wallet"></i>
                                     <i th:case="'BANK_ACCOUNT'" class="text-muted far fa-credit-card"></i>
@@ -148,13 +151,20 @@
                 <div class="col-md-8">
                     <form action="#" class="needs-validation" novalidate>
                         <div class="row">
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-5 mb-2">
                                 <input id="from-date" class="form-control form-control-sm" type="text" value=""
                                        th:placeholder="#{operations.form.period-begin}" required/>
                             </div>
-                            <div class="col-md-6 mb-2">
+                            <div class="col-md-5 mb-2">
                                 <input id="till-date" class="form-control form-control-sm" type="text" value=""
                                        th:placeholder="#{operations.form.period-end}" required/>
+                            </div>
+                            <div class="col-md-2">
+                                <select id="currency" class="form-control form-control-sm">
+                                    <th:block th:each="currency : ${currencies}">
+                                        <option th:text="${currency}" th:selected="${currency == currencies[0]}"></option>
+                                    </th:block>
+                                </select>
                             </div>
                         </div>
                     </form>
@@ -249,8 +259,8 @@
             </div>
 
             <div hidden>
-                <span id="income-chart-text" th:text="#{index.chart.income}">Income</span>
-                <span id="outcome-chart-text" th:text="#{index.chart.outcome}">Outcome</span>
+                <span id="income-chart-text" th:text="#{index.chart.income(${currencies[0]})}">Income (USD)</span>
+                <span id="outcome-chart-text" th:text="#{index.chart.outcome(${currencies[0]})}">Outcome (USD)</span>
                 <span id="delete-confirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
                 <span id="date-picker-lang" th:text="#{common.lang}">en</span>
             </div>
@@ -265,7 +275,7 @@
                     setDatePicker(newOperationDateElem, fromElem, tillElem);
                     newOperationDateElem.val(new Date().toISOString().substring(0, 10));
                     setOperationTypeListener(true);
-                    setChartDateRangeListener(fromElem, tillElem);
+                    setChartParametersChangeListener(fromElem, tillElem, $('#currency'));
                     $('#outcome').click();
                     refreshChart();
                     $('#sum').focus();

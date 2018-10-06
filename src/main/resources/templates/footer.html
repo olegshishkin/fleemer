@@ -27,6 +27,7 @@
         <p id="current-user-id" th:text="${session.person.id}"></p>
         <p id="chat-notification-icon" th:text="@{/static/images/comment-regular.svg}"></p>
         <p id="chat-notification-info" th:text="#{chat.notification.info}"></p>
+        <p id="locale" th:text="${#ctx.#locale.language}"></p>
     </div>
 </footer>
 </body>

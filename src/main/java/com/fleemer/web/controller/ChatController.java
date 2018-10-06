@@ -9,7 +9,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort.Direction;
@@ -44,7 +43,6 @@ public class ChatController {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         model.addAttribute("currentUserNickname", person.getNickname());
         model.addAttribute("currentUserId", person.getId());
-        model.addAttribute("locale", LocaleContextHolder.getLocale().toLanguageTag());
         return "chat";
     }
 

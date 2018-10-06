@@ -5,7 +5,9 @@ import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.CategoryType;
+import com.fleemer.model.enums.Currency;
 import com.fleemer.repository.OperationRepository;
+import com.fleemer.service.specification.OperationSpecification;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
@@ -18,6 +20,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class OperationServiceImpl extends AbstractService<Operation, Long, OperationRepository>
         implements OperationService {
-    private static final String DATES_SEQUENCE_ERROR = "Starting date is more than the ending date";
-    private static final String NO_ACCOUNTS_AND_CATEGORY_ERROR = "The category and at least one account are missing.";
-    private static final String NO_ACCOUNTS_ERROR = "Both the income account and outcome account are missing.";
-    private static final String NO_OPERATION_TYPE_ERROR = "Category and both the accounts are not null. There is " +
-            "no way to determine an operation type.";
     private static final String SERVICE_EXCEPTION_TEMPLATE = "ServiceException: {}";
-    private static final String WRONG_CATEGORY_TYPE_ERROR = "Wrong category type for that operation: ";
     private static final Logger logger = LoggerFactory.getLogger(OperationServiceImpl.class);
 
     private final AccountService accountService;
@@ -53,39 +50,6 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
 
     @Override
     @Transactional(readOnly = true)
-    public List<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till)
-            throws ServiceException {
-        if (from == null & till == null) {
-            return repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
-        }
-        if (from != null & till != null) {
-            checkDatesSequence(from, till);
-            return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till);
-        }
-        String msg = "Missing one of the dates. From: " + from + ". Till: " + till + '.';
-        logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
-        throw new ServiceException(msg);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Page<Operation> findAllByPerson(Person person, @Nullable LocalDate from, @Nullable LocalDate till,
-                                           Pageable pageable) throws ServiceException {
-        if (from == null || till == null) {
-            return repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable);
-        }
-        checkDatesSequence(from, till);
-        return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till, pageable);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Operation> findByIdAndPerson(Long id, Person person) {
-        return repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public long countOperationsByCategory(Category category) {
         return repository.countOperationsByCategory(category);
     }
@@ -97,11 +61,38 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
+    public List<Operation> findAll(Person person) {
+        return repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
+    }
+
+    @Override
+    public List<Operation> findAll(Person person, LocalDate from, LocalDate till) {
+        return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till);
+    }
+
+    @Override
     @Transactional(readOnly = true)
-    public List<Object[]> findAllDailyVolumes(LocalDate fromDate, LocalDate tillDate, Person person)
+    public Page<Operation> findAll(Person person, Pageable pageable, boolean orMode, @Nullable LocalDate from,
+                                   @Nullable LocalDate till, @Nullable List<Account> inAccounts,
+                                   @Nullable List<Account> outAccounts, @Nullable List<Category> categories,
+                                   @Nullable BigDecimal min, @Nullable BigDecimal max, @Nullable String comment) {
+        Specification<Operation> s = OperationSpecification.createSpecification(orMode, person, from, till, inAccounts,
+                outAccounts, categories, min, max, comment);
+        return repository.findAll(s, pageable);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Operation> findByIdAndPerson(Long id, Person person) {
+        return repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Object[]> findAllDailyVolumes(Person person, Currency currency, LocalDate fromDate, LocalDate tillDate)
             throws ServiceException {
         checkDatesSequence(fromDate, tillDate);
-        return repository.findAllDailyVolumes(fromDate, tillDate, person);
+        return repository.findAllDailyVolumes(currency.ordinal(), fromDate, tillDate, person);
     }
 
     @Override
@@ -169,34 +160,40 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
 
     private static void checkDatesSequence(LocalDate from, LocalDate till) throws ServiceException {
         if (from.isAfter(till)) {
-            String msg = DATES_SEQUENCE_ERROR + ": from: " + from + ", till: " + till;
+            String msg = "Starting date is more than the ending date: from: " + from + ", till: " + till;
             logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
         }
     }
 
     private static void checkLogicalConstraints(Account in, Account out, Category cat) throws ServiceException {
-        if (in == null & out == null) {
-            logger.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_ERROR);
-            throw new ServiceException(NO_ACCOUNTS_ERROR);
-        }
-        if (cat == null & (in == null || out == null)) {
-            logger.error(SERVICE_EXCEPTION_TEMPLATE, NO_ACCOUNTS_AND_CATEGORY_ERROR);
-            throw new ServiceException(NO_ACCOUNTS_AND_CATEGORY_ERROR);
-        }
-        if (cat == null) {
-            return;
-        }
-        if (in != null && out != null) {
-            logger.error(SERVICE_EXCEPTION_TEMPLATE, NO_OPERATION_TYPE_ERROR);
-            throw new ServiceException(NO_OPERATION_TYPE_ERROR);
-        }
-        CategoryType type = cat.getType();
-        if ((in != null && type != CategoryType.INCOME) || (out != null && type != CategoryType.OUTCOME)) {
-            String msg = WRONG_CATEGORY_TYPE_ERROR + type + '.';
+        // Conditions: if all arguments are null or if all arguments are not null or if only one argument is not null.
+        if ((in == null && out == null && cat == null) || (in != null && out != null && cat != null) ||
+                (in != null && out == null && cat == null || out != null && in == null && cat == null ||
+                        cat != null && in == null && out == null)) {
+            String msg = getIfNullErrorMsg(in, out, cat);
             logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
         }
+        // Category type is not suitable for the account
+        if (cat != null) {
+            CategoryType type = cat.getType();
+            if ((in != null && type != CategoryType.INCOME) || (out != null && type != CategoryType.OUTCOME)) {
+                String msg = "Wrong category type for such operation: " + type + ", " + in + ", " + out;
+                logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
+                throw new ServiceException(msg);
+            }
+        }
+        // Accounts have different currencies during transfer operation
+        if (in != null && out != null && !in.getCurrency().equals(out.getCurrency())) {
+            String msg = "Accounts have different currencies: " + in + ", " + out;
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
+            throw new ServiceException(msg);
+        }
+    }
+
+    private static String getIfNullErrorMsg(Account in, Account out, Category cat) {
+        return "There should be only two nonzero parameters. Actually: " + in + ", " + out + ", " + cat;
     }
 
     private static void transfer(Account in, Account out, Category category, BigDecimal sum) {

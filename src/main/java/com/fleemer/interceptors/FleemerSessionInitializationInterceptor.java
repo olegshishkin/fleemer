@@ -7,9 +7,9 @@ import com.fleemer.security.PersonDetails;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.PersonService;
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -72,7 +72,7 @@ public class FleemerSessionInitializationInterceptor extends HandlerInterceptorA
     }
 
     private static Map<Currency, BigDecimal> getTotalBalances(List<Account> accounts) {
-        Map<Currency, BigDecimal> map = new HashMap<>();
+        Map<Currency, BigDecimal> map = new TreeMap<>();
         for (Account account : accounts) {
             Currency currency = account.getCurrency();
             BigDecimal accumulatedBalance = map.get(currency);

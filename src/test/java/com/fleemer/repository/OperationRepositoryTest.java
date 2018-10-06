@@ -8,6 +8,8 @@ import com.fleemer.model.Account;
 import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
+import com.fleemer.model.enums.Currency;
+import com.fleemer.service.specification.OperationSpecification;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
@@ -25,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -221,15 +224,6 @@ public class OperationRepositoryTest {
     }
 
     @Test
-    public void findAllByInAccountPersonOrOutAccountPerson_pageable() {
-        Person person = people.get(1);
-        List<Operation> expected = List.of(operations.get(3), operations.get(2));
-        Pageable pageable = PageRequest.of(2, 2, new Sort(Sort.Direction.DESC, "date"));
-        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable).getContent();
-        RepositoryAssertions.assertIterableEquals(expected, actual);
-    }
-
-    @Test
     public void findAllByInAccountPersonOrOutAccountPersonAndDateBetween() {
         Person person = people.get(3);
         LocalDate from = LocalDate.of(2018, 1, 1);
@@ -237,18 +231,6 @@ public class OperationRepositoryTest {
         List<Operation> expected = List.of(operations.get(0), operations.get(4));
         List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person,
                 from, till);
-        RepositoryAssertions.assertIterableEquals(expected, actual);
-    }
-
-    @Test
-    public void findAllByInAccountPersonOrOutAccountPersonAndDateBetween_pageable() {
-        Person person = people.get(1);
-        LocalDate from = LocalDate.of(2018, 1, 1);
-        LocalDate till = LocalDate.of(2018, 12, 31);
-        List<Operation> expected = List.of(operations.get(1), operations.get(4));
-        Pageable pageable = PageRequest.of(1, 2, new Sort(Sort.Direction.ASC, "date"));
-        List<Operation> actual = repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person,
-                from, till, pageable).getContent();
         RepositoryAssertions.assertIterableEquals(expected, actual);
     }
 
@@ -275,11 +257,28 @@ public class OperationRepositoryTest {
         Person person = people.get(3);
         LocalDate from = LocalDate.of(2018, 1, 1);
         LocalDate till = LocalDate.of(2018, 12, 31);
-        Object[] object = new Object[]{valueOf(LocalDate.of(2018, 5, 3)), new BigDecimal("00000000000000004567.9800000000")};
+        BigDecimal volume = new BigDecimal("00000000000000004567.9800000000");
+        Object[] object = new Object[]{valueOf(LocalDate.of(2018, 5, 3)), volume};
         List<Object[]> expected = new ArrayList<>();
         expected.add(object);
-        List<Object[]> actual = repository.findAllDailyVolumes(from, till, person);
+        List<Object[]> actual = repository.findAllDailyVolumes(Currency.USD.ordinal(), from, till, person);
         assertIterableEquals(expected, actual);
+    }
+
+    @Test
+    public void findAll_bySpecification() {
+        Person person = people.get(3);
+        LocalDate from = LocalDate.of(2017, 5, 12);
+        LocalDate till = LocalDate.of(2018, 6, 30);
+        Account inAccount = accounts.get(1);
+        BigDecimal max = new BigDecimal("00000000000000000500.0000000000");
+        boolean orMode = false;
+        String commentPattern = "6";
+        Pageable pageable = PageRequest.of(0, 10, new Sort(Sort.Direction.ASC, "date"));
+        Specification<Operation> specification = OperationSpecification.createSpecification(orMode, person, from, till,
+                List.of(inAccount), null, null, null, max, commentPattern);
+        List<Operation> expected = List.of(operations.get(5));
+        RepositoryAssertions.assertIterableEquals(expected, repository.findAll(specification, pageable).getContent());
     }
 
     public static void assertIterableEquals(List<Object[]> expected, List<Object[]> actual) {

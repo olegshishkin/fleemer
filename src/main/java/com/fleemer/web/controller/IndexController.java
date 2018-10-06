@@ -3,6 +3,7 @@ package com.fleemer.web.controller;
 import com.fleemer.model.Account;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
+import com.fleemer.model.enums.Currency;
 import com.fleemer.service.*;
 import com.fleemer.service.exception.ServiceException;
 import java.time.LocalDate;
@@ -35,7 +36,8 @@ public class IndexController {
         List<Account> accounts = accountService.findAll(person);
         model.addAttribute("accounts", accounts);
         LocalDate today = LocalDate.now();
-        model.addAttribute("operations", operationService.findAllByPerson(person, today, today));
+        model.addAttribute("operations", operationService.findAll(person, today, today));
+        model.addAttribute("currencies", Currency.values());
         return ROOT_VIEW;
     }
 }

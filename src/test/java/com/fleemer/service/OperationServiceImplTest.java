@@ -9,9 +9,11 @@ import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.CategoryType;
+import com.fleemer.model.enums.Currency;
 import com.fleemer.repository.OperationRepository;
 import com.fleemer.service.exception.ServiceException;
 import com.fleemer.service.implementation.OperationServiceImpl;
+import com.fleemer.service.specification.OperationSpecification;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 
 @RunWith(MockitoJUnitRunner.class)
 public class OperationServiceImplTest {
@@ -137,6 +140,7 @@ public class OperationServiceImplTest {
         when(operation.getSum()).thenReturn(BigDecimal.TEN);
         when(repository.getOne(any())).thenReturn(operation);
         when(account.getBalance()).thenReturn(BigDecimal.ZERO);
+        when(account.getCurrency()).thenReturn(Currency.RUB);
         service.delete(operation);
         verify(repository, times(1)).delete(operation);
         verify(operation, times(1)).getInAccount();
@@ -176,18 +180,23 @@ public class OperationServiceImplTest {
     }
 
     @Test
-    public void findAll_person() throws ServiceException {
+    public void findAll_person() {
         List<Operation> expected = Collections.emptyList();
         when(repository.findAllByInAccountPersonOrOutAccountPerson(person, person)).thenReturn(expected);
-        assertEquals(expected, service.findAllByPerson(person, null, null));
+        assertEquals(expected, service.findAll(person));
         verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPerson(person, person);
     }
 
     @Test
-    public void findAll_personAndPageable() throws ServiceException {
-        when(repository.findAllByInAccountPersonOrOutAccountPerson(person, person, pageable)).thenReturn(page);
-        assertEquals(page, service.findAllByPerson(person, null, null, pageable));
-        verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPerson(person, person, pageable);
+    public void findAll_personAndDates() {
+        List<Operation> expected = Collections.emptyList();
+        LocalDate from = LocalDate.of(1000, 5, 4);
+        LocalDate till = LocalDate.of(2010, 1, 1);
+        when(repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from,
+                till)).thenReturn(expected);
+        assertEquals(expected, service.findAll(person, from, till));
+        verify(repository, times(1)).findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from,
+                till);
     }
 
     @Test
@@ -236,9 +245,11 @@ public class OperationServiceImplTest {
     public void save_categoryNull() throws ServiceException {
         Account in = new Account();
         in.setBalance(BigDecimal.valueOf(6.09));
+        in.setCurrency(Currency.USD);
 
         Account out = new Account();
         out.setBalance(BigDecimal.valueOf(10.01));
+        out.setCurrency(Currency.USD);
 
         Operation operation = new Operation();
         operation.setId(11L);
@@ -256,41 +267,28 @@ public class OperationServiceImplTest {
 
     @Test(expected = ServiceException.class)
     public void save_bothAccountsNull() throws ServiceException {
-        String errorMessage = "Both the income account and outcome account are missing.";
         Category category = new Category();
         category.setType(CategoryType.INCOME);
         Operation operation = new Operation();
         operation.setId(11L);
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setCategory(category);
-        try {
-            service.save(operation);
-        } catch (ServiceException e) {
-            assertEquals(e.getMessage(), errorMessage);
-            throw e;
-        }
+        service.save(operation);
     }
 
     @Test(expected = ServiceException.class)
     public void save_categoryAndOneAccountNull() throws ServiceException {
-        String errorMessage = "The category and at least one account are missing.";
         Account in = new Account();
         in.setBalance(BigDecimal.valueOf(6.09));
         Operation operation = new Operation();
         operation.setId(11L);
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setInAccount(in);
-        try {
-            service.save(operation);
-        } catch (ServiceException e) {
-            assertEquals(e.getMessage(), errorMessage);
-            throw e;
-        }
+        service.save(operation);
     }
 
     @Test(expected = ServiceException.class)
     public void save_allNotNull() throws ServiceException {
-        String errorMessage = "Category and both the accounts are not null. There is no way to determine an operation type.";
         Category category = new Category();
         category.setType(CategoryType.OUTCOME);
 
@@ -306,17 +304,11 @@ public class OperationServiceImplTest {
         operation.setCategory(category);
         operation.setInAccount(in);
         operation.setOutAccount(out);
-        try {
-            service.save(operation);
-        } catch (ServiceException e) {
-            assertEquals(e.getMessage(), errorMessage);
-            throw e;
-        }
+        service.save(operation);
     }
 
     @Test(expected = ServiceException.class)
     public void save_wrongIncomeType() throws ServiceException {
-        String errorMessage = "Wrong category type for that operation: INCOME.";
         Category category = new Category();
         category.setType(CategoryType.INCOME);
 
@@ -328,17 +320,11 @@ public class OperationServiceImplTest {
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setCategory(category);
         operation.setOutAccount(out);
-        try {
-            service.save(operation);
-        } catch (ServiceException e) {
-            assertEquals(e.getMessage(), errorMessage);
-            throw e;
-        }
+        service.save(operation);
     }
 
     @Test(expected = ServiceException.class)
     public void save_wrongOutcomeType() throws ServiceException {
-        String errorMessage = "Wrong category type for that operation: OUTCOME.";
         Category category = new Category();
         category.setType(CategoryType.OUTCOME);
 
@@ -350,12 +336,29 @@ public class OperationServiceImplTest {
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setCategory(category);
         operation.setInAccount(in);
-        try {
-            service.save(operation);
-        } catch (ServiceException e) {
-            assertEquals(e.getMessage(), errorMessage);
-            throw e;
-        }
+        service.save(operation);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void save_differentCurrencies() throws ServiceException {
+        Category category = new Category();
+        category.setType(CategoryType.OUTCOME);
+
+        Account in = new Account();
+        in.setBalance(BigDecimal.valueOf(6.09));
+        in.setCurrency(Currency.USD);
+
+        Account out = new Account();
+        out.setBalance(BigDecimal.valueOf(10.01));
+        out.setCurrency(Currency.RUB);
+
+        Operation operation = new Operation();
+        operation.setId(11L);
+        operation.setSum(BigDecimal.valueOf(3.45));
+        operation.setCategory(category);
+        operation.setInAccount(in);
+        operation.setOutAccount(out);
+        service.save(operation);
     }
 
     @Test
@@ -388,8 +391,8 @@ public class OperationServiceImplTest {
         LocalDate from = LocalDate.of(2018, 1, 1);
         LocalDate till = LocalDate.of(2018, 12, 31);
         List<Object[]> expected = new ArrayList<>();
-        when(repository.findAllDailyVolumes(from, till, person)).thenReturn(expected);
-        assertEquals(expected, service.findAllDailyVolumes(from, till, person));
-        verify(repository, times(1)).findAllDailyVolumes(from, till, person);
+        when(repository.findAllDailyVolumes(Currency.USD.ordinal(), from, till, person)).thenReturn(expected);
+        assertEquals(expected, service.findAllDailyVolumes(person, Currency.USD, from, till));
+        verify(repository, times(1)).findAllDailyVolumes(Currency.USD.ordinal(), from, till, person);
     }
 }

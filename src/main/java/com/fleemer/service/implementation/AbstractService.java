@@ -2,6 +2,7 @@ package com.fleemer.service.implementation;
 
 import com.fleemer.service.BaseService;
 import com.fleemer.service.exception.ServiceException;
+import java.io.Serializable;
 import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,7 +10,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-public abstract class AbstractService <T, ID, R extends JpaRepository<T, ID>> implements BaseService<T, ID> {
+public abstract class AbstractService <T extends Serializable, ID extends Comparable<ID>,
+        R extends JpaRepository<T, ID>> implements BaseService<T, ID> {
     @Override
     @Transactional(readOnly = true)
     public long count() {

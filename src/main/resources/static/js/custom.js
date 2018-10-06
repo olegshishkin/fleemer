@@ -16,6 +16,13 @@ var chartConfig = {
     pointSize: 3
 };
 
+var dateOptions = {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric'
+};
+
 if ($('#chart').length > 0) {
     var chart = Morris.Area(chartConfig);
 }
@@ -132,7 +139,7 @@ function prepareOperationEditForm() {
 }
 
 // Set listener on 'from'-date, 'till'-date and page volume at 'operations' list page.
-function setOnChangeListeners() {
+function setOnOperationFormChangeListeners() {
     $.each(arguments, function (i, obj) {
         $(obj).change(function () {
             getOperationsPage();
@@ -148,13 +155,33 @@ function getOperationsPage(pageNum) {
     }
     var from = $('#from-date').val();
     var till = $('#till-date').val();
-    var data = {
+    // If 'accountId' exists, show table for only such account
+    if ($('#account-id').length > 0) {
+        var accountId =  $('#account-id').text();
+        $('#mode-checkbox').prop('checked', true);
+        var outAccount = $('#out-account');
+        var inAccount = $('#in-account');
+        outAccount.find('option[value=""]').prop('selected', false);
+        inAccount.find('option[value=""]').prop('selected', false);
+        outAccount.val(accountId);
+        inAccount.val(accountId);
+        $('#account-id').remove();
+    }
+    var data =  {
         page: pageNum === undefined || pageNum === null ? 0 : pageNum,
         size: size,
-        from: from === null || from === '' ? null : from,
-        till: till === null || till === '' ? null : till
+        orMode: $('#mode-checkbox').prop('checked'),
+        outAccounts: $('#out-account').val(),
+        inAccounts: $('#in-account').val(),
+        categories: $('#category').val(),
+        minSum: $('#min-sum').val(),
+        maxSum: $('#max-sum').val(),
+        comment: $('#comment').val(),
+        from: from,
+        till: till
     };
     $.ajax({
+        method: 'POST',
         url: '/operations/json',
         data: data,
         success: function (result) {
@@ -200,7 +227,7 @@ function fillTable(operations) {
                 var dateTr = $('<tr>').addClass('text-dark text-center');
                 var dateTd = $('<td>').addClass('text-muted border-bottom');
                 dateTd.attr('colspan', 4);
-                dateTd.text(curDate);
+                dateTd.text(new Date(curDate + 'T00:00:00').toLocaleDateString($('#locale').html(), dateOptions));
                 dateTr
                     .append($('<td>'))
                     .append(dateTd)
@@ -317,7 +344,7 @@ function fillPaginator(cur, total, size, from, till) {
 }
 
 // Set listener on dates changing event
-function setChartDateRangeListener() {
+function setChartParametersChangeListener() {
     $.each(arguments, function (i, obj) {
         $(obj).change(function () {
             refreshChart();
@@ -330,24 +357,32 @@ function refreshChart() {
     var chartDateRangeElem = $('#chart-date-range');
     var chartElem = $('#chart');
     var loaderElem = $('#loader-container');
+    var curCurrency = $('#currency').val();
+    var from = $('#from-date').val();
+    var till = $('#till-date').val();
     chartElem.prop('hidden', true);
     chartDateRangeElem.prop('hidden', true);
     loaderElem.prop('hidden', false);
-
-    var from = $('#from-date').val();
-    var till = $('#till-date').val();
+    var incomeElem = $('#income-chart-text');
+    var outcomeElem = $('#outcome-chart-text');
+    incomeElem.text(incomeElem.text().replace(/\(.*?\)/, '(' + curCurrency + ')'));
+    outcomeElem.text(outcomeElem.text().replace(/\(.*?\)/, '(' + curCurrency + ')'));
     var data = {
+        currency: curCurrency,
         from: from === null || from === '' ? null : from,
         till: till === null || till === '' ? null : till
     };
     $.ajax({
-        url: '/operations/dailyvolumes/json',
+        url: '/operations/dailyVolumes/json',
         data: data,
+        labels: [incomeElem.text(), outcomeElem.text()],
         success: function (result) {
             chartElem.prop('hidden', false);
             chartDateRangeElem.prop('hidden', false);
             loaderElem.prop('hidden', true);
-            chart.setData(result);
+            chart.options.labels = [incomeElem.text(), outcomeElem.text()];
+            chart.options.data = result;
+            chart.setData(chart.options.data);
         }
     });
 }
@@ -390,3 +425,7 @@ function beforPageForwardCountDown(elem) {
         }
     }, 1000);
 }
+
+function toggleChevron() {
+    $('#advanced-options-toggle i').toggleClass('fa-chevron-down fa-chevron-up');
+};
