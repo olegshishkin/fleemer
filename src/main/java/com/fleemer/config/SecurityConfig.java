@@ -1,9 +1,6 @@
 package com.fleemer.config;
 
-import com.fleemer.service.ConfirmationService;
-import com.fleemer.service.PersonService;
 import com.fleemer.service.PersonUserDetailsService;
-import com.fleemer.service.implementation.PersonUserDetailsServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,18 +14,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-    private final ConfirmationService confirmationService;
-    private final PersonService personService;
+    private final PersonUserDetailsService userDetailsService;
 
     @Autowired
-    public SecurityConfig(ConfirmationService confirmationService, PersonService personService) {
-        this.confirmationService = confirmationService;
-        this.personService = personService;
+    public SecurityConfig(PersonUserDetailsService userDetailsService) {
+        this.userDetailsService = userDetailsService;
     }
 
     @Autowired
     protected void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(customUserDetailsService()).passwordEncoder(passwordEncoder());
+        auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 
     @Override
@@ -55,10 +50,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public PersonUserDetailsService customUserDetailsService() {
-        return new PersonUserDetailsServiceImpl(confirmationService, personService);
     }
 }

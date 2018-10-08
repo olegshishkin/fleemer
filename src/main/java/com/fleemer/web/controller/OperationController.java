@@ -88,8 +88,8 @@ public class OperationController {
                                        @RequestParam(value = "inAccounts", required = false) List<Long> inAccountsId,
                                        @RequestParam(value = "outAccounts", required = false) List<Long> outAccountsId,
                                        @RequestParam(value = "categories", required = false) List<Long> categoriesId,
-                                       @RequestParam(value = "minSum", required = false) BigDecimal min,
-                                       @RequestParam(value = "maxSum", required = false) BigDecimal max,
+                                       @RequestParam(value = "minSum", required = false) BigDecimal minSum,
+                                       @RequestParam(value = "maxSum", required = false) BigDecimal maxSum,
                                        @RequestParam(value = "comment", required = false) String comment,
                                        @RequestParam(value = "from", required = false) String from,
                                        @RequestParam(value = "till", required = false) String till,
@@ -103,7 +103,7 @@ public class OperationController {
         List<Account> outAccounts = outAccountsId.isEmpty() ? null : findAllByIds(accountService, outAccountsId);
         List<Category> categories = categoriesId.isEmpty() ? null : findAllByIds(categoryService, categoriesId);
         Page<Operation> operationPage = operationService.findAll(person, pageable, orMode, fromDate, tillDate,
-                inAccounts, outAccounts, categories, min, max, readyComment);
+                inAccounts, outAccounts, categories, minSum, maxSum, readyComment);
         int pageNumber = operationPage.getNumber();
         return new OperationPageDTO(pageNumber, operationPage.getTotalPages(), operationPage.getContent());
     }
