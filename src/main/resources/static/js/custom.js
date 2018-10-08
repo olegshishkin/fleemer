@@ -368,14 +368,12 @@ function setChartParametersChangeListener() {
 
 // Refresh chart
 function refreshChart() {
-    var chartDateRangeElem = $('#chart-date-range');
     var chartElem = $('#chart');
     var loaderElem = $('#loader-container');
     var curCurrency = $('#currency').val();
     var from = $('#from-date').val();
     var till = $('#till-date').val();
     chartElem.prop('hidden', true);
-    chartDateRangeElem.prop('hidden', true);
     loaderElem.prop('hidden', false);
     var incomeElem = $('#income-chart-text');
     var outcomeElem = $('#outcome-chart-text');
@@ -392,7 +390,6 @@ function refreshChart() {
         labels: [incomeElem.text(), outcomeElem.text()],
         success: function (result) {
             chartElem.prop('hidden', false);
-            chartDateRangeElem.prop('hidden', false);
             loaderElem.prop('hidden', true);
             chart.options.labels = [incomeElem.text(), outcomeElem.text()];
             chart.options.data = result;
