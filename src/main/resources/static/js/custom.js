@@ -159,21 +159,35 @@ function getOperationsPage(pageNum) {
     if ($('#account-id').length > 0) {
         var accountId =  $('#account-id').text();
         $('#mode-checkbox').prop('checked', true);
-        var outAccount = $('#out-account');
-        var inAccount = $('#in-account');
-        outAccount.find('option[value=""]').prop('selected', false);
-        inAccount.find('option[value=""]').prop('selected', false);
-        outAccount.val(accountId);
-        inAccount.val(accountId);
+        $('#in-account-checkbox-' + accountId).prop('checked', true);
+        $('#out-account-checkbox-' + accountId).prop('checked', true);
         $('#account-id').remove();
     }
     var data =  {
         page: pageNum === undefined || pageNum === null ? 0 : pageNum,
         size: size,
         orMode: $('#mode-checkbox').prop('checked'),
-        outAccounts: $('#out-account').val(),
-        inAccounts: $('#in-account').val(),
-        categories: $('#category').val(),
+        outAccounts: function () {
+            var arr = [];
+            $("input:checkbox[name=out-account-checkbox]:checked").each(function(){
+                arr.push($(this).val());
+            });
+            return arr;
+        },
+        inAccounts: function () {
+            var arr = [];
+            $("input:checkbox[name=in-account-checkbox]:checked").each(function(){
+                arr.push($(this).val());
+            });
+            return arr;
+        },
+        categories: function () {
+            var arr = [];
+            $("input:checkbox[name=category-checkbox]:checked").each(function(){
+                arr.push($(this).val());
+            });
+            return arr;
+        },
         minSum: $('#min-sum').val(),
         maxSum: $('#max-sum').val(),
         comment: $('#comment').val(),
@@ -415,7 +429,7 @@ function importButtonClick() {
     $('#export-form').attr('hidden', true);
 }
 
-function beforPageForwardCountDown(elem) {
+function beforePageForwardCountDown(elem) {
     var t = 10;
     setInterval(function () {
         if (t <= 0) {
@@ -426,6 +440,26 @@ function beforPageForwardCountDown(elem) {
     }, 1000);
 }
 
-function toggleChevron() {
-    $('#advanced-options-toggle i').toggleClass('fa-chevron-down fa-chevron-up');
-};
+function toggleAdvancedOptions(btn) {
+    $(btn).toggleClass('target-visible');
+    $('#advanced-options').toggle(0);
+    $('.fa-times').toggle(0)
+}
+
+function setOnFilterButtonClickListeners() {
+    $('#advanced-options button').each(function (i, obj) {
+        $(obj).click(function () {
+            $(obj).find('i').toggleClass('fa-chevron-down fa-chevron-up')
+        })
+    });
+}
+
+function clearForm() {
+    var isChecked = $('#mode-checkbox').prop('checked');
+    $('#advanced-options input[type="checkbox"]').prop('checked', false);
+    $('#advanced-options input[type="text"]').prop('checked', false);
+    $('#mode-checkbox').prop('checked', isChecked);
+    $('#min-sum').val('');
+    $('#max-sum').val('');
+    $('#comment').val('');
+}

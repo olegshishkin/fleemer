@@ -3,129 +3,154 @@
 <head th:replace="header::header"></head>
 <body>
 <div th:replace="navbar::navbar('operations')"></div>
-<main role="main" class="container">
     <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-8">
-                <div th:if="${#request.getParameter('error') == 'lock'}">
-                    <div class="alert alert-danger text-center" role="alert">
-                        <span th:text="#{common.error.already-modified}"></span><br>
+        <div class="col-12">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div th:if="${#request.getParameter('error') == 'lock'}">
+                        <div class="alert alert-danger text-center" role="alert">
+                            <span th:text="#{common.error.already-modified}"></span><br>
+                        </div>
                     </div>
-                </div>
-
+                    <!--Dates form-->
                     <div class="form-group row">
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-5 mb-2">
                             <input id="from-date" class="form-control form-control-sm" type="text" value=""
                                    th:placeholder="#{operations.form.period-begin}" required title=""/>
                         </div>
-                        <div class="col-md-4 mb-2">
+                        <div class="col-md-5 mb-2">
                             <input id="till-date" class="form-control form-control-sm" type="text" value=""
                                    th:placeholder="#{operations.form.period-end}" required/>
                         </div>
-                        <div class="col-md-4 mb-2">
-                            <div class="row">
-                                <div class="col-9 mb-2">
-                                    <select id="page-volume" class="form-control form-control-sm" title="">
-                                        <option>5</option>
-                                        <option selected>10</option>
-                                        <option>15</option>
-                                        <option>20</option>
-                                        <option>25</option>
-                                        <option>30</option>
-                                        <option>50</option>
-                                        <option>75</option>
-                                        <option>100</option>
-                                    </select>
-                                </div>
-                                <div class="col-2 mb-2">
-                                    <button id="advanced-options-toggle" class="btn btn-sm btn-secondary" data-toggle="collapse"
-                                            data-target="#advanced-options" onclick="toggleChevron()">
-                                        <i class="fas fa-chevron-down"></i>
-                                    </button>
-                                </div>
-                            </div>
+                        <div class="col-md-2 mb-2">
+                            <select id="page-volume" class="form-control form-control-sm" title="">
+                                <option>5</option>
+                                <option selected>10</option>
+                                <option>15</option>
+                                <option>20</option>
+                                <option>25</option>
+                                <option>30</option>
+                                <option>50</option>
+                                <option>75</option>
+                                <option>100</option>
+                            </select>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div id="advanced-options" class="collapse shadow p-3 bg-white rounded my-3">
-                        <div class="form-group row">
-                            <div class="col-md-4 mb-2">
-                                <label for="out-account" th:text="#{operation.form.out-account}">From account</label>
-                                <select id="out-account" class="form-control form-control-sm" multiple size="5">
-                                    <option value="" selected></option>
-                                    <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label for="in-account" th:text="#{operation.form.in-account}">To account</label>
-                                <select id="in-account" class="form-control form-control-sm" multiple size="5">
-                                    <option value="" selected></option>
-                                    <option th:each="account : ${accounts}" th:value="${account.id}" th:text="${account.name}"></option>
-                                </select>
-                            </div>
-                            <div class="col-md-4 mb-2">
-                                <label for="category" th:text="#{operation.form.category}">Category</label>
-                                <select id="category" class="form-control form-control-sm" title="" multiple size="5">
-                                    <option value="" selected></option>
-                                    <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
-                                </select>
-                            </div>
-                        </div>
+            <div id="loader-container" class="row col-md-12 mb-10">
+                <div class="loader"></div>
+            </div>
 
-                        <div class="form-group row">
-                            <div class="col-md-4">
-                                <label for="min-sum" th:text="#{operation.form.min-sum}">Min sum</label>
-                                <input id="min-sum" type="text" class="form-control form-control-sm" placeholder="0.00"
-                                       th:pattern="#{common.number.pattern}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="max-sum" th:text="#{operation.form.max-sum}">Max sum</label>
-                                <input id="max-sum" type="text" class="form-control form-control-sm" placeholder="0.00"
-                                       th:pattern="#{common.number.pattern}">
-                            </div>
-                            <div class="col-md-4">
-                                <label for="comment" th:text="#{operation.form.comment}">Comment</label>
-                                <input id="comment" type="text" class="form-control form-control-sm"
-                                       th:placeholder="#{operation.form.comment.placeholder}">
-                                <small class="text-muted" th:text="#{operation.form.comment-advice}">_ and % are possible</small>
-                            </div>
-                        </div>
+            <!--Charts-->
+            <div id="chart" class="collapse">
+                <!--todo add charts-->
+            </div>
 
-                        <div class="form-group form-check">
-                            <input id="mode-checkbox" type="checkbox" class="form-check-input" checked>
-                            <label class="form-check-label" for="mode-checkbox"
-                                   th:text="#{operation.form.mode} + ' (' + #{operation.form.out-account} +
-                                   ', ' + #{operation.form.in-account} + ', ' + #{operation.form.category} +
-                                   ', ' + #{operation.form.comment} + ')'">
-                                OR (From Account, To Account, Category, Comment)
-                            </label>
-                        </div>
+            <!--Operations table-->
+            <div class="row">
+                <div id="operation-table" class="col-md-12 mb-3"></div>
+            </div>
 
-                        <div class="form-group row">
-                            <div class="col-md-12 mb-2">
-                                <button class="btn btn-sm btn-secondary btn-block" type="submit" onclick="getOperationsPage()"
-                                        th:text="#{operation.form.ok}">OK
-                                </button>
-                            </div>
-                        </div>
+            <div class="row">
+                <div class="col-12">
+                    <nav>
+                        <ul id="pagination" class="pagination pagination-sm justify-content-center"></ul>
+                    </nav>
                 </div>
             </div>
         </div>
 
-        <div id="loader-container" class="row col-md-12 mb-10">
-            <div class="loader"></div>
-        </div>
-
-        <div class="row">
-            <div id="operation-table" class="col-md-12 mb-3"></div>
-        </div>
-
-        <div class="row">
-            <div class="col-md-12">
-                <nav>
-                    <ul id="pagination" class="pagination pagination-sm justify-content-center"></ul>
-                </nav>
+        <!--Advanced filter-->
+        <div id="advanced-options" class="collapse shadow p-3 bg-white rounded">
+            <div class="form-group">
+                <button class="btn btn-sm btn-light btn-block" data-toggle="collapse"
+                        data-target="#in-account-checkboxes" aria-expanded="false" aria-controls="in-account-checkboxes">
+                    <i class="float-left text-muted fas fa-chevron-down"></i>
+                    <span th:text="#{operations.form.in-account}">To account</span>
+                </button>
+                <div id="in-account-checkboxes" class="collapse">
+                    <div class="form-check" th:each="account : ${accounts}">
+                        <input type="checkbox" class="form-check-input" name="in-account-checkbox"
+                               th:value="${account.id}" th:id="'in-account-checkbox-' + ${account.id}"/>
+                        <label class="form-check-label" th:for="'in-account-checkbox-' + ${account.id}"
+                               th:text="${account.name}"></label>
+                    </div>
+                </div>
             </div>
+
+            <div class="form-group">
+                <button class="btn btn-sm btn-light btn-block" data-toggle="collapse"
+                        data-target="#out-account-checkboxes" aria-expanded="false" aria-controls="out-account-checkboxes">
+                    <i class="float-left text-muted fas fa-chevron-down"></i>
+                    <span th:text="#{operations.form.out-account}">From account</span>
+                </button>
+                <div id="out-account-checkboxes" class="collapse">
+                    <div class="form-check" th:each="account : ${accounts}">
+                        <input type="checkbox" class="form-check-input" name="out-account-checkbox"
+                               th:value="${account.id}" th:id="'out-account-checkbox-' + ${account.id}"/>
+                        <label class="form-check-label" th:for="'out-account-checkbox-' + ${account.id}"
+                               th:text="${account.name}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <button class="btn btn-sm btn-light btn-block" data-toggle="collapse"
+                        data-target="#category-checkboxes" aria-expanded="false" aria-controls="category-checkboxes">
+                    <i class="float-left text-muted fas fa-chevron-down"></i>
+                    <span th:text="#{operations.form.category}">Category</span>
+                </button>
+                <div id="category-checkboxes" class="collapse">
+                    <div class="form-check" th:each="category : ${categories}">
+                        <input type="checkbox" class="form-check-input" name="category-checkbox"
+                               th:value="${category.id}" th:id="'category-checkbox-' + ${category.id}"/>
+                        <label class="form-check-label" th:for="'category-checkbox-' + ${category.id}"
+                               th:text="${category.name}"></label>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <small th:text="#{operations.form.min-sum}">Min sum</small>
+                <input id="min-sum" type="text" class="form-control form-control-sm" placeholder="0.00"
+                       th:pattern="#{common.number.pattern}">
+            </div>
+            <div>
+                <small th:text="#{operations.form.max-sum}">Max sum</small>
+                <input id="max-sum" type="text" class="form-control form-control-sm" placeholder="0.00"
+                       th:pattern="#{common.number.pattern}">
+            </div>
+            <div>
+                <small th:text="#{operations.form.comment}">Comment</small>
+                <input id="comment" type="text" class="form-control form-control-sm"
+                       th:placeholder="#{operations.form.comment.placeholder}">
+            </div>
+
+            <div class="form-group form-check">
+                <input id="mode-checkbox" type="checkbox" class="form-check-input" checked>
+                <label class="form-check-label" for="mode-checkbox">
+                    <small th:text="#{operations.form.mode} + ' (' + #{operations.form.in-account} +
+                               ', ' + #{operations.form.out-account} + ', ' + #{operations.form.category} +
+                               ', ' + #{operations.form.comment} + ')'">OR (From Account, To Account, Category, Comment)</small>
+                </label>
+            </div>
+
+            <button class="btn btn-sm btn-light btn-block" onclick="clearForm()" th:text="#{operations.form.clear}">Clear</button>
+
+            <button class="btn btn-sm btn-secondary btn-block my-3" onclick="getOperationsPage()"
+                    th:text="#{operations.form.ok}">OK
+            </button>
+        </div>
+
+        <div id="advanced-options-toggle" class="side-toggle" th:title="#{operations.advanced-filter.title}"
+             onclick="toggleAdvancedOptions(this)">
+            <i class="fas fa-filter"></i>
+        </div>
+
+        <div id="charts-toggle" class="side-toggle" th:title="#{operations.charts.title}" onclick="toggleAdvancedOptions(this)">
+            <i class="fas fa-chart-area"></i>
         </div>
 
         <div hidden>
@@ -168,10 +193,10 @@
                 var size = $('#page-volume');
                 setDatePicker(fromDate, tillDate);
                 setOnOperationFormChangeListeners(fromDate, tillDate, size);
+                setOnFilterButtonClickListeners();
                 getOperationsPage();
             });
         </script>
     </div>
-</main>
 </body>
 </html>

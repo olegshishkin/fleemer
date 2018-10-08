@@ -63,3 +63,74 @@ td.border-bottom {
     background: lightgrey;
     color: #ffffff;
 }
+
+#advanced-options {
+    position: fixed;
+    bottom: 1.5em;
+    right: 2.5em;
+    width: 20em;
+    height: 34em;
+    overflow: auto;
+    z-index: 999;
+}
+
+#advanced-options select {
+    width: 17em;
+}
+
+#advanced-options i {
+    position: relative;
+    top: 3px;
+}
+
+#advanced-options span {
+    position: relative;
+    right: 5px;
+}
+
+.side-toggle {
+    position: fixed;
+    right: 2em;
+    height: 3em;
+    width: 3em;
+    border-radius: 100%;
+    background-color: black;
+    opacity: 0.3;
+    color: white;
+    padding: 1em;
+    z-index: 999;
+}
+
+#advanced-options-toggle {
+    top: 6em;
+}
+
+#charts-toggle {
+    top: 10em;
+}
+
+#advanced-options-toggle:hover,
+#charts-toggle:hover {
+    transform: scale(1.2);
+    opacity: 0.5;
+    cursor: pointer;
+    animation-delay: 1s;
+}
+
+.target-visible {
+    background-color: red;
+}
+
+.fa-chart-area{
+    position: relative;
+    bottom: 0.3em;
+    transform: scale(1.8);
+    opacity: 1;
+    cursor: pointer;
+}
+
+.fa-filter {
+    transform: scale(1.5);
+    opacity: 1;
+    cursor: pointer;
+}

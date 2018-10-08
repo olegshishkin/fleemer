@@ -5,7 +5,6 @@ import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
 import com.fleemer.model.enums.Currency;
 import com.fleemer.service.*;
-import com.fleemer.service.exception.ServiceException;
 import java.time.LocalDate;
 import java.util.List;
 import javax.servlet.http.HttpSession;
@@ -30,7 +29,7 @@ public class IndexController {
     }
 
     @GetMapping
-    public String index(Model model, HttpSession session) throws ServiceException {
+    public String index(Model model, HttpSession session) {
         model.addAttribute("operation", new Operation());
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         List<Account> accounts = accountService.findAll(person);
