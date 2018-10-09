@@ -6,7 +6,6 @@ var chartConfig = {
     xkey: 'date',
     ykeys: ['income', 'outcome'],
     fillOpacity: 0.5,
-    labels: [$('#income-chart-text').text(), $('#outcome-chart-text').text()],
     hideHover: 'auto',
     behaveLikeLine: true,
     resize: true,
