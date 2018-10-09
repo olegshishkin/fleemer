@@ -41,10 +41,7 @@ public class FleemerSessionInitializationInterceptor extends HandlerInterceptorA
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         HttpSession session = request.getSession();
-        String switchLocale = (String) session.getAttribute(SWITCH_LOCALE_ATTR);
-        if (switchLocale == null) {
-            session.setAttribute(SWITCH_LOCALE_ATTR, getSwitchLocale());
-        }
+        session.setAttribute(SWITCH_LOCALE_ATTR, getSwitchLocale());
         Person person = (Person) session.getAttribute(PERSON_ATTR);
         if (person == null) {
             person = getPerson();
@@ -68,7 +65,7 @@ public class FleemerSessionInitializationInterceptor extends HandlerInterceptorA
 
     private String getSwitchLocale() {
         String language = LocaleContextHolder.getLocale().getLanguage();
-        return language.equals(EN_LANG) ? RU_LANG : EN_LANG;
+        return language.toLowerCase().equals(EN_LANG) ? RU_LANG : EN_LANG;
     }
 
     private static Map<Currency, BigDecimal> getTotalBalances(List<Account> accounts) {

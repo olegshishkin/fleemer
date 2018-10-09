@@ -234,7 +234,9 @@ function fillTable(operations) {
             var isOutAccountExist = isNotNullAndNotUndefined(outAccount);
             var isInAccountExist = isNotNullAndNotUndefined(inAccount);
             var isCategoryExist = isNotNullAndNotUndefined(category);
-            var formattedSum = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+            var formattedSum = sum
+                .toLocaleString($('#locale').text(), {minimumFractionDigits: 2, maximumFractionDigits: 2})
+                .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
             var sumCell = $('<span>');
             if (curDate !== value.date) {
                 curDate = value.date;
@@ -459,4 +461,58 @@ function clearForm() {
     $('#min-sum').val('');
     $('#max-sum').val('');
     $('#comment').val('');
+}
+
+// Calculates math expressions in input field
+function setOnArithmeticListener() {
+    var template = $('#sum-tooltip-template').text() + ' ';
+    var accessible = "0123456789-+*/,.";
+    var result = 0;
+    var inputElem = $('#sum');
+    var tooltipRefresh = function () {
+        if ($(inputElem).is(':focus')) {
+            $(inputElem).tooltip('hide');
+        }
+        $(inputElem).attr('data-original-title', template + result);
+        if ($(inputElem).is(':focus')) {
+            $(inputElem).tooltip('show');
+        }
+    };
+    var replaceInputVal = function () {
+        if ($(inputElem).val().length === 0) {
+            result = 0;
+            return;
+        }
+        var revInputVal = $(inputElem).val().split('').reverse();
+        revInputVal.forEach(function (character, index) {
+            if (accessible.indexOf(character) < 0) {
+                revInputVal[index] = '';
+            }
+            if (character === ',') {
+                revInputVal[index] = '.';
+            }
+        });
+        try {
+            var curInputVal = revInputVal.reverse().join('');
+            $(inputElem).val(curInputVal);
+            result = Math.round(calculate(curInputVal) * 100) / 100;
+        } catch (e) {
+            // do nothing
+        }
+    };
+    $(inputElem).keyup(function () {
+        replaceInputVal();
+        tooltipRefresh();
+    });
+    $(inputElem).blur(function () {
+        replaceInputVal();
+        if (result === 0) {
+            $(inputElem).val('');
+        } else {
+            $(inputElem).val(result);
+        }
+        tooltipRefresh();
+    });
+    $(inputElem).tooltip({trigger:'focus'});
+    replaceInputVal();
 }

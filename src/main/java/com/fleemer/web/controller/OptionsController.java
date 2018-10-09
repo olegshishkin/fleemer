@@ -34,8 +34,8 @@ public class OptionsController {
     }
 
     @GetMapping("/locale")
-    public String localize() {
-        return "redirect:/login";
+    public String localize(@RequestParam("url") String backUrl) {
+        return "redirect:" + backUrl;
     }
 
     @GetMapping("/serialize")

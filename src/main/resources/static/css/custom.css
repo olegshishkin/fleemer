@@ -134,3 +134,8 @@ td.border-bottom {
     opacity: 1;
     cursor: pointer;
 }
+
+.tooltip {
+    opacity: 0.5 !important;
+    font-size: 90% !important;
+}

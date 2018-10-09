@@ -37,8 +37,9 @@
                         Options
                     </a>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item font-weight-light" th:href="@{/options/locale(locale=${session.locale})}" href="#"
-                           th:text="#{navbar.menu.switchLocale(${session.locale.toUpperCase()})}">Switch locale: RU</a>
+                        <a class="dropdown-item font-weight-light"
+                           th:href="@{/options/locale(locale=${session.switchLocale},url=${#request.getRequestURI()})}" href="#"
+                           th:text="#{navbar.menu.switchLocale(${session.switchLocale.toUpperCase()})}">Switch locale: RU</a>
                         <a class="dropdown-item font-weight-light" th:href="@{/chat}" href="#" target="_blank" rel="noopener noreferrer"
                            th:text="#{navbar.menu.chat}">Chat</a>
                         <a class="dropdown-item font-weight-light" th:href="@{/options/requests/stats}" href="#"

@@ -118,6 +118,7 @@
 
     <div hidden>
         <span id="date-picker-lang" th:text="#{common.lang}">en</span>
+        <span id="sum-tooltip-template" th:text="#{operation.form.sum.tooltip.template}">Result:</span>
     </div>
 </main>
 <script>
@@ -126,6 +127,7 @@
         setDatePicker($('#date'));
         setOperationTypeListener(false);
         prepareOperationEditForm();
+        setOnArithmeticListener();
     });
 </script>
 <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>

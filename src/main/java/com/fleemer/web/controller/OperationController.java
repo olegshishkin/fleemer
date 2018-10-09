@@ -196,7 +196,7 @@ public class OperationController {
     @GetMapping("/export")
     public void exportXml(@RequestParam(value = "from", required = false, defaultValue = "0000-01-01") String from,
                           @RequestParam(value = "till", required = false, defaultValue = "9999-12-31") String till,
-                          HttpSession session, HttpServletResponse response) throws ServiceException, IOException {
+                          HttpSession session, HttpServletResponse response) throws IOException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         List<Operation> operations = operationService.findAll(person, LocalDate.parse(from), LocalDate.parse(till));
         response.setContentType("application/xml");

@@ -263,6 +263,7 @@
                 <span id="outcome-chart-text" th:text="#{index.chart.outcome(${currencies[0]})}">Outcome (USD)</span>
                 <span id="delete-confirm" th:text="#{index.delete-confirm}">Do you really want to delete this operation?</span>
                 <span id="date-picker-lang" th:text="#{common.lang}">en</span>
+                <span id="sum-tooltip-template" th:text="#{index.form.sum.tooltip.template}">Result:</span>
             </div>
 
             <footer th:replace="footer::footer(enableMessageNotification=true)"></footer>
@@ -278,6 +279,7 @@
                     setChartParametersChangeListener(fromElem, tillElem, $('#currency'));
                     $('#outcome').click();
                     refreshChart();
+                    setOnArithmeticListener();
                     $('#sum').focus();
                 });
             </script>
