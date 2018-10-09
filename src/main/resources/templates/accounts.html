@@ -131,16 +131,16 @@
                                     <span>
                                         <span th:text="${#numbers.formatDecimal(a.balance,1,'WHITESPACE',2,'DEFAULT')}"></span>
                                         <span th:switch="${a.currency.name()}">
-                                            <span th:case="'USD'"><span class="text-muted  fas fa-dollar-sign"></span></span>
-                                            <span th:case="'EUR'"><span class="text-muted  fas fa-euro-sign"></span></span>
-                                            <span th:case="'RUB'"><span class="text-muted  fas fa-ruble-sign"></span></span>
+                                            <span th:case="'USD'"><span class="text-muted fas fa-dollar-sign"></span></span>
+                                            <span th:case="'EUR'"><span class="text-muted fas fa-euro-sign"></span></span>
+                                            <span th:case="'RUB'"><span class="text-muted fas fa-ruble-sign"></span></span>
                                         </span>
                                         &nbsp;
                                         <a href="#" th:href="@{/accounts/update(id=${a.id})}">
-                                            <span class="far fa-edit text-dark"></span>
+                                            <span class="far fa-edit text-muted"></span>
                                         </a>
                                         <a href="#" th:href="@{/accounts/delete(id=${a.id})}" onclick="return confirmWindow();">
-                                            <span class="far fa-trash-alt text-dark"></span>
+                                            <span class="far fa-trash-alt text-muted"></span>
                                         </a>
                                     </span>
                                 </td>
