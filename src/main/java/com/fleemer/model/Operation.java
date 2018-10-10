@@ -9,18 +9,21 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateSerializer;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.NumberFormat;
 
 @Entity
-@Table(name = "operation", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -42,12 +45,12 @@ public class Operation implements Serializable {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "in_account_id")
+    @JoinColumn
     private Account inAccount;
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "out_account_id")
+    @JoinColumn
     private Account outAccount;
 
     @ManyToOne
@@ -64,6 +67,16 @@ public class Operation implements Serializable {
     @Size(max = 255)
     @Column
     private String comment;
+
+    @JsonIgnore
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime creationTime;
+
+    @JsonIgnore
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime lastUpdateTime;
 
     @JsonIgnore
     @Version

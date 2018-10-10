@@ -8,6 +8,7 @@ import com.fleemer.model.Person;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.Assert;
@@ -92,14 +93,16 @@ public class ConfirmationRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void save_new() {
         repository.save(create(null, "11111111-1111-1111-1111-111111111111", false, people.get(2), 0));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void save_existing() {
         Confirmation confirmation = confirmations.get(2);
         confirmation.setToken("11111111-1111-1111-1111-111111111111");
@@ -108,7 +111,8 @@ public class ConfirmationRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void saveAll() {
         Confirmation newConfirmation1 = create(null, "11111111-1111-1111-1111-111111111111", true, people.get(3), 0);
         Confirmation newConfirmation2 = create(null, "22222222-2222-2222-2222-222222222222", false, people.get(1), 0);
@@ -119,42 +123,47 @@ public class ConfirmationRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_by_id.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_by_id.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteById() {
         repository.deleteById(2L);
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void delete() {
         repository.delete(confirmations.get(0));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_in_batch.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_in_batch.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteInBatch() {
         repository.deleteInBatch(List.of(confirmations.get(1), confirmations.get(2)));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_iterable.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_iterable.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAll_iterable() {
         repository.deleteAll(List.of(confirmations.get(0), confirmations.get(1)));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAll() {
         repository.deleteAll();
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_in_batch.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_in_batch.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAllInBatch() {
         repository.deleteAllInBatch();
         repository.flush();

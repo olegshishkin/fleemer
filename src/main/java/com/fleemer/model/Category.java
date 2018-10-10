@@ -3,16 +3,18 @@ package com.fleemer.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fleemer.model.enums.CategoryType;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "category", uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
+@Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"id"})})
 @Getter
 @Setter
 @NoArgsConstructor
@@ -38,6 +40,16 @@ public class Category implements Serializable {
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn
     private Person person;
+
+    @JsonIgnore
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime creationTime;
+
+    @JsonIgnore
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime lastUpdateTime;
 
     @JsonIgnore
     @Version

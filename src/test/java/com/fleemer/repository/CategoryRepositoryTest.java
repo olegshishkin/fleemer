@@ -9,6 +9,7 @@ import com.fleemer.model.enums.CategoryType;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import java.util.*;
 import javax.transaction.Transactional;
 import org.junit.Assert;
@@ -94,14 +95,16 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void save_new() {
         repository.save(create(null, "new category", CategoryType.INCOME, people.get(2), 0));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void save_existing() {
         Category category = categories.get(4);
         category.setName("Changed name");
@@ -110,7 +113,8 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void saveAll() {
         Category newCategory1 = create(null, "new category1", CategoryType.INCOME, people.get(3), 0);
         Category newCategory2 = create(null, "new category2", CategoryType.OUTCOME, people.get(1), 0);
@@ -121,42 +125,47 @@ public class CategoryRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_by_id.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_by_id.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteById() {
         repository.deleteById(3L);
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void delete() {
         repository.delete(categories.get(3));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_in_batch.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_in_batch.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteInBatch() {
         repository.deleteInBatch(List.of(categories.get(5), categories.get(2)));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_iterable.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_iterable.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAll_iterable() {
         repository.deleteAll(List.of(categories.get(3), categories.get(4)));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAll() {
         repository.deleteAll();
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_in_batch.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_in_batch.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAllInBatch() {
         repository.deleteAllInBatch();
         repository.flush();

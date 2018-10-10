@@ -12,7 +12,7 @@ var chartConfig = {
     pointFillColors: ['#ffffff'],
     pointStrokeColors: ['black'],
     lineColors: ['green', 'red'],
-    pointSize: 3
+    pointSize: 1
 };
 
 var dateOptions = {

@@ -2,15 +2,17 @@ package com.fleemer.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Entity
-@Table(name = "person", uniqueConstraints = @UniqueConstraint(columnNames = {"id", "email"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"id", "email"}))
 @Getter
 @Setter
 @NoArgsConstructor
@@ -24,11 +26,11 @@ public class Person implements Serializable {
 
     @NotNull
     @Size(min = 1, max = 255)
-    @Column(name = "first_name", nullable = false)
+    @Column(nullable = false)
     private String firstName;
 
     @Size(max = 255)
-    @Column(name = "last_name")
+    @Column
     private String lastName;
 
     @Size(min = 1, max = 255)
@@ -45,6 +47,16 @@ public class Person implements Serializable {
     @Size(min = 1, max = 255)
     @Column(nullable = false)
     private String hash;
+
+    @JsonIgnore
+    @CreationTimestamp
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime creationTime;
+
+    @JsonIgnore
+    @UpdateTimestamp
+    @Column(nullable = false)
+    private LocalDateTime lastUpdateTime;
 
     @JsonIgnore
     @Version

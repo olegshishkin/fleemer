@@ -7,6 +7,7 @@ import com.fleemer.model.Person;
 import com.github.springtestdbunit.DbUnitTestExecutionListener;
 import com.github.springtestdbunit.annotation.ExpectedDatabase;
 import com.github.springtestdbunit.annotation.DatabaseSetup;
+import com.github.springtestdbunit.assertion.DatabaseAssertionMode;
 import java.util.List;
 import java.util.Optional;
 import javax.transaction.Transactional;
@@ -92,7 +93,8 @@ public class PersonRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_new.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void save_new() {
         String firstName = "test firstname";
         Person person = create(null, firstName, "test lastname", "test nickname", "test@email.com", "test hash", 0);
@@ -101,7 +103,8 @@ public class PersonRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_existing.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void save_existing() {
         Person person = people.get(1);
         person.setEmail("Changed@email.ch");
@@ -110,7 +113,8 @@ public class PersonRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "save_all.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void saveAll() {
         String firstName1 = "New Firstname1";
         Person newPerson1 = create(null, firstName1, "New Lastname1", "New Nickname1", "New@email1.co", "New hash1", 0);
@@ -123,14 +127,15 @@ public class PersonRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_by_id.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_by_id.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteById() {
         repository.deleteById(1L);
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete.xml", assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void delete() {
         repository.delete(people.get(3));
         repository.flush();
@@ -148,14 +153,16 @@ public class PersonRepositoryTest {
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_iterable.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all_iterable.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAll_iterable() {
         repository.deleteAll(List.of(people.get(3), people.get(4)));
         repository.flush();
     }
 
     @Test
-    @ExpectedDatabase(value = DATASETS_PATH + "delete_all.xml")
+    @ExpectedDatabase(value = DATASETS_PATH + "delete_all.xml",
+            assertionMode = DatabaseAssertionMode.NON_STRICT_UNORDERED)
     public void deleteAll() {
         repository.deleteAll();
         repository.flush();
