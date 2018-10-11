@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
 public class ConfirmationServiceImpl extends AbstractService<Confirmation, Long, ConfirmationRepository>
         implements ConfirmationService {
     private final ConfirmationRepository repository;

@@ -7,6 +7,8 @@ import com.fleemer.service.ConfirmationService;
 import com.fleemer.service.MailService;
 import com.fleemer.service.PersonService;
 import com.fleemer.service.exception.ServiceException;
+import com.fleemer.web.form.PersonForm;
+import com.fleemer.web.form.validator.PersonFormValidator;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Optional;
@@ -27,6 +29,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import org.thymeleaf.TemplateEngine;
@@ -36,11 +39,9 @@ import org.thymeleaf.context.Context;
 @RequestMapping("/user")
 public class UserController {
     private static final String EMAIL_TEMPLATE = "mail";
-    private static final String PASSWD_CONFIRM_FAILED_MSG_KEY = "user.error.password-not-equals";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String SUBJECT_TEXT_MSG_KEY = "mail.subject";
     private static final String USER_CREATE_VIEW = "user_create";
-    private static final String USER_EXISTS_ERROR_MSG_KEY = "user.error.user-exists";
     private static final String USER_JOINING_MSG = "New user has joined to Fleemer: ";
     private static final String USER_UPDATE_VIEW = "user_update";
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
@@ -50,6 +51,7 @@ public class UserController {
     private final MessageSource messageSource;
     private final BCryptPasswordEncoder passwordEncoder;
     private final PersonService personService;
+    private final PersonFormValidator personFormValidator;
     private final TemplateEngine templateEngine;
 
     @Value("${com.fleemer.owner.email}")
@@ -60,53 +62,41 @@ public class UserController {
     @Autowired
     public UserController(TemplateEngine templateEngine, PersonService personService,
                           BCryptPasswordEncoder passwordEncoder, ConfirmationService confirmationService,
-                          MailService mailService, MessageSource messageSource) {
+                          MailService mailService, MessageSource messageSource, PersonFormValidator personFormValidator) {
         this.templateEngine = templateEngine;
         this.personService = personService;
         this.passwordEncoder = passwordEncoder;
         this.confirmationService = confirmationService;
         this.mailService = mailService;
         this.messageSource = messageSource;
+        this.personFormValidator = personFormValidator;
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(personFormValidator);
     }
 
     @GetMapping("/create")
     public ModelAndView create() {
-        return new ModelAndView(USER_CREATE_VIEW, "person", new Person());
+        PersonForm personForm = new PersonForm();
+        personForm.setPerson(new Person());
+        return new ModelAndView(USER_CREATE_VIEW, "personForm", personForm);
     }
 
     @LogAfterReturning
     @PostMapping("/create")
-    public String create(HttpServletRequest request, @Valid @ModelAttribute Person person,
-                         @RequestParam("confirm") String confirmPassword, BindingResult bindingResult)
-            throws ServiceException, MessagingException, MalformedURLException {
+    public String create(HttpServletRequest request, @Valid @ModelAttribute PersonForm personForm,
+                         BindingResult bindingResult) throws ServiceException, MessagingException,
+            MalformedURLException {
         if (bindingResult.hasErrors()) {
             return USER_CREATE_VIEW;
         }
-        if (!confirmPassword.equals(person.getHash())) {
-            String msg = getMessage(PASSWD_CONFIRM_FAILED_MSG_KEY);
-            bindingResult.rejectValue("hash", "hash.confirmNotEquals", msg);
-            return USER_CREATE_VIEW;
-        }
+        Person person = personForm.getPerson();
+        person.setHash(passwordEncoder.encode(person.getHash()));
         String email = person.getEmail();
-        if (personService.findByEmail(email).isPresent()) {
-            String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
-            bindingResult.rejectValue("email", "email.alreadyExists", msg);
-            return USER_CREATE_VIEW;
-        }
-        String nickname = person.getNickname();
-        if (personService.findByNickname(nickname).isPresent()) {
-            String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
-            bindingResult.rejectValue("nickname", "nickname.alreadyExists", msg);
-            return USER_CREATE_VIEW;
-        }
-        String hash = passwordEncoder.encode(person.getHash());
-        person.setHash(hash);
-        Confirmation confirmation = new Confirmation();
-        confirmation.setPerson(person);
         String token = UUID.randomUUID().toString();
-        confirmation.setToken(token);
-        personService.save(person);
-        confirmationService.save(confirmation);
+        personService.saveAndConfirm(person, token);
         try {
             sendConfirmationMail(request, email, token);
         } catch (MalformedURLException e) {
@@ -136,51 +126,37 @@ public class UserController {
 
     @GetMapping("/update")
     public ModelAndView update(HttpSession session) {
-        Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        return new ModelAndView(USER_UPDATE_VIEW, "person", person);
+        PersonForm personForm = new PersonForm();
+        personForm.setPerson((Person) session.getAttribute(PERSON_SESSION_ATTR));
+        return new ModelAndView(USER_UPDATE_VIEW, "personForm", personForm);
     }
 
     @LogAfterReturning
     @PostMapping("/update")
-    public String update(@Valid @ModelAttribute Person person, BindingResult bindingResult, HttpSession session)
-            throws ServiceException {
+    public String update(@Valid @ModelAttribute PersonForm personForm, BindingResult bindingResult, HttpSession session)
+            throws ServiceException {//todo make email update confirmation and password recovery
         if (bindingResult.hasErrors()) {
             return USER_UPDATE_VIEW;
         }
-        Person currentUser = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        if (!person.getId().equals(currentUser.getId())) {
+        Person persistedPerson = (Person) session.getAttribute(PERSON_SESSION_ATTR);
+        Person formPerson = personForm.getPerson();
+        if (!formPerson.getId().equals(persistedPerson.getId())) {
             return "redirect:/";
         }
-        String email = person.getEmail();//todo make email update confirmation and password recovery
-        if (!email.equals(currentUser.getEmail())) {
-            if (personService.findByEmail(email).isPresent()) {
-                String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
-                bindingResult.rejectValue("email", "email.alreadyExists", msg);
-                return USER_UPDATE_VIEW;
-            }
-        }
-        String nickname = person.getNickname();
-        if (!nickname.equals(currentUser.getNickname())) {
-            if (personService.findByNickname(nickname).isPresent()) {
-                String msg = getMessage(USER_EXISTS_ERROR_MSG_KEY);
-                bindingResult.rejectValue("nickname", "nickname.alreadyExists", msg);
-                return USER_UPDATE_VIEW;
-            }
-        }
-        String password = person.getHash();
-        if (!passwordEncoder.matches(password, currentUser.getHash())) {
-            person.setHash(passwordEncoder.encode(password));
+        String password = formPerson.getHash();
+        if (!passwordEncoder.matches(password, persistedPerson.getHash())) {
+            formPerson.setHash(passwordEncoder.encode(password));
         } else {
-            person.setHash(currentUser.getHash());
+            formPerson.setHash(persistedPerson.getHash());
         }
         try {
-            personService.save(person);
+            personService.save(formPerson);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
             logger.warn("Optimistic lock: {}", e.getMessage());
-            session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElse(null));
+            session.setAttribute(PERSON_SESSION_ATTR, personService.findById(formPerson.getId()).orElse(null));
             return "redirect:/user/update?error=lock";
         }
-        session.setAttribute(PERSON_SESSION_ATTR, personService.findById(person.getId()).orElseThrow());
+        session.setAttribute(PERSON_SESSION_ATTR, personService.findById(formPerson.getId()).orElseThrow());
         return "redirect:/user/update?success";
     }
 

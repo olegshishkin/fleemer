@@ -7,6 +7,7 @@ import com.fleemer.model.enums.CategoryType;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
+import com.fleemer.web.form.validator.CategoryValidator;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -17,19 +18,17 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/categories")
 public class CategoryController {
     private static final String CATEGORY_UPDATE_VIEW = "category_update";
-    private static final String CATEGORY_EXISTS_ERROR_KEY = "categories.error.user-exists";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String REDIRECT_CATEGORIES_URL = "redirect:/categories";
     private static final String ROOT_VIEW = "categories";
@@ -37,15 +36,20 @@ public class CategoryController {
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
 
     private final CategoryService categoryService;
-    private final MessageSource messageSource;
+    private final CategoryValidator categoryValidator;
     private final OperationService operationService;
 
     @Autowired
-    public CategoryController(CategoryService categoryService, OperationService operationService,
-                              MessageSource messageSource) {
+    public CategoryController(CategoryService categoryService, CategoryValidator categoryValidator,
+                              OperationService operationService) {
         this.categoryService = categoryService;
+        this.categoryValidator = categoryValidator;
         this.operationService = operationService;
-        this.messageSource = messageSource;
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(categoryValidator);
     }
 
     @GetMapping
@@ -71,12 +75,6 @@ public class CategoryController {
                          HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (bindingResult.hasErrors()) {
-            fillModel(model, categoryService.findAll(person));
-            return ROOT_VIEW;
-        }
-        Optional<Category> optional = categoryService.findByNameAndPerson(category.getName(), person);
-        if (optional.isPresent()) {
-            bindingResult.rejectValue("name", "name.alreadyExists", getMessage(CATEGORY_EXISTS_ERROR_KEY));
             fillModel(model, categoryService.findAll(person));
             return ROOT_VIEW;
         }
@@ -110,13 +108,7 @@ public class CategoryController {
         if (!optional.isPresent()) {
             return REDIRECT_CATEGORIES_URL;
         }
-        Category category = optional.get();
-        if (!canUseName(category, formCategory, person)) {
-            bindingResult.rejectValue("name", "name.alreadyExists", getMessage(CATEGORY_EXISTS_ERROR_KEY));
-            fillModel(model, categoryService.findAll(person));
-            return CATEGORY_UPDATE_VIEW;
-        }
-        formCategory.setPerson(category.getPerson());
+        formCategory.setPerson(optional.get().getPerson());
         try {
             categoryService.save(formCategory);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
@@ -140,19 +132,6 @@ public class CategoryController {
             categoryService.delete(category);
         }
         return REDIRECT_CATEGORIES_URL;
-    }
-
-    private boolean canUseName(Category category, Category formCategory, Person person) {
-        String name = category.getName();
-        String formName = formCategory.getName();
-        if (name.equals(formName)) {
-            return true;
-        }
-        return !categoryService.findByNameAndPerson(formName, person).isPresent();
-    }
-
-    private String getMessage(String key) {
-        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
     }
 
     private void fillModel(@NotNull Model model, Iterable<Category> collection) {

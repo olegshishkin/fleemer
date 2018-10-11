@@ -8,6 +8,7 @@ import com.fleemer.model.enums.Currency;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
+import com.fleemer.web.form.validator.AccountValidator;
 import java.util.Optional;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.http.HttpSession;
@@ -16,34 +17,37 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/accounts")
 public class AccountController {
     private static final String ACCOUNT_UPDATE_VIEW = "account_update";
-    private static final String ACCOUNT_EXISTS_ERROR_KEY = "accounts.error.name-exists";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String REDIRECT_ACCOUNTS_URL = "redirect:/accounts";
     private static final String ROOT_VIEW = "accounts";
     private static final Logger logger = LoggerFactory.getLogger(AccountController.class);
 
     private final AccountService accountService;
-    private final MessageSource messageSource;
     private final OperationService operationService;
+    private final AccountValidator accountValidator;
 
     @Autowired
-    public AccountController(AccountService accountService, MessageSource messageSource,
-                             OperationService operationService) {
+    public AccountController(AccountService accountService, OperationService operationService,
+                             AccountValidator accountValidator) {
         this.accountService = accountService;
-        this.messageSource = messageSource;
         this.operationService = operationService;
+        this.accountValidator = accountValidator;
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(accountValidator);
     }
 
     @GetMapping
@@ -60,12 +64,6 @@ public class AccountController {
                          HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (bindingResult.hasErrors()) {
-            fillModel(model, accountService.findAll(person));
-            return ROOT_VIEW;
-        }
-        Optional<Account> optional = accountService.findByNameAndPerson(account.getName(), person);
-        if (optional.isPresent()) {
-            bindingResult.rejectValue("name", "name.alreadyExists", getMessage(ACCOUNT_EXISTS_ERROR_KEY));
             fillModel(model, accountService.findAll(person));
             return ROOT_VIEW;
         }
@@ -93,6 +91,7 @@ public class AccountController {
                          Model model, HttpSession session) throws ServiceException {
         if (bindingResult.hasErrors()) {
             model.addAttribute("accountTypes", AccountType.values());
+            model.addAttribute("currencies", Currency.values());
             return ACCOUNT_UPDATE_VIEW;
         }
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
@@ -100,13 +99,7 @@ public class AccountController {
         if (!optional.isPresent()) {
             return REDIRECT_ACCOUNTS_URL;
         }
-        Account account = optional.get();
-        if (!canUseName(account, formAccount, person)) {
-            bindingResult.rejectValue("name", "name.alreadyExists", getMessage(ACCOUNT_EXISTS_ERROR_KEY));
-            fillModel(model, accountService.findAll(person));
-            return ACCOUNT_UPDATE_VIEW;
-        }
-        formAccount.setPerson(account.getPerson());
+        formAccount.setPerson(optional.get().getPerson());
         try {
             accountService.save(formAccount);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
@@ -132,20 +125,7 @@ public class AccountController {
         return REDIRECT_ACCOUNTS_URL;
     }
 
-    private boolean canUseName(Account account, Account formAccount, Person person) {
-        String name = account.getName();
-        String formName = formAccount.getName();
-        if (name.equals(formName)) {
-            return true;
-        }
-        return !accountService.findByNameAndPerson(formName, person).isPresent();
-    }
-
-    private String getMessage(String key) {
-        return messageSource.getMessage(key, null, LocaleContextHolder.getLocale());
-    }
-
-    private void fillModel(@NotNull Model model, Iterable<Account> collection) {
+    private void fillModel(Model model, Iterable<Account> collection) {
         model.addAttribute("accounts", collection);
         model.addAttribute("accountTypes", AccountType.values());
         model.addAttribute("currencies", Currency.values());

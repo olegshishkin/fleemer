@@ -9,11 +9,13 @@ import com.fleemer.model.Account;
 import com.fleemer.model.Category;
 import com.fleemer.model.Operation;
 import com.fleemer.model.Person;
+import com.fleemer.model.enums.Currency;
 import com.fleemer.service.AccountService;
 import com.fleemer.service.BaseService;
 import com.fleemer.service.CategoryService;
 import com.fleemer.service.OperationService;
 import com.fleemer.service.exception.ServiceException;
+import com.fleemer.web.form.validator.OperationValidator;
 import com.fleemer.web.other.OperationXmlMixIn;
 import javax.persistence.OptimisticLockException;
 import javax.servlet.ServletOutputStream;
@@ -41,6 +43,7 @@ import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -51,23 +54,31 @@ public class OperationController {
     private static final String EMPTY_STRING = "";
     private static final String ILLEGAL_VALUES_EXCEPTION_MSG = "Same entities have different field(s) value(s): " +
             "1) %s, 2) %s.";
+    private static final String INDEX_VIEW = "index";
     private static final String IO_ERROR_EXCEPTION_TEMPLATE = "IO Error: Exception: {}";
     private static final String OPERATION_UPDATE_VIEW = "operation_update";
+    private static final String OPERATIONS_VIEW = "operations";
     private static final String PERSON_SESSION_ATTR = "person";
     private static final String REDIRECT = "redirect:";
-    private static final String ROOT_VIEW = "operations";
     private static final Logger logger = LoggerFactory.getLogger(OperationController.class);
 
     private final AccountService accountService;
     private final CategoryService categoryService;
     private final OperationService operationService;
+    private final OperationValidator operationValidator;
 
     @Autowired
     public OperationController(AccountService accountService, CategoryService categoryService,
-                               OperationService operationService) {
+                               OperationService operationService, OperationValidator operationValidator) {
         this.accountService = accountService;
         this.categoryService = categoryService;
         this.operationService = operationService;
+        this.operationValidator = operationValidator;
+    }
+
+    @InitBinder
+    protected void initBinder(WebDataBinder binder) {
+        binder.addValidators(operationValidator);
     }
 
     @GetMapping
@@ -77,7 +88,7 @@ public class OperationController {
         model.addAttribute("accounts", accountService.findAll(person));
         model.addAttribute("categories", categoryService.findAll(person));
         model.addAttribute("accountId", accountId);
-        return ROOT_VIEW;
+        return OPERATIONS_VIEW;
     }
 
     @ResponseBody
@@ -124,15 +135,18 @@ public class OperationController {
 
     @LogAfterReturning
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute Operation operation, BindingResult result, Model model,
+    public String create(@Valid @ModelAttribute Operation operation, BindingResult bindingResult, Model model,
                          HttpSession session) throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
-        if (result.hasErrors()) {
+        if (bindingResult.hasErrors()) {
             model.addAttribute("accounts", accountService.findAll(person));
-            return ROOT_VIEW;
+            LocalDate today = LocalDate.now();
+            model.addAttribute("operations", operationService.findAll(person, today, today));
+            model.addAttribute("currencies", Currency.values());
+            return INDEX_VIEW;
         }
         operationService.save(operation);
-        return REDIRECT + "/";
+        return REDIRECT + '/';
     }
 
     @GetMapping("/update")
@@ -143,10 +157,7 @@ public class OperationController {
         if (!operation.isPresent()) {
             return REDIRECT + url;
         }
-        model.addAttribute("accounts", accountService.findAll(person));
-        model.addAttribute("categories", categoryService.findAll(person));
-        model.addAttribute("operation", operation.get());
-        model.addAttribute("redirectUrl", url);
+        fillModel(model, url, person, operation.get());
         return OPERATION_UPDATE_VIEW;
     }
 
@@ -157,19 +168,14 @@ public class OperationController {
             throws ServiceException {
         Person person = (Person) session.getAttribute(PERSON_SESSION_ATTR);
         if (bindingResult.hasErrors()) {
-            model.addAttribute("accounts", accountService.findAll(person));
+            fillModel(model, url, person, formOperation);
             return OPERATION_UPDATE_VIEW;
         }
-        List<Operation> operations = operationService.findAll(person);
-        if (!operations.contains(formOperation)) {
+        Optional<Operation> operation = operationService.findByIdAndPerson(formOperation.getId(), person);
+        if (!operation.isPresent()) {
             return REDIRECT + url;
         }
-        long id = formOperation.getId();
-        Operation operation = operationService.findById(id).orElse(null);
-        if (operation == null) {
-            return REDIRECT + url;
-        }
-        String param = "";
+        String param = EMPTY_STRING;
         try {
             operationService.save(formOperation);
         } catch (OptimisticLockException | ObjectOptimisticLockingFailureException e) {
@@ -241,6 +247,13 @@ public class OperationController {
             throw e;
         }
         return REDIRECT + "/options/serialize?success";
+    }
+
+    private void fillModel(Model model, @RequestParam("redirect") String url, Person person, Operation operation) {
+        model.addAttribute("accounts", accountService.findAll(person));
+        model.addAttribute("categories", categoryService.findAll(person));
+        model.addAttribute("operation", operation);
+        model.addAttribute("redirectUrl", url);
     }
 
     private List<DailyVolumesDTO> convertDailyVolumes(LocalDate from, LocalDate till, List<Object[]> volumes) {

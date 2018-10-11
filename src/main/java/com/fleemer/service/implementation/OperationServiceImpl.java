@@ -23,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -49,29 +50,31 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public long countOperationsByCategory(Category category) {
         return repository.countOperationsByCategory(category);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public long countOperationsByAccount(Account account) {
         return repository.countOperationsByInAccountOrOutAccount(account, account);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Operation> findAll(Person person) {
         return repository.findAllByInAccountPersonOrOutAccountPerson(person, person);
     }
 
     @Override
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Operation> findAll(Person person, LocalDate from, LocalDate till) {
         return repository.findAllByInAccountPersonOrOutAccountPersonAndDateBetween(person, person, from, till);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Page<Operation> findAll(Person person, Pageable pageable, boolean orMode, @Nullable LocalDate from,
                                    @Nullable LocalDate till, @Nullable List<Account> inAccounts,
                                    @Nullable List<Account> outAccounts, @Nullable List<Category> categories,
@@ -82,13 +85,13 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Optional<Operation> findByIdAndPerson(Long id, Person person) {
         return repository.getByIdAndInAccountPersonOrOutAccountPerson(id, person, person);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Object[]> findAllDailyVolumes(Person person, Currency currency, LocalDate fromDate, LocalDate tillDate)
             throws ServiceException {
         checkDatesSequence(fromDate, tillDate);
@@ -140,7 +143,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             categoryService.saveAll(categories.values());
         }
         for (Operation operation : entities) {
-            this.save(operation);
+            this.save(operation);//todo
         }
         return entities;
     }
@@ -167,11 +170,18 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     private static void checkLogicalConstraints(Account in, Account out, Category cat) throws ServiceException {
-        // Conditions: if all arguments are null or if all arguments are not null or if only one argument is not null.
-        if ((in == null && out == null && cat == null) || (in != null && out != null && cat != null) ||
+        // Conditions: if all arguments are null or if all arguments are not null or if only one argument is not null
+        // or in and out is the same.
+        if ((in == null && out == null && cat == null) ||
+                (in != null && out != null && cat != null) ||
                 (in != null && out == null && cat == null || out != null && in == null && cat == null ||
                         cat != null && in == null && out == null)) {
             String msg = getIfNullErrorMsg(in, out, cat);
+            logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
+            throw new ServiceException(msg);
+        }
+        if (in == out) {
+            String msg = "Accounts are equals: " + in + ", " + out;
             logger.error(SERVICE_EXCEPTION_TEMPLATE, msg);
             throw new ServiceException(msg);
         }
@@ -193,7 +203,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
     }
 
     private static String getIfNullErrorMsg(Account in, Account out, Category cat) {
-        return "There should be only two nonzero parameters. Actually: " + in + ", " + out + ", " + cat;
+        return "There should be two nonzero parameters. Actually: " + in + ", " + out + ", " + cat;
     }
 
     private static void transfer(Account in, Account out, Category category, BigDecimal sum) {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
@@ -26,25 +27,25 @@ public class CategoryServiceImpl extends AbstractService<Category, Long, Categor
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Category> findAll(Person person) {
         return repository.findAllByPersonOrderByName(person);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Optional<Category> findByNameAndPerson(String name, Person person) {
         return repository.findByNameAndPerson(name, person);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public List<Category> findAllByTypeAndPerson(CategoryType type, Person person) {
         return repository.findAllByTypeAndPerson(type, person);
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
     public Optional<Category> findByIdAndPerson(Long id, Person person) {
         return repository.findByIdAndPerson(id, person);
     }

@@ -20,18 +20,18 @@
                     </div>
                 </div>
 
-                <form method="post" action="#" th:action="@{/user/update}" th:object="${person}" class="needs-validation" novalidate>
+                <form method="post" action="#" th:action="@{/user/update}" th:object="${personForm}" class="needs-validation" novalidate>
 
-                    <input type="hidden" th:field="*{id}">
-                    <input type="hidden" th:field="*{version}">
+                    <input type="hidden" th:field="*{person.id}">
+                    <input type="hidden" th:field="*{person.version}">
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label th:for="*{email}">Email</label>
-                            <input th:field="*{email}" type="email" class="form-control form-control-sm"
+                            <label th:for="*{person.email}">Email</label>
+                            <input th:field="*{person.email}" type="email" class="form-control form-control-sm"
                                    pattern="^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$" required/>
-                            <div th:if="${#fields.hasErrors('email')}">
-                                <span th:errors="*{email}" class="text-danger small"></span><br>
+                            <div th:if="${#fields.hasErrors('person.email')}">
+                                <span th:errors="*{person.email}" class="text-danger small"></span><br>
                             </div>
                             <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                         </div>
@@ -39,10 +39,10 @@
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label th:for="*{firstName}" th:text="#{user.form.firstname}">Firstname</label>
-                            <input th:field="*{firstName}" type="text" class="form-control form-control-sm" required/>
-                            <div th:if="${#fields.hasErrors('firstName')}">
-                                <span th:errors="*{firstName}" class="text-danger small"></span><br>
+                            <label th:for="*{person.firstName}" th:text="#{user.form.firstname}">Firstname</label>
+                            <input th:field="*{person.firstName}" type="text" class="form-control form-control-sm" required/>
+                            <div th:if="${#fields.hasErrors('person.firstName')}">
+                                <span th:errors="*{person.firstName}" class="text-danger small"></span><br>
                             </div>
                             <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                         </div>
@@ -50,20 +50,20 @@
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label th:for="*{lastName}" th:text="#{user.form.lastname}">Lastname</label>
-                            <input th:field="*{lastName}" type="text" class="form-control form-control-sm"/>
-                            <div th:if="${#fields.hasErrors('lastName')}">
-                                <span th:errors="*{lastName}" class="text-danger small"></span><br>
+                            <label th:for="*{person.lastName}" th:text="#{user.form.lastname}">Lastname</label>
+                            <input th:field="*{person.lastName}" type="text" class="form-control form-control-sm"/>
+                            <div th:if="${#fields.hasErrors('person.lastName')}">
+                                <span th:errors="*{person.lastName}" class="text-danger small"></span><br>
                             </div>
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label th:for="*{nickname}" th:text="#{user.form.nickname}">Nickname</label>
-                            <input th:field="*{nickname}" type="text" class="form-control form-control-sm" required/>
-                            <div th:if="${#fields.hasErrors('nickname')}">
-                                <span th:errors="*{nickname}" class="text-danger small"></span><br>
+                            <label th:for="*{person.nickname}" th:text="#{user.form.nickname}">Nickname</label>
+                            <input th:field="*{person.nickname}" type="text" class="form-control form-control-sm" required/>
+                            <div th:if="${#fields.hasErrors('person.nickname')}">
+                                <span th:errors="*{person.nickname}" class="text-danger small"></span><br>
                             </div>
                             <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                         </div>
@@ -71,10 +71,21 @@
 
                     <div class="row">
                         <div class="col-md-12 mb-3">
-                            <label th:for="*{hash}" th:text="#{user.form.password}">Password</label>
-                            <input th:field="*{hash}" type="password" class="form-control form-control-sm" required/>
-                            <div th:if="${#fields.hasErrors('hash')}">
-                                <span th:errors="*{hash}" class="text-danger small"></span><br>
+                            <label th:for="*{person.hash}" th:text="#{user.form.password}">Password</label>
+                            <input th:field="*{person.hash}" type="password" class="form-control form-control-sm" required/>
+                            <div th:if="${#fields.hasErrors('person.hash')}">
+                                <span th:errors="*{person.hash}" class="text-danger small"></span><br>
+                            </div>
+                            <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label th:for="*{confirmPassword}" th:text="#{user.form.confirm-password}">Confirm password</label>
+                            <input th:field="*{confirmPassword}" type="password" class="form-control form-control-sm" required/>
+                            <div th:if="${#fields.hasErrors('confirmPassword')}">
+                                <span th:errors="*{confirmPassword}" class="text-danger small"></span><br>
                             </div>
                             <div class="invalid-feedback" th:text="#{user.error.not-empty}">The field cannot be empty</div>
                         </div>

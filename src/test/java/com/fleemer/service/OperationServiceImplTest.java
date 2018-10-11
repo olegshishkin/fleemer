@@ -64,6 +64,9 @@ public class OperationServiceImplTest {
     @Mock
     private Account account;
 
+    @Mock
+    private Account anotherAccount;
+
     @Test
     public void count() {
         when(repository.count()).thenReturn(id);
@@ -136,11 +139,13 @@ public class OperationServiceImplTest {
     public void delete() throws ServiceException {
         doNothing().when(repository).delete(operation);
         when(operation.getInAccount()).thenReturn(account);
-        when(operation.getOutAccount()).thenReturn(account);
+        when(operation.getOutAccount()).thenReturn(anotherAccount);
         when(operation.getSum()).thenReturn(BigDecimal.TEN);
         when(repository.getOne(any())).thenReturn(operation);
         when(account.getBalance()).thenReturn(BigDecimal.ZERO);
         when(account.getCurrency()).thenReturn(Currency.RUB);
+        when(anotherAccount.getBalance()).thenReturn(BigDecimal.ZERO);
+        when(anotherAccount.getCurrency()).thenReturn(Currency.RUB);
         service.delete(operation);
         verify(repository, times(1)).delete(operation);
         verify(operation, times(1)).getInAccount();
@@ -273,6 +278,20 @@ public class OperationServiceImplTest {
         operation.setId(11L);
         operation.setSum(BigDecimal.valueOf(3.45));
         operation.setCategory(category);
+        service.save(operation);
+    }
+
+    @Test(expected = ServiceException.class)
+    public void save_bothAccountsIsEquals() throws ServiceException {
+        Category category = new Category();
+        category.setType(CategoryType.INCOME);
+        Operation operation = new Operation();
+        operation.setId(11L);
+        operation.setSum(BigDecimal.valueOf(3.45));
+        operation.setCategory(category);
+        Account account = new Account();
+        operation.setInAccount(account);
+        operation.setOutAccount(account);
         service.save(operation);
     }
 
