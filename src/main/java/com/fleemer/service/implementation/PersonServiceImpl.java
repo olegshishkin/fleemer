@@ -54,7 +54,7 @@ public class PersonServiceImpl extends AbstractService<Person, Long, PersonRepos
         Confirmation confirmation = new Confirmation();
         confirmation.setPerson(person);
         confirmation.setToken(token);
-        super.save(person);//todo
+        super.save(person);
         confirmationService.save(confirmation);
     }
 }

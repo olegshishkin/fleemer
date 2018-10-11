@@ -13,7 +13,8 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class CategoryServiceImpl extends AbstractService<Category, Long, CategoryRepository> implements CategoryService {
+public class CategoryServiceImpl extends AbstractService<Category, Long, CategoryRepository>
+        implements CategoryService {
     private final CategoryRepository repository;
 
     @Autowired

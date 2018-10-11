@@ -53,10 +53,6 @@ var STRING_ENUM=new Enum([
 );
 
 function calculate(expression){
-  //todo calculate('1,2') = error
-  //todo calculate('sin(1,2)') = error
-	//test '1e2' ok '1.e-2'
-	
   var i,j,k,s,e,from,to,r;
   e=expression.toLowerCase().replace(/\s+/g,"");
   if(e.length==0){

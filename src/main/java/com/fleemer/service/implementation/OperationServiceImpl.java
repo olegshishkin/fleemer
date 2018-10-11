@@ -143,7 +143,7 @@ public class OperationServiceImpl extends AbstractService<Operation, Long, Opera
             categoryService.saveAll(categories.values());
         }
         for (Operation operation : entities) {
-            this.save(operation);//todo
+            this.save(operation);
         }
         return entities;
     }
