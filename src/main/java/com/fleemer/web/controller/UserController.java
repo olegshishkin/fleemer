@@ -62,7 +62,8 @@ public class UserController {
     @Autowired
     public UserController(TemplateEngine templateEngine, PersonService personService,
                           BCryptPasswordEncoder passwordEncoder, ConfirmationService confirmationService,
-                          MailService mailService, MessageSource messageSource, PersonFormValidator personFormValidator) {
+                          MailService mailService, MessageSource messageSource,
+                          PersonFormValidator personFormValidator) {
         this.templateEngine = templateEngine;
         this.personService = personService;
         this.passwordEncoder = passwordEncoder;

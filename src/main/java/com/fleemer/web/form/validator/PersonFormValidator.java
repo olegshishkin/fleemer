@@ -39,16 +39,16 @@ public class PersonFormValidator implements Validator {
         }
         personService.findByEmail(person.getEmail()).ifPresent(p -> {
             String field = "person.email";
-            isAnotherExists(errors, person, p, field, field + ".alreadyExists");
+            rejectIfAnotherExists(errors, person, p, field, field + ".alreadyExists");
         });
         personService.findByNickname(person.getNickname()).ifPresent(p -> {
             String field = "person.nickname";
-            isAnotherExists(errors, person, p, field, field + ".alreadyExists");
+            rejectIfAnotherExists(errors, person, p, field, field + ".alreadyExists");
         });
     }
 
-    private void isAnotherExists(Errors errors, Person formPerson, Person persistedPerson, String field,
-                                 String errorCode) {
+    private void rejectIfAnotherExists(Errors errors, Person formPerson, Person persistedPerson, String field,
+                                       String errorCode) {
         if (!persistedPerson.getId().equals(formPerson.getId())) {
             errors.rejectValue(field, errorCode, getMessage(USER_EXISTS_ERROR_MSG_KEY));
         }
