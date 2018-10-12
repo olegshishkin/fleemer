@@ -13,5 +13,5 @@ public interface PersonService extends BaseService<Person, Long> {
 
     Optional<Person> findByNickname(String nickname);
 
-    void saveAndConfirm(Person person, String token) throws ServiceException;
+    void saveAndCreateConfirmation(Person person, String token) throws ServiceException;
 }

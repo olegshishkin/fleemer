@@ -50,11 +50,33 @@ public class PersonServiceImpl extends AbstractService<Person, Long, PersonRepos
 
     @Override
     @Transactional
-    public void saveAndConfirm(Person person, String token) throws ServiceException {
-        Confirmation confirmation = new Confirmation();
+    public void saveAndCreateConfirmation(Person person, String token) throws ServiceException {
+        Confirmation confirmation;
+        Optional<Person> optionalPerson = this.findByEmail(person.getEmail());
+        if (optionalPerson.isPresent()) {
+            Person persistentPerson = optionalPerson.get();
+            person.setId(persistentPerson.getId());
+            String email = person.getEmail();
+            Optional<Confirmation> optionalConfirmation = confirmationService.findByPersonEmail(email);
+            if (optionalConfirmation.isPresent()) {
+                Confirmation persistentConfirmation = optionalConfirmation.get();
+                persistentConfirmation.setToken(token);
+                confirmation = persistentConfirmation;
+            } else {
+                confirmation = getNewConfirmation(person, token);
+            }
+        } else {
+            confirmation = getNewConfirmation(person, token);
+        }
+        this.save(person);
+        confirmationService.save(confirmation);
+    }
+
+    private static Confirmation getNewConfirmation(Person person, String token) {
+        Confirmation confirmation;
+        confirmation = new Confirmation();
         confirmation.setPerson(person);
         confirmation.setToken(token);
-        super.save(person);
-        confirmationService.save(confirmation);
+        return confirmation;
     }
 }

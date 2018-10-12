@@ -97,14 +97,14 @@ public class UserController {
         person.setHash(passwordEncoder.encode(person.getHash()));
         String email = person.getEmail();
         String token = UUID.randomUUID().toString();
-        personService.saveAndConfirm(person, token);
+        personService.saveAndCreateConfirmation(person, token);
         try {
             sendConfirmationMail(request, email, token);
         } catch (MalformedURLException e) {
             personService.delete(person);
             throw e;
         }
-        logger.info("New user has created: {}", email);
+        logger.info("New user was created: {}", email);
         return "redirect:/user/create/status?confirm=notification";
     }
 
@@ -120,7 +120,7 @@ public class UserController {
         boolean success = verify(email, token);
         if (success) {
             mailService.send(senderEmail, ownerEmail, USER_JOINING_MSG + email, "");
-            logger.info("User has confirmed: {}", email);
+            logger.info("User's email was confirmed: {}", email);
         }
         return "redirect:/user/create/status?confirm=" + (success ? "success" : "failed");
     }
@@ -183,14 +183,15 @@ public class UserController {
     private boolean verify(String email, String token) throws ServiceException {
         Optional<Confirmation> optional = confirmationService.findByPersonEmail(email);
         if (!optional.isPresent()) {
+            logger.info("Email address confirmation is failed: {}", email);
             return false;
         }
         Confirmation confirmation = optional.get();
         if (confirmation.isEnabled() || !confirmation.getToken().equals(token)) {
+            logger.info("Email address confirmation is failed: {}", email);
             return false;
         }
         confirmation.setEnabled(true);
-        logger.info("User's email has confirmed: {}", email);
         return confirmationService.save(confirmation) != null;
     }
 }
