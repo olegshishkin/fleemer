@@ -7,7 +7,6 @@ import lombok.Data;
 public class AccessStats implements Serializable {
     private String date;
     private String ip;
-    private String host;
     private String uri;
     private String agent;
     private int count;
