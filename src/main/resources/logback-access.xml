@@ -7,7 +7,7 @@
     <springProperty name="username" source="spring.data.mongodb.username"/>
     <springProperty name="password" source="spring.data.mongodb.password"/>
 
-    <appender name="mongo" class="ch.qos.logback.contrib.mongodb.MongoDBAccessEventAppender">
+    <appender name="mongo" class="com.fleemer.web.other.FleemerMongoDBAccessEventAppender">
         <filter class="com.fleemer.web.filter.AccessLoggingFilter" />
         <uri>mongodb://${username}:${password}@${host}:${port}/${database}.${collection}</uri>
     </appender>

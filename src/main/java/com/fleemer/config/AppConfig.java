@@ -2,6 +2,7 @@ package com.fleemer.config;
 
 import com.fleemer.interceptors.FleemerSessionInitializationInterceptor;
 import java.nio.charset.StandardCharsets;
+import org.apache.catalina.filters.RemoteIpFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,18 @@ public class AppConfig implements WebMvcConfigurer {
     @Autowired
     public AppConfig(FleemerSessionInitializationInterceptor fleemerSessionInitializationInterceptor) {
         this.fleemerSessionInitializationInterceptor = fleemerSessionInitializationInterceptor;
+    }
+
+    /**
+     * Is is necessary for 'logback-mongodb-access' artifact.
+     * Internally RemoteIpFilter integrates X-Forwarded-For and X-Forwarded-Proto HTTP headers.
+     * It is necessary for substitute remote client ip while http-server is proxying all the requests (otherwise all
+     * clients has localhost ip address).
+     * WARNING: It is used only for Tomcat-server.
+     */
+    @Bean
+    public RemoteIpFilter remoteIpFilter() {
+        return new RemoteIpFilter();
     }
 
     @Bean
